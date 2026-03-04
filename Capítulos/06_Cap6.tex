@@ -1,0 +1,50 @@
+\begin{comment}
+    
+
+%\addtocounter{chapter}{-1}
+\chapter{Conclusiones}
+\label{Cap_AnalisisResultados}
+\textit{Presenta las conclusiones más relevantes y propone una línea para la continuación del trabajo de investigación}
+\vfill
+\renewcommand{\mtctitle}{Contenido}  
+\minitoc
+\newpage
+
+\cleardoublepage
+\end{comment}
+
+\section{Conclusiones}
+
+% Primer objetivo
+La revisión del estado del arte del concepto de UNS permitió comprender a profundidad su papel como pieza clave en la convergencia de tecnologías de información (IT) y operación (OT) dentro de los entornos industriales modernos. Se evidenció que el UNS no es simplemente una técnica de integración, sino una filosofía de diseño que reorganiza la forma en que los datos fluyen, se acceden y se gestionan en tiempo real, promoviendo la estandarización, la interoperabilidad y la contextualización a lo largo de toda la arquitectura digital industrial. Este enfoque rompe con los esquemas tradicionales basados en silos de información y abre paso a un modelo en el que todos los actores humanos, máquinas, software y procesos tienen una visión común y actualizada del sistema.
+
+Además, al identificar y comparar las distintas interpretaciones, ventajas y limitaciones del UNS, se logró establecer una base conceptual sólida que sirvió como punto de partida para las siguientes etapas del estudio. El análisis crítico de métodos como los propuestos por David Schultz y Matthew Parris, permitió contrastar enfoques jerárquicos y funcionales, rescatando elementos clave para un diseño efectivo. Este ejercicio ayudó a delimitar el alcance de la investigación, seleccionando los métodos como referencias prácticas para la implementación experimental en la plataforma de entrenamiento IIoT.
+
+
+% Segundo objetivo
+La definición de métricas de evaluación cualitativas y cuantitativas fueron instrumentos de análisis para valorar el comportamiento de las arquitecturas UNS en entornos de simulación. Las métricas cualitativas como integración, resiliencia, flexibilidad, seguridad, implementación y escalabilidad permitieron evaluar dimensiones críticas del diseño, destacando la capacidad de las técnicas UNS para sostener flujos de datos robustos, adaptarse a cambios en tiempo real y facilitar la integración de nuevos elementos tecnológicos sin afectar la operación del sistema. Estas métricas ofrecieron una revisión del desempeño arquitectónico más allá de los simples indicadores técnicos.
+
+Por otro lado, las métricas cuantitativas centradas en la estructura de topics, sesiones activas, autenticaciones, flujos de datos, gestión de clientes y actividad de mensajes MQTT permitieron medir con precisión aspectos operativos relevantes de cada implementación. Gracias a estas métricas, se pudo observar el comportamiento del sistema ante distintos escenarios de carga, tráfico y número de dispositivos conectados. La obtención de estos datos aportó objetividad al análisis comparativo entre métodos UNS, posibilitando una toma de decisiones basada en evidencia técnica. Así, las métricas diseñadas se consolidaron como herramientas clave para evaluar y optimizar arquitecturas UNS futuras.
+
+
+
+% Tercer objetivo:
+
+La implementación de los métodos Schultz y Parris en la plataforma Ignition permitió contrastar dos enfoques reconocidos para la estructuración del Unified Namespace. El método Schultz, al organizar jerárquicamente los datos en función del modelo físico y semántico de la planta, ofreció claridad en la navegación del namespace, facilitando la identificación de dispositivos, procesos y valores asociados. Su diseño promovió la estandarización del nombre de los tópicos, lo que redujo la complejidad operativa y mejoró la sostenibilidad del sistema a largo plazo. En la práctica, demostró ser altamente efectivo en escenarios donde la prioridad es la trazabilidad de activos y la consistencia de datos.
+
+El método Parris, en cambio, ofreció una perspectiva más funcional, orientada a reflejar los flujos de proceso y las operaciones de negocio dentro del namespace. Su implementación permitió mapear el comportamiento de sistemas complejos de forma más dinámica y flexible, adaptándose mejor a entornos donde los procesos cambian con mayor frecuencia. Esta característica resultó valiosa para visualizar flujos de trabajo y asociar eventos operativos con su contexto de producción. El análisis comparativo entre ambos métodos evidenció que la elección del enfoque UNS debe responder a las necesidades específicas de cada planta, priorizando ya sea la estabilidad jerárquica o la agilidad funcional.
+
+
+% Cuarto objetivo:
+Mediante la incorporación de los dispositivos industriales de la plataforma de entrenamiento IIoT, conectados a través de un broker MQTT, se simularon condiciones reales de operación para evaluar la robustez de la infraestructura UNS. Se comprobó que el protocolo MQTT Sparkplug B ofrece ventajas notables en cuanto a gestión del estado de los dispositivos, retención de datos, supervisión de la conexión y estandarización del payload, lo cual facilitó la integración de los datos en el namespace. Así, se validó la utilidad del protocolo como base sólida para entornos industriales modernos.
+
+Finalmente, se logró evaluar el desempeño de cada implementación mediante pruebas controladas en la plataforma IIoT desarrollada. Estas pruebas incluyeron análisis en tiempo real de los datos publicados, verificación del cumplimiento de la estructura de nombres, evaluación de la carga del broker, y monitoreo del comportamiento ante eventos disruptivos. Se evidenció que ambas implementaciones UNS fueron funcionales y capaces de sostener flujos de información estables, pero cada una mostró ventajas particulares: mientras el método Schultz sobresalió en organización y claridad del namespace, el método Parris ofreció mayor flexibilidad para representar flujos operativos dinámicos.
+
+Los resultados de las métricas cualitativas y cuantitativas se integraron para obtener una visión completa del rendimiento del sistema, destacando cómo el diseño del namespace influye directamente en la escalabilidad, trazabilidad y facilidad de uso de la plataforma. Esta evaluación permitió validar los beneficios del UNS como habilitador de arquitecturas IIoT, y al mismo tiempo identificar oportunidades de mejora para futuras implementaciones. En conjunto, la plataforma de entrenamiento sirvió como entorno de validación efectivo, permitiendo experimentar en condiciones controladas con resultados extrapolables a escenarios industriales reales. Así, se demostró que el uso de técnicas UNS, correctamente implementadas y evaluadas, puede acelerar la adopción de tecnologías digitales avanzadas en el sector industrial hacia la transformación digital.
+
+
+\section{Trabajo futuro}
+
+La línea de este trabajo de investigación continúa con la implementación de un UNS en un entorno industrial real para validar su desempeño bajo condiciones operativas no simuladas. Además, se sugiere desarrollar una nueva técnica de diseño que combine las ventajas de los métodos Schultz y Parris, buscando un enfoque más equilibrado entre estructura jerárquica, escalabilidad, resiliencia y flexibilidad en la gestión de datos IIoT.
+   
+  

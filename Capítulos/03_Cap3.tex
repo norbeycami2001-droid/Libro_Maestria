@@ -1,0 +1,97 @@
+
+\begin{comment}
+    
+
+\addtocounter{chapter}{2}
+\chapter[Montaje experimental]{Montaje Experimental}
+
+\begin{flushright}
+\textsc{Presenta la identificación del motor, el cálculo de constantes y el banco de pruebas utilizado para los ensayos.}
+\end{flushright}
+\label{chap:capitulo3}
+
+
+
+
+
+
+\vfill
+\renewcommand{\mtctitle}{Contenido}
+\minitoc
+\newpage
+\end{comment}
+
+
+
+\section{Capitulo 3: Técnicas de Diseño de UNS} \label{tecnicasdiseñouns}
+
+En este capítulo se presentan y se definen los métodos de diseño UNS encontrados en el estado del arte, junto con sus aplicaciones y diagramas de conexión para su posterior implementación.
+
+
+
+\subsection{Método de Schultz}
+
+El método Schultz propone la construcción de un UNS sin depender de un único broker MQTT. En su lugar, se despliegan múltiples brokers en diferentes niveles de la jerarquía \textit{(Enterprise, Site, Area, Line, Cell)} para facilitar la comunicación mediante UNS locales. Posteriormente, una plataforma IIoT puede agregar estas instancias de UNS locales y re-publicar los datos, formando así un UNS unificado a nivel empresarial \citep{web1}.
+
+Por ejemplo, en una organización, cada área tiene su propio broker, donde los dispositivos publican datos utilizando un namespace de tópicos predefinido. Luego, una plataforma IIoT consolida la información de cada área y la publica en el broker del nivel superior (por ejemplo, el nivel de sitio). Una representación esquemática de este método se muestra en la Fig. \ref{fig:schultz}.
+
+
+\begin{figure}[h]
+\centerline{\includegraphics[width=14cm]{Figuras/tecnica_schultz_V2.png}}
+\caption{Esquema de la estructura del método Schultz}
+\label{fig:schultz}
+\end{figure}
+
+Una de las principales ventajas del método Schultz es que permite la creación de un UNS con una estructura jerárquica, sin las limitaciones impuestas por la cantidad de elementos en los tópicos de Sparkplug. Esta flexibilidad proporciona mayor versatilidad en el namespace, permitiendo la implementación de múltiples brokers en diferentes niveles. La conexión de los dispositivos a su broker local designado se simplifica, evitando conflictos con otros brokers y mejorando la eficiencia operativa.
+
+
+La integración de diversas plataformas IIoT, mediante la interconexión de instancias locales, contribuye a una mayor comprensión de la estructura jerárquica del UNS. Esto facilita la identificación del nivel correspondiente a cada UNS local y optimiza la gestión del flujo de datos en función de los requerimientos específicos de cada línea de producción. Adicionalmente, la separación entre los UNS locales y el UNS a nivel empresarial proporciona una mayor resiliencia. En caso de una falla en el UNS empresarial (remoto), las operaciones pueden continuar sin interrupciones, ya que dependen de los UNS locales.
+
+Sin embargo, aunque este enfoque elimina delimitadores y fomenta la flexibilidad en cada área de trabajo, también incrementa la complejidad de la integración de las plataformas IIoT. Conectar los UNS locales al UNS empresarial puede generar mayores costos y requerir recursos computacionales adicionales para gestionar eficazmente la arquitectura distribuida.
+
+
+\subsection{Método de Parris}
+
+El método Parris consiste en agrupar toda la estructura empresarial dentro del elemento <group\_id>, utilizando delimitadores para separar las categorías \citep{web4}. Por ejemplo, si se emplea el carácter “:” como delimitador, el namespace de los tópicos en Sparkplug tendría el siguiente formato:
+
+\begin{center}
+    \textit{spBv1.0/Plant:Area:Line:Cell/DDATA/<edgenode\_id>}\\
+\end{center}
+
+
+Donde \textit{"DDATA"} corresponde al \textit{<message\_type>}. Como otra alternativa, el formato en el que \textit{Line:Cell} corresponde a \textit{<edgenode\_id>} del namespace, se puede utilizar de la siguiente manera:
+
+\begin{center}
+    \textit{spBv1.0/Plant:Area/DDATA/Line:Cell/<device\_id>}\\
+\end{center}
+
+Sin embargo, se recomienda evitar incluir el elemento <edgenodeid> dentro de la jerarquía ISA-95, ya que debe identificarse de manera única en el MQTT EoN (Edge of Network) dentro de la arquitectura para prevenir conflictos de redundancia. La Fig. \ref{fig:parrs} muestra un diagrama esquemático del funcionamiento del método Parris.
+
+
+\begin{figure}[h]
+\centerline{\includegraphics[width=12cm]{Figuras/tecnica_parris_V2.png}}
+\caption{Esquema de la estructura del método de Parris}
+\label{fig:parrs}
+\end{figure}
+
+Este método garantiza un \textit{"group\_id"} definido de manera única, lo que permite la transferencia de datos sin problemas entre diferentes brokers MQTT a través de un \textbf{Bridge} (mecanismo que permite interconectar dos brokers para reenviar mensajes entre ellos de manera automática) y así evitar conflictos en los topics. De este modo, se elimina la necesidad de una plataforma IIoT intermedia que decodifique los datos en niveles superiores de la jerarquía de temas \citep{web4}.
+
+Además, la incorporación de delimitadores en el \textit{"group\_id"} mejora la estandarización, asegurando una interpretación coherente de los temas en toda la organización. Sin esta estandarización, cada aplicación requeriría programación personalizada para alinearse con la jerarquía de temas específica del broker al que está conectada, lo que aumentaría el esfuerzo de desarrollo y la complejidad de integración.
+
+Otra ventaja clave de este método es la posibilidad de implementar un solo broker para todo el UNS, lo que simplifica el despliegue y reduce los costos operativos de software. Esto permite monitorear desde una única consola el estado de todos los mensajes enviados al broker central, facilitando la detección de fallos en la transmisión. La arquitectura centralizada consolida la información de todos los nodos y estructuras de manera estandarizada, permitiendo que un solo broker integre todos los niveles del UNS. Esta solución proporciona una vía de entrada rentable, ideal para organizaciones en crecimiento.
+
+Aunque el método Parris es relativamente sencillo de implementar, presenta un desafío técnico cuando una plataforma IIoT recibe un mensaje Sparkplug al suscribirse a un tema general como "spBv1.0/\#". En este caso, la plataforma debe extraer el GroupID y re-publicar el mensaje en temas MQTT específicos. Este proceso permite reconstruir la estructura original, convirtiendo la organización plana de los datos en una jerarquía más detallada.
+
+A continuación, se presenta un ejemplo de cómo un mensaje Sparkplug se convierte en una estructura plana para implementar el método Parris:
+
+
+\begin{center}
+    \textit{spBv1.0/Plant:Area:Line:Cell/\#}
+    $\rightarrow$
+    \textit{Plant:Area:Line:Cell/\#}\\   
+\end{center}
+
+
+En este caso, al suscribirse a un tema general como \textit{"spBv1.0/Plant:Area:Line:Cell/\#"}, donde \textit{"\#"} actúa como un marcador global para recibir todos los sub-temas bajo el nivel especificado, la plataforma IIoT debe descomponerlo y re-publicarlo en temas específicos, como \textit{"Plant/Area/Line/Cell/\#"}.
+
+La implementación de estos métodos se ejemplificará mediante un caso de aplicación. El propósito de esto es proporcionar claridad sobre las consideraciones clave a tener en cuenta para su implementación práctica.

@@ -1,0 +1,180 @@
+% Preámbulo
+\documentclass[stu, 12pt, letterpaper, donotrepeattitle, floatsintext]{apa7}
+\usepackage[utf8]{inputenc}
+\usepackage{comment}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{marvosym}
+\usepackage{graphicx}
+\usepackage{xspace}
+\usepackage{blindtext}
+\usepackage{ragged2e}
+\usepackage{pifont}
+\usepackage{xcolor}
+\usepackage{forest}
+\usepackage{hyperref} 
+\usepackage{float}
+\usepackage[normalem]{ulem}
+\usepackage[spanish]{babel} 
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
+
+\selectlanguage{spanish}
+\useunder{\uline}{\ul}{}
+\newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\}
+
+
+
+\usepackage[american,cuteinductors,smartlabels]{circuitikz}
+\usetikzlibrary{calc}
+\ctikzset{bipoles/thickness=1}
+\ctikzset{bipoles/length=1.1cm}
+\ctikzset{bipoles/diode/height=.3}
+\ctikzset{bipoles/diode/width=.2}
+\ctikzset{tripoles/nigbt/height=1.4}
+\ctikzset{tripoles/nigbt/width=1}
+\ctikzset{bipoles/vsourceam/height/.initial=.7}
+\ctikzset{bipoles/vsourceam/width/.initial=.7}
+\tikzstyle{every node}=[font=\large]
+\tikzstyle{every path}=[line width=1.5pt,line cap=round,line join=round]
+\usepackage{tikz}
+\renewcommand\refname{\large\textbf{Referencias}}
+\usepackage[
+	backend=biber,
+	style=ieee,
+	sorting=none,
+	url=true,
+	doi=true,
+	eprint=false
+]{biblatex}
+\addbibresource{10_references.bib}
+\usetikzlibrary{shapes,arrows}
+\usepackage{afterpage}
+\tikzstyle{blockp} = [draw, rectangle, minimum height=22em, minimum width=8em] %fill=blue!20
+\tikzstyle{block_kalman} = [draw, rectangle, minimum height=4em, minimum width=8em] %fill=blue!20
+\tikzstyle{block} = [draw, rectangle, minimum height=2em, minimum width=4em] %fill=blue!20
+\tikzstyle{sum} = [draw, circle  , minimum size=0.5cm, node distance=2cm]
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+
+
+
+
+% Portada
+\thispagestyle{empty}
+\title{\Large Título del documento}
+\author{Autor(a) \\Autor(a) \\Autor(a)} % (autores separados, consultar al docente)
+% Manera oficial de colocar los autores:
+%\author{Autor(a) I, Autor(a) II, Autor(a) III, Autor(a) X}
+\affiliation{Nombre de la institución}
+\course{Código del curso: Nombre del curso}
+\professor{Nombre del docente}
+\duedate{Fecha}
+
+
+
+
+
+
+
+\begin{document}
+
+\captionsetup[figure]{justification=raggedright, singlelinecheck=false}
+\markright{Integración de LLM a arquitectura UNS para analítica de datos en Industria 4.0}
+\pagestyle{myheadings}
+
+
+\input{Secciones/Portada}
+
+
+\pagenumbering{roman}
+
+
+    % Contenido
+\renewcommand\contentsname{\largeÍndice}
+\tableofcontents
+\setcounter{tocdepth}{2}
+\newpage
+    % Fíguras
+\renewcommand{\listfigurename}{\largeÍndice de fíguras}
+\listoffigures
+\newpage
+    % Tablas
+\renewcommand{\listtablename}{\largeÍndice de tablas}
+\listoftables
+\newpage
+
+
+\begin{center}
+    {\large \textbf{Resumen}}
+\end{center}
+\justify
+La Cuarta Revolución Industrial, o Industria 4.0, está redefiniendo el sector manufacturero mediante la integración de tecnologías avanzadas como el Internet Industrial de las Cosas (IIoT), la inteligencia artificial (IA) y los sistemas ciberfísicos. Un elemento clave en esta transformación es el \textit{Unified Namespace (UNS)}, una arquitectura que optimiza la gestión de datos en tiempo real, superando las limitaciones de integración y escalabilidad de las estructuras tradicionales. Sin embargo, su adopción generalizada se ha visto obstaculizada por la falta de documentación técnica detallada y metodologías de implementación bien definidas. Este estudio revisa los conceptos fundamentales del UNS, analiza sus metodologías de implementación y compara diferentes enfoques de diseño. Para validar su aplicación, se desarrolla un caso práctico basado en una plataforma de entrenamiento IIoT que utiliza el protocolo de comunicación MQTT Sparkplug B. Este trabajo no solo proporciona una referencia estructurada para la comunidad académica, sino que también ofrece lineamientos prácticos para la industria, facilitando la comprensión y adopción del UNS en entornos productivos.
+\newpage
+\begin{center}
+    {\large \textbf{Abstract}}
+\end{center}
+\justify
+
+The Fourth Industrial Revolution, or Industry 4.0, is transforming the manufacturing sector by integrating advanced technologies such as the Industrial Internet of Things (IIoT), artificial intelligence (AI), and cyber-physical systems. A key enabler of this transformation is the \textit{Unified Namespace (UNS)}, an architecture that optimizes real-time data management, overcoming the integration and scalability challenges of traditional structures. However, its widespread adoption has been limited by the lack of comprehensive technical documentation and well-defined implementation methodologies. This study reviews the fundamental concepts of UNS, analyzes its implementation methodologies, and compares different design approaches. To validate its application, a case study is developed using an IIoT training platform based on the MQTT Sparkplug B communication protocol. This work not only provides a structured reference for the academic community but also offers practical guidelines for industry stakeholders, facilitating the understanding and adoption of UNS in manufacturing environments.
+
+\newpage
+% Cuerpo
+\pagenumbering{arabic}
+
+
+%%%%% PROPUESTA DE ÍNDICE %%%%%
+
+% 1) Introducción
+%   > Aterrizamos al contexto (industria 4.0 -> UNS)
+%   > Formulación del problema: falta de documentación -> falta de comparaciones entre las propuestas
+
+% 2) UNS -> explicar el concepto
+% Técnicas
+
+% 3) Caso de estudio
+% Aplicación 
+% Herramienta de comparación
+
+% 4) Resultados y análisis
+
+% 5) Conclusiones
+
+
+\input{Capítulos/00_Intro}
+\clearpage\phantomsection
+
+\input{Capítulos/01_Cap1}
+\cleardoublepage
+
+\include{Capítulos/02_Cap2}
+\cleardoublepage
+
+%\include{Capítulos/03_Cap3}
+%%\cleardoublepage
+
+%%\include{Capítulos/04_Cap4}
+%%\cleardoublepage
+
+
+%%\include{Capítulos/05_Cap5}
+%%\cleardoublepage
+
+
+\include{Capítulos/06_Cap6}
+\cleardoublepage
+
+
+
+
+
+
+%\color{black}
+
+\newpage
+% Referencias
+\printbibliography[title={Referencias}]
+
+% \include{Capítulos/07_Cap7_Anexo}
+\cleardoublepage
+
+\end{document}

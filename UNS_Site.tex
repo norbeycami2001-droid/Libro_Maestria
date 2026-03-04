@@ -1,0 +1,75 @@
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}
+\centering
+\scalebox{0.6}{
+\begin{forest}
+  for tree={
+    font=\ttfamily,
+    grow'=0,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}]
+      (!u.south west) +(7.5pt,0) |- node[fill,inner sep=1.25pt] {} (.child anchor)\forestoption{edge label};
+    },
+    before typesetting nodes={
+      if n=1
+        {insert before={[,phantom]}}
+        {}
+    },
+    fit=band,
+    before computing xy={l=15pt},
+  }
+  [\textbf{Site:} Guatiguara  
+    [\textbf{Area:} LIE
+       [\textbf{Line:} Microrred
+        [\textbf{Cell:} GroovEpic]
+       ]
+    ]
+  ]
+\end{forest}
+}
+\end{minipage}%
+\begin{minipage}{0.32\textwidth}
+\centering
+\scalebox{0.6}{
+\begin{forest}
+  for tree={
+    font=\ttfamily,
+    grow'=0,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}]
+      (!u.south west) +(7.5pt,0) |- node[fill,inner sep=1.25pt] {} (.child anchor)\forestoption{edge label};
+    },
+    before typesetting nodes={
+      if n=1
+        {insert before={[,phantom]}}
+        {}
+    },
+    fit=band,
+    before computing xy={l=15pt},
+  }
+[\textbf{Site:} Central
+    [\textbf{Area:} Radiogis
+       [\textbf{Line:} Casiri
+        [\textbf{Cell:} Camara]
+        [\textbf{Cell:} Estacion Ambiental]
+       ]
+    ]
+    [\textbf{Area:} Cenivam
+       [\textbf{Line:} Vivero
+        [\textbf{Cell:} GroovRio]
+       ]
+    ]
+]
+\end{forest}
+}
+\end{minipage}
+\end{figure}
