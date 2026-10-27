@@ -40,7 +40,7 @@ El Web Dev Module es un módulo nativo de Ignition que permite definir endpoints
 \label{modeladosemantico}
 Antes de construir los endpoints hubo que resolver un punto previo. El Capítulo~\ref{tecnicasdiseñouns} describió en el texto qué representa cada tag de los UDT \texttt{MES}, \texttt{Line}, \texttt{ERP} y \texttt{Edge}: por ejemplo, que \texttt{OEE} es la eficiencia global del equipo o que \texttt{Availability} es el porcentaje del tiempo que la línea estuvo operando. Esa descripción vivía solo en la narrativa del documento y no en la configuración del Tag Provider. Para llevarla a los propios tags se usaron dos campos que Ignition provee para cada miembro de un UDT \cite{ignition_tags}: \texttt{Documentation}, con la descripción de cada tag, y \texttt{EngUnit}, con su unidad de medida (por ejemplo, \texttt{\%} para \texttt{OEE} y \texttt{unidades} para \texttt{Good/Bad/Total Count}). Como estos campos se llenan en la plantilla UDT y no por instancia, se definen una sola vez y se propagan automáticamente a las doce celdas y las cuatro líneas del caso de estudio, igual que la reutilización del UDT \texttt{Edge} descrita en el Capítulo~\ref{tecnicasdiseñouns}. Anotar semánticamente los nodos de un modelo de datos industrial en la propia fuente, en lugar de dejar esa interpretación solo en el texto, es lo que proponen Katti y Plociennik para OPC UA \cite{KattiOPCUASemantics2018}. El mismo principio se aplica más adelante sobre la base de datos histórica (Sección~\ref{accesodatoshistoricos}).
 
-Cada unidad se validó con los valores reales del Tag Provider, los tiempos de la corrida (\texttt{RunTime}, \texttt{PlannedDowntime} y \texttt{UnplannedDowntime}) quedaron en segundos, porque su suma coincide con el tiempo transcurrido desde el inicio de la corrida. \texttt{StandardRate} y \texttt{ScheduledRate} quedaron en \texttt{unidades/min}, porque al multiplicar \texttt{StandardRate} por el tiempo de marcha en minutos se obtiene exactamente el \texttt{TargetCount}. \texttt{Infeed},
+Cada unidad se validó con los valores reales del Tag Provider: los tiempos de la corrida (\texttt{RunTime}, \texttt{PlannedDowntime} y \texttt{UnplannedDowntime}) quedaron en segundos, porque su suma coincide con el tiempo transcurrido desde el inicio de la corrida. \texttt{StandardRate} y \texttt{ScheduledRate} quedaron en \texttt{unidades/min}, porque al multiplicar \texttt{StandardRate} por el tiempo de marcha en minutos se obtiene exactamente el \texttt{TargetCount}. \texttt{Infeed},
 \texttt{Outfeed} y \texttt{Waste} quedaron en \texttt{unidades} y documentados como contadores acumulados, porque solo crecen mientras el equipo está en marcha y permanecen fijos cuando está detenido. En los tags de estado (\texttt{Status} en \texttt{Edge} y \texttt{State} en \texttt{Line}), la \texttt{Documentation} incluye además el diccionario de códigos
 (0 = indefinido, 1 = detenido, 2 = en marcha), que es el mismo que usa el histórico en \texttt{mes\_core.statereason}. Así el LLM no tiene que deducir la unidad de un valor ni el significado de un código numérico.
 
@@ -241,7 +241,7 @@ mensaje de error legible en vez de un traceback sin procesar o un fallo silencio
 Resource \texttt{uns://hierarchy} usa la misma lógica de acceso HTTP, pero ante esas
 condiciones levanta la excepción que el SDK define para Resources (\texttt{ResourceError}).
 
-La validación se hizo con el propio servidor MCP y no solo contra los endpoints por separado. La Figura~\ref{fig:claude_desktop_tools} muestra el
+Para validarlo, el servidor se conectó a Claude Desktop, un cliente MCP real, y se comprobó que este listara sus Tools. La Figura~\ref{fig:claude_desktop_tools} muestra el
 servidor conectado en Claude Desktop con sus Tools.
 
 % PENDIENTE: reemplazar por la captura real de Claude Desktop con el servidor uns-mcp
@@ -378,7 +378,7 @@ específicas. En ningún caso el LLM construye o envía una sentencia SQL: entre
 parámetros estructurados de cada Tool, y es el servidor quien arma la consulta parametrizada.
 
 La validación se hizo con el servidor MCP real y no solo con consultas SQL directas. Las seis Tools respondieron sin error al invocarlas con datos reales de la planta; una combinación de
-área y línea inexistente devuelven un mensaje de error. La Figura~\ref{fig:claude_desktop_mes_history} muestra el servidor conectado en Claude Desktop, junto a \texttt{uns-mcp}, con sus Tools y su Resource disponibles.
+área y línea inexistente devuelve un mensaje de error. La Figura~\ref{fig:claude_desktop_mes_history} muestra el servidor conectado en Claude Desktop, junto a \texttt{uns-mcp}, con sus Tools y su Resource disponibles.
 
 % PENDIENTE: reemplazar por la captura real de Claude Desktop con el servidor
 % mes-history-mcp conectado, las 6 tools y el resource mes-history://schema listados,
@@ -475,7 +475,7 @@ Figura~\ref{fig:flujo_integrado_chat} muestra esta consulta ejecutada en Claude 
 \begin{figure}[H]
 \centerline{\includegraphics[width=16cm]{Figuras/flujo_integrado_chat.png}}
 \vspace{0.2cm}
-\caption{Consulta que combina tiempo real e histórico ejecutada en Claude Desktop, ver conversación completa en \hyperref[anexo:conversacion_flujo]{Anexo~A}). Elaboración propia.}
+\caption{Consulta que combina tiempo real e histórico ejecutada en Claude Desktop, ver conversación completa en el \hyperref[anexo:conversacion_flujo]{Anexo~A}. Elaboración propia.}
 \label{fig:flujo_integrado_chat}
 \end{figure}
 
