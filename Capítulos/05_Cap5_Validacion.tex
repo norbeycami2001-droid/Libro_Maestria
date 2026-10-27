@@ -8,7 +8,7 @@ Este capítulo responde al quinto objetivo específico: validar el funcionamient
 
 La validación de desempeño mide el comportamiento del sistema sobre un conjunto de preguntas de referencia. Cada métrica evalúa un aspecto distinto: la precisión y la tasa de alucinaciones miden si la respuesta es correcta y está fundamentada en los datos del UNS, la latencia mide el tiempo que espera el usuario, y la calidad semántica mide si la respuesta es coherente y suficiente para el contexto industrial. La Sección~\ref{disenoevaluacion} define cada una.
 
-La validación de cumplimiento contrasta el sistema con los tres requerimientos y los ocho desafíos identificados en la Sección~\ref{requerimientosdesafios}. Las métricas no reemplazan esa contrastación, la alimentan: cada pregunta del conjunto de referencia se asocia al desafío que pone a prueba, y el veredicto sobre el desafío se apoya en los resultados de esas preguntas. La Sección~\ref{cumplimientorequerimientos} presenta ese resultado.
+La validación de cumplimiento verifica si el sistema satisface los tres requerimientos y los ocho desafíos identificados en la Sección~\ref{requerimientosdesafios}. Las métricas no reemplazan esa verificación, la alimentan: cada pregunta del conjunto de referencia se asocia al desafío que pone a prueba, y el veredicto sobre el desafío se apoya en los resultados de esas preguntas. La Sección~\ref{cumplimientorequerimientos} presenta ese resultado.
 
 Dos desafíos quedan fuera de la medición porque no se implementaron: la adaptación del reporte al perfil del usuario (D2.3) y la selección automática de la granularidad (D3.2). El capítulo los declara como no cumplidos y los traslada al trabajo futuro.
 
@@ -58,6 +58,6 @@ Tasa de alucinaciones & Cuantitativa & Proporción de respuestas con informació
 
 \subsubsection{Procedimiento}
 
-Cada pregunta se ejecutó \textcolor{blue}{[n]} veces, en conversaciones independientes, para observar la variabilidad de las respuestas del modelo. La latencia se registró en cada ejecución. La precisión y las alucinaciones se determinaron contrastando la respuesta con la referencia calculada sobre los datos. La calidad semántica se puntuó con la rúbrica.
+Cada pregunta se ejecutó \textcolor{blue}{[n]} veces, en conversaciones independientes, para observar la variabilidad de las respuestas del modelo. La latencia se registró en cada ejecución. La precisión y las alucinaciones se determinaron comparando la respuesta con la referencia calculada sobre los datos. La calidad semántica se puntuó con la rúbrica.
 
 La puntuación con la rúbrica estuvo a cargo del tutor técnico, que es también el autor de este trabajo y trabaja en DAUTOM, empresa del caso de estudio, por lo que conoce el proceso evaluado. Esta coincidencia es una limitación de la evaluación cualitativa, que se discute en la Sección~\ref{discusionvalidacion}. Para acotarla, las métricas de precisión, alucinaciones y latencia no dependen del juicio del evaluador, porque se calculan contra los datos o se miden con instrumentación. \textcolor{blue}{[Opcional: indicar la muestra puntuada por un segundo evaluador, si se hace.]}
