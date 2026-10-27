@@ -1,22 +1,30 @@
 % Preámbulo
 \documentclass[stu, 12pt, letterpaper, donotrepeattitle, floatsintext]{apa7}
+\setcounter{secnumdepth}{5}
+\usepackage{fancyvrb}
+\usepackage{pmboxdraw}
+\usepackage{adjustbox}
+\usepackage{caption}
+\captionsetup{justification=centering, singlelinecheck=true}
 \usepackage[utf8]{inputenc}
 \usepackage{comment}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{marvosym}
 \usepackage{graphicx}
+\usepackage{pdfpages}
 \usepackage{xspace}
 \usepackage{blindtext}
 \usepackage{ragged2e}
 \usepackage{pifont}
 \usepackage{xcolor}
 \usepackage{forest}
-\usepackage{hyperref} 
+\usepackage{hyperref}
 \usepackage{float}
 \usepackage[normalem]{ulem}
-\usepackage[spanish]{babel} 
+\usepackage[spanish]{babel}
 \addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
-
+\setlength{\parskip}{0.6em plus 0.1em minus 0.1em}
+\setlength{\parindent}{0pt}
 \selectlanguage{spanish}
 \useunder{\uline}{\ul}{}
 \newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\}
@@ -78,7 +86,6 @@
 
 \begin{document}
 
-\captionsetup[figure]{justification=raggedright, singlelinecheck=false}
 \markright{Integración de LLM a arquitectura UNS para analítica de datos en Industria 4.0}
 \pagestyle{myheadings}
 
@@ -108,14 +115,13 @@
     {\large \textbf{Resumen}}
 \end{center}
 \justify
-La Cuarta Revolución Industrial, o Industria 4.0, está redefiniendo el sector manufacturero mediante la integración de tecnologías avanzadas como el Internet Industrial de las Cosas (IIoT), la inteligencia artificial (IA) y los sistemas ciberfísicos. Un elemento clave en esta transformación es el \textit{Unified Namespace (UNS)}, una arquitectura que optimiza la gestión de datos en tiempo real, superando las limitaciones de integración y escalabilidad de las estructuras tradicionales. Sin embargo, su adopción generalizada se ha visto obstaculizada por la falta de documentación técnica detallada y metodologías de implementación bien definidas. Este estudio revisa los conceptos fundamentales del UNS, analiza sus metodologías de implementación y compara diferentes enfoques de diseño. Para validar su aplicación, se desarrolla un caso práctico basado en una plataforma de entrenamiento IIoT que utiliza el protocolo de comunicación MQTT Sparkplug B. Este trabajo no solo proporciona una referencia estructurada para la comunidad académica, sino que también ofrece lineamientos prácticos para la industria, facilitando la comprensión y adopción del UNS en entornos productivos.
+\textcolor{blue}{Pendiente: La Cuarta Revolución Industrial, o Industria 4.0, está redefiniendo el sector manufacturero mediante la integración de tecnologías avanzadas como el Internet Industrial de las Cosas (IIoT), la inteligencia artificial (IA) y los sistemas ciberfísicos. Un elemento clave en esta transformación es el \textit{Unified Namespace (UNS)}, una arquitectura que optimiza la gestión de datos en tiempo real, superando las limitaciones de integración y escalabilidad de las estructuras tradicionales. Sin embargo, su adopción generalizada se ha visto obstaculizada por la falta de documentación técnica detallada y metodologías de implementación bien definidas. Este estudio revisa los conceptos fundamentales del UNS, analiza sus metodologías de implementación y compara diferentes enfoques de diseño. Para validar su aplicación, se desarrolla un caso práctico basado en una plataforma de entrenamiento IIoT que utiliza el protocolo de comunicación MQTT Sparkplug B. Este trabajo no solo proporciona una referencia estructurada para la comunidad académica, sino que también ofrece lineamientos prácticos para la industria, facilitando la comprensión y adopción del UNS en entornos productivos.}
 \newpage
 \begin{center}
     {\large \textbf{Abstract}}
 \end{center}
 \justify
-
-The Fourth Industrial Revolution, or Industry 4.0, is transforming the manufacturing sector by integrating advanced technologies such as the Industrial Internet of Things (IIoT), artificial intelligence (AI), and cyber-physical systems. A key enabler of this transformation is the \textit{Unified Namespace (UNS)}, an architecture that optimizes real-time data management, overcoming the integration and scalability challenges of traditional structures. However, its widespread adoption has been limited by the lack of comprehensive technical documentation and well-defined implementation methodologies. This study reviews the fundamental concepts of UNS, analyzes its implementation methodologies, and compares different design approaches. To validate its application, a case study is developed using an IIoT training platform based on the MQTT Sparkplug B communication protocol. This work not only provides a structured reference for the academic community but also offers practical guidelines for industry stakeholders, facilitating the understanding and adoption of UNS in manufacturing environments.
+\textcolor{blue}{Pendiente: The Fourth Industrial Revolution, or Industry 4.0, is transforming the manufacturing sector by integrating advanced technologies such as the Industrial Internet of Things (IIoT), artificial intelligence (AI), and cyber-physical systems. A key enabler of this transformation is the \textit{Unified Namespace (UNS)}, an architecture that optimizes real-time data management, overcoming the integration and scalability challenges of traditional structures. However, its widespread adoption has been limited by the lack of comprehensive technical documentation and well-defined implementation methodologies. This study reviews the fundamental concepts of UNS, analyzes its implementation methodologies, and compares different design approaches. To validate its application, a case study is developed using an IIoT training platform based on the MQTT Sparkplug B communication protocol. This work not only provides a structured reference for the academic community but also offers practical guidelines for industry stakeholders, facilitating the understanding and adoption of UNS in manufacturing environments.}
 
 \newpage
 % Cuerpo
@@ -132,7 +138,7 @@ The Fourth Industrial Revolution, or Industry 4.0, is transforming the manufactu
 % Técnicas
 
 % 3) Caso de estudio
-% Aplicación 
+% Aplicación
 % Herramienta de comparación
 
 % 4) Resultados y análisis
@@ -149,18 +155,18 @@ The Fourth Industrial Revolution, or Industry 4.0, is transforming the manufactu
 \include{Capítulos/02_Cap2}
 \cleardoublepage
 
-%\include{Capítulos/03_Cap3}
-%%\cleardoublepage
+\include{Capítulos/03_Cap3}
+\cleardoublepage
 
-%%\include{Capítulos/04_Cap4}
-%%\cleardoublepage
+\include{Capítulos/04_Cap4}
+\cleardoublepage
 
 
 %%\include{Capítulos/05_Cap5}
 %%\cleardoublepage
 
 
-\include{Capítulos/06_Cap6}
+%\include{Capítulos/06_Cap6}
 \cleardoublepage
 
 
@@ -173,8 +179,10 @@ The Fourth Industrial Revolution, or Industry 4.0, is transforming the manufactu
 \newpage
 % Referencias
 \printbibliography[title={Referencias}]
+\cleardoublepage
 
-% \include{Capítulos/07_Cap7_Anexo}
+% Anexos
+\include{Capítulos/01_Cap4_Anexo}
 \cleardoublepage
 
 \end{document}

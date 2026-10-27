@@ -1,205 +1,526 @@
+\section{Capítulo 4: Integración de la herramienta LLM a la arquitectura UNS}
+\label{implementacionintegracion}
 
+Con el mecanismo de integración y la herramienta LLM ya seleccionados
+(Capítulo~\ref{seleccionllm}), este capítulo documenta cómo se implementó sobre la arquitectura UNS del caso de estudio. Se describe la construcción de la capa de endpoints sobre Ignition, el servidor MCP que los expone al LLM, la incorporación de acceso a datos históricos como una fuente adicional de contexto, y la contextualización del modelo al vocabulario y a la estructura de datos de la molinera.
 
-\section{Capitulo 4: Implementación de Técnicas UNS en la Plataforma IIoT}
-La implementación del UNS en la plataforma de entrenamiento IIoT se basa en la aplicación de técnicas de diseño previamente estudiadas en un entorno académico. Esta aplicación integra sistemas y dispositivos mediante el protocolo MQTT Sparkplug B, estableciendo un modelo jerárquico y estructurado de comunicación orientado a la gestión eficiente de datos.
+\subsection{Visión general de la arquitectura de implementación}
+\label{visiongeneralimplementacion}
 
-Este entorno de entrenamiento simula escenarios operacionales reales de la industria  permitiendo a los usuarios interactuar directamente con dispositivos IIoT y validar los principios del UNS en tiempo real.
+La Figura~\ref{fig:flujo_uns_llm} retoma el esquema general planteado desde la justificación de este trabajo: un LLM que actúa como capa de inteligencia contextual sobre una arquitectura UNS, conectado mediante un mecanismo de integración. El Capítulo~\ref{seleccionllm} resolvió dos de esas capas para el caso de estudio. La Capa 3 (mecanismo de integración) se instanció como un servidor MCP con transporte STDIO y alcance de solo lectura (Sección~\ref{seleccionmecanismo}), y la Capa 4 (LLM) se instanció como Claude (Sección~\ref{seleccionherramientallm}). El resultado es la arquitectura concreta de la Figura~\ref{fig:mcp_lista_blanca}, donde el LLM se conecta mediante un Cliente MCP a un Servidor MCP que expone la información contenida en el Tag Provider \texttt{UNS\_Molinera}.
 
+\begin{figure}[H]
+\centerline{\includegraphics[width=13cm]{Figuras/flujo_llm_uns.png}}
+\vspace{0.2cm}
+\caption{Arquitectura general de integración entre el LLM y el UNS, planteada desde la
+justificación de este trabajo. Elaboración propia}
+\label{fig:flujo_uns_llm}
+\end{figure}
 
-\subsection{Descripción de la Plataforma IIoT}
-La construcción de la plataforma IIoT para entrenamiento en tecnologías de la Industria 4.0 surge como resultado de dos proyectos de investigación estratégicos. El primero, desarrollado bajo la Convocatoria interna VIE en 2021, llevó por título "Plataforma IIoT para formación de profesionales en tecnologías de la cuarta revolución industrial" y se ejecutó entre noviembre de 2021 y noviembre de 2023. Posteriormente, el proyecto "Diseño, desarrollo e implementación de una plataforma IIoT para formación de profesionales en tecnologías de la cuarta revolución industrial", financiado por la Convocatoria 890 de Minciencias, inició en abril de 2023 y se encuentra actualmente en desarrollo. 
+La Figura~\ref{fig:mcp_lista_blanca} simplifica dos aspectos que este capítulo desarrolla en detalle. El primero es cómo accede el Servidor MCP al Tag Provider: hacerlo de forma directa expondría toda la superficie del Gateway de Ignition, en contravía del alcance mínimo definido en la Sección~\ref{seleccionmecanismo}. Por eso se construyó una capa intermedia de endpoints sobre el Web Dev Module de Ignition, que expone únicamente los contextos MES, Line, ERP y Edge diseñados en el Capítulo~\ref{tecnicasdiseñouns} y que se documenta en la Sección~\ref{capaendpoints}. El segundo es que la figura solo contempla el UNS en tiempo real, y deja sin resolver el requerimiento R3 identificado en el Capítulo~\ref{cap:caso_estudio}
+(acceso eficiente a datos históricos y en tiempo real). La Sección~\ref{accesodatoshistoricos} añade una segunda fuente de datos, la base de datos histórica documentada en el Capítulo~\ref{cap:caso_estudio}, a la que el LLM accede mediante un segundo servidor MCP independiente del que atiende el UNS.
 
+El resto del capítulo desarrolla estas dos piezas, describe cómo se contextualiza el modelo en cada servidor (Secciones~\ref{contextualizacionmodelouns} y
+\ref{contextualizacionmodelomeshistory}), presenta un ejemplo de consulta que combina ambas fuentes (Sección~\ref{flujoconsultaintegrado}) y cierra con una síntesis de la implementación (Sección~\ref{sintesiscap4}).
 
-\subsubsection{Dispositivos y Nodos Industriales:}
-La plataforma se compone de tres casos de estudio, cada uno asociado a un grupo de investigación y con aplicaciones específicas en entornos industriales y académicos:
+\subsection{Capa de endpoints sobre Ignition (Web Dev Module)}
+\label{capaendpoints}
 
+Para que el servidor MCP pueda exponer las operaciones definidas en la Sección~\ref{construccionservidormcp}, hace falta una capa que traduzca el acceso al Tag Provider \texttt{UNS\_Molinera} en un conjunto controlado de endpoints HTTP. Esta sección explica por qué esa capa se construyó sobre el Web Dev Module de Ignition, cómo se lleva a la configuración de cada tag el significado descrito en el Capítulo~\ref{tecnicasdiseñouns}, qué rutas expone, qué recibe y qué responde cada una, y cómo están implementadas.
+
+\subsubsection{Justificación del uso del Web Dev Module}
+\label{justificacionwebdev}
+
+El Web Dev Module es un módulo nativo de Ignition que permite definir endpoints HTTP mediante scripts Python ejecutados directamente en el Gateway \cite{ignition_webdev}. Se eligió sobre un framework externo (por ejemplo, FastAPI o Flask corriendo como un servicio aparte) por cuatro razones. Primero, corre dentro del mismo proceso que aloja el Tag Provider, sin infraestructura adicional que instalar ni mantener. Segundo, permite controlar con precisión qué queda expuesto hacia afuera, en línea con el alcance mínimo fijado en la Sección~\ref{seleccionmecanismo}: solo son visibles las rutas que se definen explícitamente en este módulo, nunca el árbol completo de tags ni la configuración interna del Gateway. Tercero, tiene acceso directo a las funciones de scripting de Ignition
+(\texttt{system.tag.browse}, \texttt{system.tag.readBlocking},
+\texttt{system.tag.getConfiguration}) sin necesitar un adaptador intermedio entre el servidor HTTP y el Tag Provider. Cuarto, es coherente con el transporte STDIO local adoptado en la Sección~\ref{seleccionmecanismo}: todo el stack, desde el servidor MCP hasta el Tag Provider, corre en la misma máquina o red interna, sin exponer nada a internet.
+
+\medskip
+\noindent\textbf{Modelado semántico de los tags.}\quad
+\label{modeladosemantico}
+Antes de construir los endpoints hubo que resolver un punto previo. El Capítulo~\ref{tecnicasdiseñouns} describió en el texto qué representa cada tag de los UDT \texttt{MES}, \texttt{Line}, \texttt{ERP} y \texttt{Edge}: por ejemplo, que \texttt{OEE} es la eficiencia global del equipo o que \texttt{Availability} es el porcentaje del tiempo que la línea estuvo operando. Esa descripción vivía solo en la narrativa del documento y no en la configuración del Tag Provider. Para llevarla a los propios tags se usaron dos campos que Ignition provee para cada miembro de un UDT \cite{ignition_tags}: \texttt{Documentation}, con la descripción de cada tag, y \texttt{EngUnit}, con su unidad de medida (por ejemplo, \texttt{\%} para \texttt{OEE} y \texttt{unidades} para \texttt{Good/Bad/Total Count}). Como estos campos se llenan en la plantilla UDT y no por instancia, se definen una sola vez y se propagan automáticamente a las doce celdas y las cuatro líneas del caso de estudio, igual que la reutilización del UDT \texttt{Edge} descrita en el Capítulo~\ref{tecnicasdiseñouns}. Anotar semánticamente los nodos de un modelo de datos industrial en la propia fuente, en lugar de dejar esa interpretación solo en el texto, es lo que proponen Katti y Plociennik para OPC UA \cite{KattiOPCUASemantics2018}. El mismo principio se aplica más adelante sobre la base de datos histórica (Sección~\ref{accesodatoshistoricos}).
+
+Cada unidad se validó con los valores reales del Tag Provider, los tiempos de la corrida (\texttt{RunTime}, \texttt{PlannedDowntime} y \texttt{UnplannedDowntime}) quedaron en segundos, porque su suma coincide con el tiempo transcurrido desde el inicio de la corrida. \texttt{StandardRate} y \texttt{ScheduledRate} quedaron en \texttt{unidades/min}, porque al multiplicar \texttt{StandardRate} por el tiempo de marcha en minutos se obtiene exactamente el \texttt{TargetCount}. \texttt{Infeed},
+\texttt{Outfeed} y \texttt{Waste} quedaron en \texttt{unidades} y documentados como contadores acumulados, porque solo crecen mientras el equipo está en marcha y permanecen fijos cuando está detenido. En los tags de estado (\texttt{Status} en \texttt{Edge} y \texttt{State} en \texttt{Line}), la \texttt{Documentation} incluye además el diccionario de códigos
+(0 = indefinido, 1 = detenido, 2 = en marcha), que es el mismo que usa el histórico en \texttt{mes\_core.statereason}. Así el LLM no tiene que deducir la unidad de un valor ni el significado de un código numérico.
+
+% PENDIENTE: reemplazar por la captura real del Designer mostrando un tag con
+% Documentation y EngUnit ya configurados, en el mismo estilo que las Figuras 10 a 13
+% del Capítulo 2.
+\begin{figure}[H]
+\centerline{\includegraphics[width=15cm]{Figuras/tag_documentado_designer.png}}
+\vspace{0.2cm}
+\caption{Tag del UDT \texttt{MES} con los campos \texttt{Documentation} y \texttt{EngUnit}
+configurados en el Designer de Ignition. Elaboración propia.}
+\label{fig:tag_documentado}
+\end{figure}
+
+\subsubsection{Diseño de endpoints por operación}
+\label{disenoendpoints}
+
+Se definió un endpoint por cada operación del servidor MCP
+(Sección~\ref{disenotoolsresources}), tanto las que se exponen como Tool como la que se expone
+como Resource. Cada endpoint está parametrizado en lugar de duplicarse por línea:
 
 \begin{itemize}
-    \item \textbf{VIVERO:} Pertenece al Grupo de Investigación CENIVAM, donde se monitorean condiciones ambientales dentro de un invernadero mediante un PLC Opto22 - Groov RIO conectado a un termohigrómetro que captura datos de temperatura y humedad. Estos datos son procesados por un servidor Ignition Edge para ser transmitidos.
-
-    \item \textbf{CASIRI:} Pertenece a los Grupos de Investigación RADIOGIS y CEMOS, consiste en una estación de radioastronomía equipada con sensores ambientales que miden temperatura, humedad, presión atmosférica, velocidad y dirección del viento; además de  una cámara multi-espectral para captura de imágenes espectrales y un dispositivo de monitoreo del espectro radioeléctrico. Todos estos dispositivos están integrados mediante un servidor que envía los datos al servidor central.
-
-    \item \textbf{MICRORRED:} Pertenece al Grupo de Investigación GISEL, ubicada en el Laboratorio de Investigación Eléctrica (LIE) en la sede UIS Guatiguara. Este sistema monitorea parámetros críticos de la red eléctrica como tensión RMS, corriente RMS, factor de potencia y diferentes tipos de potencia (aparente, activa y reactiva) mediante un PLC Opto22 - Groov EPIC que utiliza un servidor de Ignition Edge para  prestar servicios a los usuarios.
-
+    \item \texttt{/uns/hierarchy}: respalda el Resource \texttt{uns://hierarchy}. Recorre
+    todo el Tag Provider y devuelve la jerarquía completa Enterprise-Site-Area-Line-Cell
+    junto con la documentación y la unidad de ingeniería de cada tag, configuradas en la
+    Sección~\ref{modeladosemantico}. No hace modelado semántico propio: lee el estado actual
+    del Tag Provider con los metadatos cargados a nivel de tag, para ofrecerle al LLM una vista
+    completa y vigente de la jerarquía UNS antes de consultar el contexto o el estado de un
+    equipo.
+    \item \texttt{/uns/context}: respalda la Tool \texttt{get\_context}, que devuelve el
+    contexto semántico de una línea filtrado por tipo de UDT.
+    \item \texttt{/uns/tags}: respalda la Tool \texttt{get\_tags}, para la lectura puntual
+    de uno o más tags por ruta completa.
+    \item \texttt{/uns/equipment}: respalda la Tool \texttt{get\_equipment\_status}, que
+    devuelve el estado de una celda específica.
 \end{itemize}
 
-\begin{figure}[h]
-\centerline{\includegraphics[width=10cm]{Figuras/IIoTPlatform_V2}}
-\caption{Esquema de la Plataforma de Entrenamiento IIoT}
-\label{fig:iiot_platform}
-\end{figure}
+Los cuatro endpoints comparten una misma estructura de respuesta JSON, y el apartado~\ref{especificacionendpoints} detalla qué recibe y qué devuelve cada uno. No se define ningún endpoint de escritura (\texttt{PUT} o \texttt{POST}), de acuerdo con el alcance de solo lectura fijado en la Sección~\ref{seleccionmecanismo}. Si en un trabajo futuro se decidiera habilitar escritura sobre el UNS, el mismo patrón de rutas parametrizadas se podría extender sin cambios estructurales.
 
+\subsubsection{Entrada y salida de cada endpoint}
+\label{especificacionendpoints}
 
-Para centralizar la comunicación y visualización de datos en tiempo real de todos los dispositivos (casos de estudio) que actualmente se conectan de forma distribuida a través de internet, se propone implementar un UNS que sea el nodo central del sistema representado en la Figura \ref{fig:iiot_platform}. Allí se debe integrar un broker MQTT escalable a nivel de Enterprise mediante un servidor IIoT, con el objetivo de normalizar los datos, unificar protocolos y gestionar usuarios, permitiendo así una plataforma única para agregar, procesar y visualizar toda la información de los casos de estudio.\\
+La Tabla~\ref{tab:io_endpoints} resume qué parámetros recibe cada endpoint y qué información
+devuelve. En los tres endpoints que leen valores (\texttt{/uns/context}, \texttt{/uns/tags} y
+\texttt{/uns/equipment}) la respuesta incluye, además, la calidad de la lectura y la marca de
+tiempo de cada tag; \texttt{/uns/hierarchy} describe la estructura y los metadatos, sin
+valores.
 
-A partir de la conexión y configuración de los casos de estudio, es posible diseñar un UNS empleando las diversas técnicas de diseño previamente estudiadas y analizadas. Para cada caso, se define un \textit{namespace} estructurado, asegurando una organización eficiente de los datos y su interoperabilidad dentro del sistema.
+\begin{table}[H]
+\centering
+\caption{Entrada y salida de los cuatro endpoints del Web Dev Module, y operación MCP que
+respalda cada uno.}
+\label{tab:io_endpoints}
+\small
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}p{2.5cm}p{3.1cm}p{3.6cm}p{4.8cm}@{}}
+\hline
+\textbf{Endpoint} & \textbf{Operación MCP} & \textbf{Entrada} & \textbf{Salida} \\
+\hline
+\texttt{/uns/hierarchy} &
+Resource \texttt{uns://}\allowbreak\texttt{hierarchy} &
+Ninguna &
+Árbol completo de la jerarquía UNS: nombre y tipo de nodo (carpeta, instancia de UDT
+o tag), con documentación y unidad de ingeniería. \\
+\texttt{/uns/context} &
+Tool \texttt{get\_context} &
+\texttt{area} y \texttt{line} (obligatorios); \texttt{context} (opcional, uno de
+\texttt{mes}, \texttt{line}, \texttt{erp}, \texttt{edge} o \texttt{all}; por defecto
+\texttt{all}) &
+Los tags del tipo de UDT solicitado, cada uno con su ruta, valor actual, documentación y
+unidad de ingeniería. Cuando \texttt{context} es \texttt{edge} o \texttt{all}, los tags de
+Edge se agrupan por celda. \\
+\texttt{/uns/tags} &
+Tool \texttt{get\_tags} &
+\texttt{paths}: una o más rutas de tag, separadas por coma &
+El valor, documentación y unidad de ingeniería de cada tag solicitado. \\
+\texttt{/uns/equipment} &
+Tool \texttt{get\_equipment\_}\allowbreak\texttt{status} &
+\texttt{area}, \texttt{line} y \texttt{cell} (los tres obligatorios) &
+Los cuatro tags de Edge de la celda solicitada (\texttt{Infeed}, \texttt{Outfeed},
+\texttt{Waste}, \texttt{Status}), con su valor, documentación y unidad de ingeniería. \\
+\hline
+\end{tabular}
+\end{table}
 
-Ambas metodologías se implementan utilizando el protocolo de comunicación MQTT Sparkplug B, lo que permite la integración de los casos de estudio al servidor principal de manera independiente. A continuación, se detalla el proceso de configuración en la plataforma.
+Cuando falta un parámetro obligatorio o llega un valor fuera de los permitidos, el endpoint
+responde con un código de error explícito en lugar de fallar de forma silenciosa. Esa
+validación se describe en el apartado~\ref{implementacionendpoints}.
 
+\subsubsection{Implementación de los endpoints}
+\label{implementacionendpoints}
 
-\subsection{Implementación del Método Schultz}
-
-Para la implementación de la técnica de Schultz, se establecen los niveles jerárquicos del UNS, organizando la arquitectura del sistema en función de los \textit{sites, areas, lines y cells} como se adquieren los datos. Esta estructura permite una gestión eficiente de la información para la integración de los dispositivos en la plataforma de entrenamiento IIoT.
-
-El sistema está compuesto por dos \textit{sites} principales: Central y Guatiguará. En el \textit{site} Central, se encuentran dos \textit{areas} diferenciadas. La primera, Cenivam, comprende la \textit{line} Vivero y la \textit{cell} GroovRio, donde este último es el PLC encargado de la adquisición de datos a través del termo-higrómetro. La segunda \textit{area}, Radiogis, está conformada por la \textit{line} Casiri, las \textit{cell} Cámara, responsables de la captura de imágenes espectrales, y la \textit{cell} Estación Ambiental, que recopila información sobre variables ambientales.
-
-Por otro lado, en el \textit{site} Guatiguará, se encuentra el \textit{area} LIE (Laboratorio de Integración Energética), la cual alberga la \textit{line} Microrred y la \textit{cell} GroovEpic, un PLC encargado de la adquisición de datos eléctricos de la Microrred.
-
-
-\subsubsection{Arquitectura de Diseño}
-
-Para implementar esta técnica en la aplicación de Ignition basada en MQTT Sparkplug B, se diseña la arquitectura mostrada en la Fig. \ref{fig:arqIIoT_Schultz}, en donde se escala desde el nivel de \textit{area}, al nivel de  \textit{site} y finalmente al nivel de \textit{Enterprise}.
-
-\begin{figure}[H]
-\centerline{\includegraphics[width=19cm]{Figuras/ArqSchultz_IIoT_V3.png}}
-\caption{Esquema de la Arquitectura UNS con el Método de Schultz en la Plataforma IIoT}
-\label{fig:arqIIoT_Schultz}
-\end{figure}
-
-
-Los dispositivos IIoT de cada uno de los casos de estudio de la plataforma IIoT, se conectan a brokers de HiveMQ (MQTT Area Server 111, MQTT Area Server 112 y MQTT Site Server 211), que actúan como concentradores de datos para áreas específicas. Estos brokers recogen los datos y los envían a las Plataformas IIoT 111 y 211 para organizar los datos en un UNS de \textit{area} para cada caso, con la siguiente estructura: (\textcircled{1}, \textcircled{2} y \textcircled{3} en Fig. \ref{fig:arqIIoT_Schultz}) 
-
-\input{UNS_Area}
-
-%\input{UNS_Area_LIE}
-%\input{UNS_Area_Radiogis}
-%\input{UNS_Area_Cenivam}
-
-Secuencialmente, los UNS de \textit{area} son enviados a un broker local (MQTT Site Server 121 y 221) para recolectar la información por \textit{site} y enviarlas a las Plataformas IIoT 121 y 221. Estas procesan los datos contextualizados y organizan los datos en un UNS de \textit{site} con la siguiente estructura:(\textcircled{4} y  \textcircled{5} en Fig. \ref{fig:arqIIoT_Schultz}))\\
-
-\input{UNS_Site}
-
-
-Finalmente, con la estructura definida para cada uno de los \textit{site}, se consolidan todos los namespaces distribuidos en un broker en la nube (MQTT Enterprise Server). Este recibe todas las áreas de la infraestructura y organiza el UNS a nivel de \textit{Enterprise} en el Ignition Enterprise, con el siguiente modelo jerárquico.(\textcircled{6} en Fig. \ref{fig:arqIIoT_Schultz}) 
-
-\input{UNS_Namespace_Schultz}
-
-La nube opera como la capa de integración global, permitiendo analítica avanzada y gestión remota de cada uno de los niveles de la jerarquía, además permite la conexión de diferentes aplicaciones al nivel de \textit{Enterprise} para monitorear y controlar los datos. Esta estructura multi-capa mantiene la autonomía local, evita los diferentes silos de datos y permite la re-conexión automática de los datos ante una falla en el sistema en cualquier nivel del UNS.
-
-\subsubsection{Implementación en Ignition}
-
-Una vez diseñada e implementada la arquitectura del UNS utilizando el método de Schultz, es posible establecer conexión con el servidor Enterprise MQTT a través de la aplicación Ignition. Esta conexión permite visualizar de forma estructurada y en tiempo real toda la jerarquía del UNS previamente definida, facilitando el acceso a los datos organizados por \textit{sites}, \textit{areas}, \textit{lines} y \textit{cells}. La plataforma Ignition actúa como cliente MQTT compatible con Sparkplug B, lo que permite la exploración y supervisión directa del modelo UNS. A continuación, se presenta una visualización dentro del entorno de Ignition.
-
-\begin{figure}[h]
-\centerline{\includegraphics[width=8cm]{Figuras/UNS_Schultz_Ignition}}
-\caption{UNS Schultz en Ignition}
-\label{fig:unsSchultzig}
-\end{figure}
-
-A través de esta estructura jerárquica es posible acceder a los datos de toda la infraestructura, desde el nivel \textit{Enterprise} hasta el nivel de \textit{cell}, reflejando con precisión los distintos niveles definidos en el UNS. Cada uno de estos niveles representa una instancia clara dentro de la jerarquía del sistema, lo que garantiza una organización coherente y uniforme de los dispositivos y sensores conectados en las diferentes áreas.
-
-Esta estandarización en la representación y ubicación de los dispositivos permite lograr una alta escalabilidad e interoperabilidad sin necesidad de modificar la arquitectura base. De esta manera, cualquier nuevo caso de estudio o integración de un dispositivo adicional puede ser incorporado directamente en el área correspondiente, y automáticamente será reflejado en el UNS general, manteniendo la integridad y consistencia del sistema.
-
-\subsection{Implementación del Método Parris}
-
-Para la aplicación de la técnica de Parris en la plataforma IIoT, se define la jerarquía del UNS replicando la estructura utilizada previamente, basada en los mismos \textit{sites}, \textit{areas}, \textit{lines} y \textit{cells} de adquisición de datos de la plataforma. La arquitectura contempla nuevamente dos \textit{sites} principales: Central, que incluye las \textit{areas} Cenivam, con la \textit{line} Vivero y la \textit{cell} GroovRio, además del Radiogis, con la \textit{line} Casiri y las \textit{cells} Cámara y Estación Ambiental; por otro lado, se tiene el \textit{site} Guatiguará, que incorpora el \textit{area} LIE, compuesta por la \textit{line} Microrred y la \textit{cell} GroovEpic.
-
-\subsubsection{Arquitectura de Diseño}
-
-La arquitectura basada en el método de Parris presenta un enfoque simplificado y estandarizado para implementar un UNS, utilizando un broker MQTT centralizado como columna vertebral de la comunicación. A diferencia del modelo jerárquico de Schultz, aquí todos los dispositivos (Sensor 1, Sensor 2, Sensor 3) de los 3 casos de estudios y las aplicaciones (como Ignition Enterprise) se conectan directamente al mismo MQTT Broker en la nube, eliminando capas intermedias de servidores locales. En la Fig. \ref{fig:arqIIoT_Parris} se representa como cada dispositivo publica datos en rutas estandarizadas (UNS Path) para cada uno de los casos, que definen un namespace unificado y accesible para toda la organización. Algunos ejemplos de UNS Path utilizando el delimitador \textit{"\_"} son los siguientes:
-
-
-\begin{center}
-    UNS Path 1: \textit{UIS\_Central/Radiogis\_Casiri\_Estacion Ambiental/<device\_id>}\\
-    UNS Path 2: \textit{UIS\_Central/Cenivam\_Vivero\_GroovRio/<device\_id>}\\
-    UNS Path 3: \textit{UIS\_Guatiguara/LIE\_Microrred\_GroovEpic/<device\_id>}
-\end{center}
-
-
+El Web Dev Module despacha cada ruta a una función Python independiente dentro del mismo
+proyecto de Ignition. La Figura~\ref{fig:flujo_hierarchy} resume la lógica de
+\texttt{/uns/hierarchy}, el endpoint que alimenta el Resource \texttt{uns://hierarchy} y el más
+elaborado de los cuatro. Al recibir la solicitud,
+la función recorre el Tag Provider de forma recursiva con \texttt{system.tag.browse()}; por
+cada tag se consulta su configuración con \texttt{system.tag.getConfiguration()} para leer
+la documentación y la unidad de ingeniería cargadas en la Sección~\ref{modeladosemantico}; y
+ensambla el resultado como un árbol JSON que reproduce la jerarquía diseñada en el
+Capítulo~\ref{tecnicasdiseñouns}.
 
 \begin{figure}[H]
-\centerline{\includegraphics[width=19cm]{Figuras/ArqParris_IIoT_V3.png}}
-\caption{Esquema de la Arquitectura UNS con el Metodo de Parris en la Plataforma IIoT}
-\label{fig:arqIIoT_Parris}
+\centerline{\includegraphics[width=16cm]{Figuras/flujo_endpoint_hierarchy.png}}
+\vspace{0.2cm}
+\caption{Flujo de atención del endpoint \texttt{/uns/hierarchy}, que alimenta el Resource
+\texttt{uns://hierarchy}: del recorrido del Tag Provider a la respuesta JSON con contexto
+semántico. Elaboración propia.}
+\label{fig:flujo_hierarchy}
+\end{figure}
+
+Las funciones de \texttt{/uns/context}, \texttt{/uns/tags} y \texttt{/uns/equipment} son más
+simples: toman las rutas o parámetros de la solicitud, los traducen a rutas completas dentro de
+\texttt{UNS\_Molinera} y leen esos tags directamente con \texttt{system.tag.readBlocking()},
+sin recorrer la jerarquía completa. Las descripciones de \texttt{Documentation} están escritas en español y contienen tildes y eñes, por lo que se verificó que la codificación de caracteres se conservara hasta el JSON de la respuesta.
+
+Los cuatro endpoints comparten un mismo esquema de manejo de errores. Una solicitud sin los parámetros obligatorios devuelve código \texttt{400} con un motivo explícito (\texttt{MISSING\_PARAMETER} o \texttt{INVALID\_PARAMETER}); una combinación de área, línea y celda inexistente en \texttt{/uns/equipment} devuelve \texttt{404} (\texttt{EQUIPMENT\_NOT\_FOUND}); y cualquier excepción no anticipada se responde con \texttt{500} (\texttt{UNHANDLED\_EXCEPTION}) en vez de propagarse sin control.
+
+% PENDIENTE: reemplazar por la captura real del árbol de endpoints en el Designer
+% (dau_fc_demo/com.inductiveautomation.webdev/resources/uns/), en el mismo estilo que
+% las Figuras 10 a 13 del Capítulo 2 para los UDT.
+\begin{figure}[H]
+\centerline{\includegraphics[width=11cm]{Figuras/endpoints_webdev_designer.png}}
+\vspace{0.2cm}
+\caption{Árbol de endpoints \texttt{/uns/*} en el Designer de Ignition. Elaboración propia.}
+\label{fig:endpoints_designer}
+\end{figure}
+
+\subsection{Construcción del servidor MCP}
+\label{construccionservidormcp}
+
+\subsubsection{Diseño de \textit{Tools} y \textit{Resources}}
+\label{disenotoolsresources}
+
+El servidor MCP \texttt{uns-mcp} expone los cuatro endpoints del
+apartado~\ref{disenoendpoints} con dos de las primitivas del protocolo. Las Tools son
+funciones que el LLM invoca explícitamente dentro de su razonamiento, con parámetros y un
+resultado puntual. Los Resources son contenido de solo lectura que el cliente puede adjuntar a
+la conversación sin que el LLM lo solicite. El criterio para elegir entre ambas es simple: si
+la operación recibe parámetros y devuelve el resultado de una consulta específica, es una
+Tool; si no recibe parámetros y su función es dar contexto u orientación de referencia, es un
+Resource.
+
+Tres de los cuatro endpoints encajan en el primer caso y se exponen como Tools
+(Tabla~\ref{tab:tools_mcp}). El cuarto, \texttt{/uns/hierarchy}, no recibe parámetros y
+siempre devuelve la jerarquía completa del UNS, así que se expone como el Resource
+\texttt{uns://hierarchy}. El servidor ofrece un segundo Resource, \texttt{uns://glosario},
+que se describe en la Sección~\ref{contextualizacionmodelouns}.
+
+\begin{table}[H]
+\centering
+\caption{Tools expuestas por el servidor MCP \texttt{uns-mcp}.}
+\label{tab:tools_mcp}
+\small
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}p{4.6cm}p{4.3cm}p{3.5cm}@{}}
+\hline
+\textbf{Tool} & \textbf{Parámetros} & \textbf{Endpoint que invoca} \\
+\hline
+\texttt{get\_context} & \texttt{area}, \texttt{line}, \texttt{context} (opcional) &
+\texttt{/uns/context} \\
+\texttt{get\_tags} & \texttt{paths} & \texttt{/uns/tags} \\
+\texttt{get\_equipment\_status} & \texttt{area}, \texttt{line}, \texttt{cell} &
+\texttt{/uns/equipment} \\
+\hline
+\end{tabular}
+\end{table}
+
+Cada Tool traduce sus parámetros directamente en la llamada al endpoint correspondiente y
+devuelve la respuesta sin transformarla, de manera que la especificación de la
+Tabla~\ref{tab:io_endpoints} es también, en la práctica, la especificación de la Tool que
+invoca ese endpoint. El Resource \texttt{uns://hierarchy} funciona igual: genera su contenido
+en cada lectura a partir de \texttt{/uns/hierarchy}, por lo que siempre refleja el estado
+real del Tag Provider.
+
+\subsubsection{Transporte y arranque del servidor}
+\label{transportearranque}
+
+Tal como se decidió en la Sección~\ref{seleccionmecanismo}, el servidor \texttt{uns-mcp}
+usa exclusivamente transporte STDIO, sin exponer ningún puerto de red. Se implementó en
+Python con la versión 2.2.0 del SDK oficial de MCP y se registró en la configuración de
+Claude Desktop (\texttt{claude\_desktop\_config.json}) bajo la clave \texttt{uns-mcp}.
+
+La dirección del Gateway y el nombre del proyecto de Ignition no están escritos en el código:
+se leen de variables de entorno (\texttt{UNS\_GATEWAY\_URL} y \texttt{UNS\_PROJECT\_NAME},
+con \texttt{http://localhost:9588} y \texttt{dau\_fc\_demo} como valores por defecto), de
+manera que el mismo servidor puede apuntar a otra instancia de Ignition sin modificar el
+código fuente.
+
+\subsubsection{Implementación del servidor MCP}
+\label{implementacionservidormcp}
+
+Las tres Tools comparten una función auxiliar interna que hace la solicitud HTTP al endpoint
+correspondiente y devuelve su respuesta. Ante un Gateway inalcanzable, un tiempo de espera
+agotado, una respuesta HTTP distinta de 200 o un cuerpo con \texttt{"success": false}, esa
+función levanta una excepción del SDK de MCP (\texttt{ToolError}), y el cliente recibe un
+mensaje de error legible en vez de un traceback sin procesar o un fallo silencioso. El
+Resource \texttt{uns://hierarchy} usa la misma lógica de acceso HTTP, pero ante esas
+condiciones levanta la excepción que el SDK define para Resources (\texttt{ResourceError}).
+
+La validación se hizo con el propio servidor MCP y no solo contra los endpoints por separado. La Figura~\ref{fig:claude_desktop_tools} muestra el
+servidor conectado en Claude Desktop con sus Tools.
+
+% PENDIENTE: reemplazar por la captura real de Claude Desktop con el servidor uns-mcp
+% conectado, las 3 tools y los 2 resources listados.
+\begin{figure}[H]
+\centerline{\includegraphics[width=16cm]{Figuras/claude_desktop_tools.png}}
+\vspace{0.2cm}
+\caption{Servidor \texttt{uns-mcp} conectado en Claude Desktop, con sus tres Tools. Elaboración propia.}
+\label{fig:claude_desktop_tools}
+\end{figure}
+
+\subsection{Incorporación de acceso a datos históricos}
+\label{accesodatoshistoricos}
+
+\subsubsection{Justificación}
+\label{justificacionhistorico}
+
+El servidor \texttt{uns-mcp} resuelve el acceso en tiempo real a la planta: el valor actual de
+cualquier tag de \texttt{UNS\_Molinera}, con su contexto semántico. El requerimiento R3
+identificado en el Capítulo~\ref{cap:caso_estudio} pide algo más amplio: acceso eficiente
+tanto al dato en tiempo real como al histórico. El Tag Provider, por diseño, no conserva ese
+histórico. Quien lo conserva es el esquema relacional \texttt{mes\_core} de una base de datos
+PostgreSQL, que el módulo MES de la planta usa para registrar corridas de producción, eventos
+de paro y órdenes de trabajo. Ese esquema, y no la arquitectura UNS, es la fuente natural del
+segundo tipo de acceso que pide R3. En lugar de forzar ese histórico dentro del Tag Provider, o de hacer que \texttt{uns-mcp}
+también hable con PostgreSQL, se construyó un segundo servidor MCP dedicado exclusivamente a
+esta fuente.
+
+\subsubsection{Conexión a la base de datos histórica}
+\label{conexionbdhistorica}
+
+El acceso al histórico se implementó en \texttt{mes-history-mcp}, un servidor MCP
+independiente de \texttt{uns-mcp}, con proceso propio, código propio y su propia entrada en la
+configuración de Claude Desktop. Los dos servidores no comparten código; lo único que tienen
+en común es el transporte STDIO y el estilo de manejo de errores, para que se comporten de
+forma consistente ante quien los invoque.
+
+\texttt{uns-mcp} llega a los datos de planta a través de los endpoints HTTP del Web Dev Module
+(Sección~\ref{capaendpoints}). \texttt{mes-history-mcp}, en cambio, se conecta directamente a
+PostgreSQL, sin capa intermedia: el esquema \texttt{mes\_core} vive en una instancia de
+PostgreSQL desplegada como servicio nativo del sistema operativo, la misma que usa el módulo
+MES para registrar su historial de producción. Igual que \texttt{uns-mcp} con la dirección del
+Gateway (Sección~\ref{transportearranque}), \texttt{mes-history-mcp} lee los datos de conexión
+a la base de variables de entorno, de modo que puede apuntar a otra instancia sin modificar el
+código.
+
+\subsubsection{Diseño de \textit{Tools} y \textit{Resources} de consulta histórica}
+\label{toolconsultahistorica}
+
+Antes de diseñar las operaciones del servidor, se aplicó a \texttt{mes\_core} el mismo principio de modelado semántico usado en los tags de Ignition
+(Sección~\ref{modeladosemantico}): anotar el significado del dato en su propia fuente. En PostgreSQL ese lugar es el catálogo del motor, mediante \texttt{COMMENT ON TABLE} y \texttt{COMMENT ON COLUMN} sobre las tablas y columnas relevantes de \texttt{mes\_core}. Una columna de PostgreSQL no tiene un campo nativo para la unidad de ingeniería, así que la unidad se incluye dentro del mismo comentario con un formato fijo que el servidor reconoce: la descripción, seguida de la frase ``\emph{Unidad: \textless unidad \textgreater}.'' cuando aplica. Por ejemplo, la columna \texttt{oee} de la tabla \texttt{run} está documentada en la propia base como ``\emph{Eficiencia global del equipo (OEE), resultado de multiplicar disponibilidad, rendimiento y calidad. Unidad: fracción 0-1.}'', y \texttt{mes-history-mcp} separa automáticamente la descripción de la unidad al construir sus respuestas.
+
+Sobre esa base semántica se diseñaron seis Tools y un Resource, cada uno respaldado solo por
+las tablas de \texttt{mes\_core} que necesita. La Tabla~\ref{tab:tools_historico} los resume.
+
+\begin{table}[H]
+\centering
+\caption{Tools y Resource expuestos por el servidor MCP \texttt{mes-history-mcp}.}
+\label{tab:tools_historico}
+\small
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}p{4.4cm}p{4.4cm}p{3.6cm}@{}}
+\hline
+\textbf{Tool / Resource} & \textbf{Parámetros} & \textbf{Tablas consultadas} \\
+\hline
+\texttt{get\_oee\_history} & \texttt{area}, \texttt{line}, \texttt{date\_from},
+\texttt{date\_to} & \texttt{run} \\
+\texttt{get\_downtime\_events} & \texttt{area}, \texttt{line}, \texttt{date\_from},
+\texttt{date\_to} & \texttt{statehistory}, \texttt{statereason} \\
+\texttt{get\_production\_}\allowbreak\texttt{orders} & \texttt{area}, \texttt{line},
+\texttt{date\_from}, \texttt{date\_to} & \texttt{workorder}, \texttt{schedule},
+\texttt{productcode} \\
+\texttt{get\_standard\_rate} & \texttt{area}, \texttt{line} & \texttt{standardrate},
+\texttt{productcode} \\
+\texttt{get\_count\_history} & \texttt{area}, \texttt{line}, \texttt{date\_from},
+\texttt{date\_to}, \texttt{count\_type} (opcional) & \texttt{counthistory},
+\texttt{counttag}, \texttt{counttype} \\
+\texttt{query\_table} & \texttt{table}, \texttt{filters} (opcional),
+\texttt{date\_from}/\texttt{date\_to} (opcional), \texttt{limit} (opcional) & Una de las 13
+tablas en alcance, según \texttt{table} \\
+\texttt{mes-history://schema} (Resource) & Ninguno & Las 13 tablas en alcance (catálogo) \\
+\hline
+\end{tabular}
+\end{table}
+
+Las primeras cinco Tools responden las preguntas más frecuentes sobre el histórico de
+producción: eficiencia (\texttt{get\_oee\_history}, que incluye la disponibilidad calculada
+por corrida como parte del OEE), paros (\texttt{get\_downtime\_events}), órdenes de trabajo
+ejecutadas (\texttt{get\_production\_orders}), tasas estándar de referencia
+(\texttt{get\_standard\_rate}) y conteos más granulares que los totales de una corrida
+(\texttt{get\_count\_history}). Cada una devuelve, para cada columna de cada fila, el valor
+junto con la documentación y la unidad cargadas en el catálogo, con el mismo patrón que siguen
+\texttt{get\_context} y \texttt{get\_tags} en \texttt{uns-mcp}
+(Sección~\ref{disenotoolsresources}). Además, todas las Tools de \texttt{mes-history-mcp},
+incluida \texttt{query\_table}, reciben y devuelven los nombres de área, línea y celda con el
+mismo vocabulario de \texttt{UNS\_Molinera} (\texttt{Empaque Maiz}, \texttt{Linea A},
+\texttt{Empacadora 1}), de modo que el LLM usa una sola convención de nombres en los dos
+servidores.
+
+Las dos últimas filas de la Tabla~\ref{tab:tools_historico} cubren lo que esas cinco Tools no
+cubren, y siguen el mismo criterio de Tools frente a Resources de \texttt{uns-mcp}.
+\texttt{query\_table} recibe parámetros y devuelve el resultado de una consulta específica,
+por lo que es una Tool: una consulta genérica pero acotada, pensada para preguntas puntuales
+que no encajan en las cinco Tools específicas, sin permitir que el LLM envíe SQL libre. Sus
+cotas se detallan en el apartado~\ref{alcanceseguridadhistorico}. \texttt{mes-history://schema}
+no recibe parámetros y ofrece el mapa de referencia del esquema, por lo que es un Resource; su
+contenido y su papel en la orientación del modelo se describen en la
+Sección~\ref{contextualizacionmodelomeshistory}.
+
+\subsubsection{Alcance y seguridad}
+\label{alcanceseguridadhistorico}
+
+El acceso a \texttt{mes\_core} se hace con un rol de PostgreSQL creado para \texttt{mes-history-mcp}, con permiso de \texttt{SELECT} únicamente sobre las trece tablas que
+necesitan sus Tools y su Resource (\texttt{run}, \texttt{statehistory}, \texttt{statereason},
+\texttt{node}, \texttt{workorder}, \texttt{schedule}, \texttt{productcode},
+\texttt{productcodenode}, \texttt{standardrate}, \texttt{counthistory}, \texttt{counttag},
+\texttt{counttype} y \texttt{stateprocess}) y sin ningún permiso de escritura. La tabla
+\texttt{audit\_events}, el registro de auditoría del propio MES, queda fuera del alcance: no
+tiene \texttt{COMMENT ON}, el rol de conexión no tiene \texttt{SELECT} sobre ella y ninguna
+operación del servidor la consulta. Esta exclusión se verificó contra la base real: una
+consulta del rol de conexión sobre \texttt{audit\_events} devuelve un error de permiso
+denegado, igual que cualquier intento de escritura (por ejemplo, un \texttt{DELETE}) sobre las
+tablas permitidas.
+
+\texttt{query\_table} es la Tool más flexible de las seis y por eso concentra la mayoría de las
+restricciones adicionales. El parámetro \texttt{table} solo admite una de las trece tablas en
+alcance (\texttt{audit\_events} se rechaza explícitamente aunque se pida por nombre), y los
+filtros se validan columna por columna contra el esquema real de esa tabla antes de construir
+la consulta, en vez de aceptarse como texto libre. Los nombres de tabla y de columna se arman
+como identificadores parametrizados, nunca por interpolación de cadenas, y el número de filas
+que puede devolver una llamada tiene un tope fijo. \texttt{query\_table} no permite combinar
+varias tablas en una misma consulta (\textit{JOIN}); esa necesidad la cubren las cinco Tools
+específicas. En ningún caso el LLM construye o envía una sentencia SQL: entrega los
+parámetros estructurados de cada Tool, y es el servidor quien arma la consulta parametrizada.
+
+La validación se hizo con el servidor MCP real y no solo con consultas SQL directas. Las seis Tools respondieron sin error al invocarlas con datos reales de la planta; una combinación de
+área y línea inexistente devuelven un mensaje de error. La Figura~\ref{fig:claude_desktop_mes_history} muestra el servidor conectado en Claude Desktop, junto a \texttt{uns-mcp}, con sus Tools y su Resource disponibles.
+
+% PENDIENTE: reemplazar por la captura real de Claude Desktop con el servidor
+% mes-history-mcp conectado, las 6 tools y el resource mes-history://schema listados,
+% en el mismo estilo que la Figura fig:claude_desktop_tools.
+\begin{figure}[H]
+\centerline{\includegraphics[width=16cm]{Figuras/claude_desktop_mes_history.png}}
+\vspace{0.2cm}
+\caption{Servidor \texttt{mes-history-mcp} conectado en Claude Desktop, con sus seis Tools y
+su Resource. Elaboración propia.}
+\label{fig:claude_desktop_mes_history}
 \end{figure}
 
 
-Las aplicaciones acceden directamente al broker central para visualizar, analizar y controlar los datos en tiempo real. De manera similar al método de Schultz, la jerarquía del UNS diseñada desde la plataforma Ignition Enterprise se representa con la siguiente estructura.
+\subsection{Contextualización del modelo en \texttt{uns-mcp}}
+\label{contextualizacionmodelouns}
 
-\input{UNS_Namespace_Schultz}
+Exponer los datos no basta para que el LLM los use bien. Antes de invocar cualquier Tool, necesita conocer el vocabulario de la planta (que un Area se llame \texttt{Empaque Maiz} o \texttt{Empaque Trigo}, que una Cell sea \texttt{Empacadora 1}, \texttt{Empacadora 2} o \texttt{Enfardadora}) y saber a cuál de los dos servidores dirigir cada pregunta. El Resource \texttt{uns://hierarchy} (Sección~\ref{disenotoolsresources}) le entrega los nombres de la jerarquía, pero no le dice cuándo conviene usar \texttt{uns-mcp} y cuándo \texttt{mes-history-mcp}.
 
+Para resolverlo se consideraron tres mecanismos. El primero, instrucciones de proyecto configuradas en el cliente (por ejemplo, en Claude Desktop), se descartó porque vive fuera de los servidores MCP: cualquier otro cliente que se conectara a \texttt{uns-mcp} o \texttt{mes-history-mcp} no tendría ese contexto. El segundo, un \textit{Prompt} de MCP (la tercera primitiva del protocolo, pensada para plantillas que el cliente ofrece como preset), sí viaja con el servidor, pero requiere que el cliente lo invoque de forma explícita. Se eligió
+el tercero: un Resource de MCP, \texttt{uns://glosario}, que el cliente puede adjuntar a la sesión sin que el LLM tenga que pedirlo. Encaja en el mismo criterio que \texttt{uns://hierarchy}: no recibe parámetros y su función es dar orientación de referencia.
 
-El método de Parris destaca por su simplicidad y flexibilidad, ideal para entornos donde la agilidad y la conectividad directa son prioritarias. Al eliminar servidores intermedios, se reduce el mantenimiento y se acelera la implementación, aunque requiere un broker MQTT robusto y una red confiable para manejar todo el tráfico de datos de manera eficiente.
+El glosario tiene dos partes. La primera es una explicación fija de qué representa cada nivel de la jerarquía ISA-95 (Enterprise, Site, Area, Line, Cell) y el criterio de selección de servidor: las preguntas sobre el estado o el valor actual de la planta van a \texttt{uns-mcp}, y las preguntas sobre historial, tendencias, OEE pasado, órdenes de trabajo cerradas o paros ya ocurridos van a \texttt{mes-history-mcp}. La segunda es la lista de nombres reales del caso de estudio (Molinera, Barranquilla, Empaque Maiz y Empaque Trigo, Linea A y Linea B, Empacadora 1, Empacadora 2 y Enfardadora). Esa lista no está escrita en el código: se genera en cada lectura recorriendo el mismo Tag Provider que consulta \texttt{uns://hierarchy} y filtrando los nodos de tipo carpeta, para quedarse con las celdas físicas y descartar las instancias de los UDT \texttt{MES}, \texttt{Line} y \texttt{ERP} que conviven con ellas dentro de cada línea. Así, el glosario se mantiene al día ante cambios en la planta. No incluye detalles de implementación de ninguno de los dos servidores, porque su propósito es orientar al LLM y no documentar la arquitectura.
 
+La validación se realizó con un cliente MCP real, que ejecutó las dos operaciones con las que un cliente descubre y consume Resources: \texttt{resources/list}, que solicita el catálogo de Resources disponibles, y \texttt{resources/read}, que solicita el contenido de uno de ellos a partir de su URI. La primera devolvió exactamente los dos Resources definidos en \texttt{uns-mcp}: \texttt{uns://glosario} y \texttt{uns://hierarchy}. La segunda devolvió su contenido en ambos casos. En \texttt{uns://hierarchy}, la respuesta coincide con la jerarquía implementada en Ignition, con \texttt{Molinera} como raíz y \texttt{UNS\_Molinera} como Tag Provider. En \texttt{uns://glosario}, la lista de nombres incluye las celdas físicas de cada línea (\texttt{Empacadora 1}, \texttt{Empacadora 2} y \texttt{Enfardadora}) y excluye las instancias de los UDT \texttt{MES}, \texttt{Line} y \texttt{ERP} que conviven con ellas. La Figura~\ref{fig:resource_glosario} muestra \texttt{uns://glosario} adjunto a una conversación en Claude Desktop, con el contenido tal como lo recibe el LLM.
 
+% PENDIENTE: captura de Claude Desktop con uns://glosario adjunto desde el menú "+" y su
+% contenido visible (niveles ISA-95, nombres reales y criterio de selección de servidor).
+\begin{figure}[H]
+\centerline{\includegraphics[width=16cm]{Figuras/resource_glosario_claude_desktop.png}}
+\vspace{0.2cm}
+\caption{Resource \texttt{uns://glosario} adjunto a una conversación en Claude Desktop.
+Elaboración propia.}
+\label{fig:resource_glosario}
+\end{figure}
 
-\subsubsection{Implementación  en Ignition}
+\subsection{Contextualización del modelo en \texttt{mes-history-mcp}}
+\label{contextualizacionmodelomeshistory}
 
-Una vez implementada la arquitectura del UNS, se establece la conexión con el broker MQTT centralizado, el cual contiene la estructura completa del sistema. A través de la aplicación Ignition, es posible visualizar cada uno de los ``Paths'' correspondientes a los casos de estudio, estructurados según el delimitador definido. Esta visualización se realiza conforme a la especificación MQTT Sparkplug B, adoptando la siguiente organización jerárquica:
+El glosario de la Sección~\ref{contextualizacionmodelouns} le indica al LLM cuándo una pregunta es histórica, pero una vez que la dirige a \texttt{mes-history-mcp} el modelo todavía necesita saber qué tablas de \texttt{mes\_core} existen, qué columnas tiene cada una y cómo se relacionan, para elegir la Tool correcta o armar los parámetros de \texttt{query\_table}. Ninguna de las seis Tools de la Tabla~\ref{tab:tools_historico} le da esa información, porque
+todas suponen que el LLM ya sabe qué tabla o combinación de tablas necesita.
 
-\begin{center}      
-    \textit{<group\_id>: Enterprise\_Site}\\ 
-    \textit{<edgenode\_id>: Area\_Line\_Cell}\\ 
-\end{center}
+Esa orientación la entrega el Resource \texttt{mes-history://schema}, bajo el mismo criterio de la Sección~\ref{disenotoolsresources}: no recibe parámetros y su función es dar contexto de referencia. Expone el catálogo de las trece tablas en alcance, con sus columnas, tipos, documentación y unidad tomadas del \texttt{COMMENT ON} de cada una, más las relaciones entre tablas que usan los \textit{JOIN} de las Tools. El glosario de \texttt{uns-mcp} es prosa en español para que el LLM entienda el vocabulario de la planta; este Resource, en cambio, es un documento estructurado para que entienda la forma del esquema relacional.
 
-En la Fig \ref{fig:unsParrisig_engine} se puede observar como se reciben los topics en Ignition según la especificación del protocolo y la definición de cada uno de los nodos.
+La validación confirmó que \texttt{resources/list} devuelve \texttt{mes-history://schema} y que \texttt{resources/read} entrega el catálogo de las
+tablas, con sus columnas, documentación y relaciones. La Figura~\ref{fig:resource_schema} muestra \texttt{mes-history://schema}
+adjunto a una conversación en Claude Desktop.
 
+% PENDIENTE: captura de Claude Desktop con mes-history://schema adjunto desde el menú "+",
+% donde se vea parte del catálogo (una tabla con sus columnas y la lista de relaciones).
+\begin{figure}[H]
+\centerline{\includegraphics[width=16cm]{Figuras/resource_schema_claude_desktop.png}}
+\vspace{0.2cm}
+\caption{Resource \texttt{mes-history://schema} adjunto a una conversación en Claude Desktop.
+Elaboración propia.}
+\label{fig:resource_schema}
+\end{figure}
+
+\subsection{Flujo de consulta integrado}
+\label{flujoconsultaintegrado}
+
+Una sola pregunta del usuario basta para ver cómo trabajan juntas las piezas de este capítulo. Supongamos que se pregunta: \emph{"¿cómo va la Linea A de Empaque Trigo ahora mismo, y cómo se compara su OEE
+con el de la última semana?"} La pregunta no se resuelve con una sola fuente: la primera mitad
+es un dato en tiempo real del UNS y la segunda es un histórico de la base de datos MES.
+
+Con el glosario de la Sección~\ref{contextualizacionmodelouns} en la sesión, el LLM reconoce
+\texttt{Empaque Trigo} como un Area y \texttt{Linea A} como una de sus Line, y divide la
+pregunta en dos partes, cada una para un servidor. Si el usuario hubiera dicho solo
+\emph{"la Linea A"}, el mismo glosario le muestra que existe una en cada área, y el LLM puede
+pedir la aclaración antes de consultar. Para el estado actual invoca \texttt{get\_context} de
+\texttt{uns-mcp} con esa área y línea y \texttt{context} igual a \texttt{mes}, que responde con
+el OEE, la disponibilidad, el rendimiento y la calidad de la corrida en curso, cada uno con su
+documentación y su unidad (\texttt{\%}). Para la última semana invoca \texttt{get\_oee\_history}
+de \texttt{mes-history-mcp} con la misma área y línea y un rango de siete días, que responde con
+los mismos indicadores para cada corrida registrada en ese periodo, esta vez con unidad
+\texttt{fracción 0-1}.
+
+Las dos fuentes expresan el OEE en unidades distintas, y el LLM lo sabe porque cada valor llega
+acompañado de su unidad. Eso le permite convertirlos a una misma escala antes de compararlos,
+en lugar de contrastar un 85 con un 0,85 como si fueran magnitudes diferentes. Es un efecto
+directo del modelado semántico de las Secciones~\ref{modeladosemantico} y
+\ref{toolconsultahistorica}: sin \texttt{EngUnit} en los tags ni la unidad en los
+\texttt{COMMENT ON}, esa conversión dependería de que el modelo adivinara la escala.
+
+El LLM combina ambas respuestas en una sola salida. Ninguno de los dos servidores sabe
+de la existencia del otro: cada uno atiende su fuente de datos con su propio modelado
+semántico, y es el LLM quien integra el resultado. El ejemplo muestra que la arquitectura de
+dos servidores independientes descrita en la Sección~\ref{conexionbdhistorica} cumple el
+requerimiento R3 (acceso eficiente tanto al dato en tiempo real como al histórico) sin que
+las dos fuentes tengan que converger en un único punto de acceso. La
+Figura~\ref{fig:flujo_integrado_chat} muestra esta consulta ejecutada en Claude Desktop, y el inicio de la respuesta. La transcripción completa de la conversación en la que se observa toda la respuesta es presentada en el \hyperref[anexo:conversacion_flujo]{Anexo~A}. 
+
+% PENDIENTE: captura de Claude Desktop con la pregunta de esta sección, el glosario adjunto,
+% las llamadas a get_context y get_oee_history expandidas y el inicio de la respuesta.
+\begin{figure}[H]
+\centerline{\includegraphics[width=16cm]{Figuras/flujo_integrado_chat.png}}
+\vspace{0.2cm}
+\caption{Consulta que combina tiempo real e histórico ejecutada en Claude Desktop, ver conversación completa en \hyperref[anexo:conversacion_flujo]{Anexo~A}). Elaboración propia.}
+\label{fig:flujo_integrado_chat}
+\end{figure}
+
+\subsection{Síntesis del capítulo}
+\label{sintesiscap4}
+
+Este capítulo documentó la implementación de la arquitectura definida en el
+Capítulo~\ref{seleccionllm}: un LLM conectado, mediante servidores MCP con transporte STDIO y
+alcance de solo lectura, a la información de la planta. La implementación tiene cuatro piezas.
+La primera es una capa de endpoints sobre el Web Dev Module de Ignition
+(Sección~\ref{capaendpoints}) que traduce el acceso al Tag Provider en cuatro rutas HTTP
+parametrizadas, apoyada en el significado de cada tag cargado en \texttt{Documentation} y
+\texttt{EngUnit}. La segunda es el servidor \texttt{uns-mcp}
+(Sección~\ref{construccionservidormcp}), que expone esos endpoints con dos primitivas del
+protocolo: Tools para las operaciones que reciben parámetros y devuelven el resultado de una
+consulta puntual, y Resources para el contenido de referencia sin parámetros. La tercera es
+\texttt{mes-history-mcp} (Sección~\ref{accesodatoshistoricos}), un servidor independiente que
+atiende el acceso a datos históricos exigido por R3 conectándose directamente al esquema
+\texttt{mes\_core} de PostgreSQL; aplica el mismo modelado semántico, esta vez sobre
+\texttt{COMMENT ON}, el mismo criterio de Tools y Resources, y una Tool de consulta acotada
+(\texttt{query\_table}) que no deja al LLM construir SQL libre. La cuarta es la
+contextualización del modelo en cada servidor (Secciones~\ref{contextualizacionmodelouns} y
+\ref{contextualizacionmodelomeshistory}), resuelta con Resources: en \texttt{uns-mcp}, el
+vocabulario de la planta y el criterio para elegir servidor; en \texttt{mes-history-mcp}, el
+mapa del esquema relacional.
+
+La Figura~\ref{fig:arquitectura_mcp_implementada} reúne estas cuatro piezas en la arquitectura
+final. Dentro del host (Claude Desktop), el LLM mantiene una sesión con cada servidor a través
+de su propio cliente MCP. \texttt{uns-mcp} atiende el tiempo real pasando por los endpoints del
+Web Dev Module hasta el Tag Provider \texttt{UNS\_Molinera}, y \texttt{mes-history-mcp} atiende
+el histórico consultando directamente el esquema \texttt{mes\_core} de PostgreSQL. Cada
+servidor aparece con las Tools y los Resources definidos a lo largo del capítulo.
 
 \begin{figure}[H]
-\centerline{\includegraphics[width=8cm]{Figuras/UNS_Engine_Parris_Ignition_V2}}
-\caption{Método de Parris en el Módulo MQTT Engine en Ignition}
-\label{fig:unsParrisig_engine}
+\centerline{\includegraphics[width=16cm]{Figuras/arquitectura_mcp_implementada.png}}
+\vspace{0.2cm}
+\caption{Arquitectura MCP implementada: un host con dos clientes MCP, los servidores
+\texttt{uns-mcp} y \texttt{mes-history-mcp} con sus Tools y Resources, y las dos fuentes de
+datos que consulta cada uno. Elaboración propia.}
+\label{fig:arquitectura_mcp_implementada}
 \end{figure}
 
-La aplicación permite recibir y procesar los ``topics''
-suscritos, y como se muestra en la Fig. \ref{fig:unsParrisig}, Ignition interpreta los delimitadores ``\_'' para dividirlos en sub-topics, construyendo así la jerarquía del UNS definida previamente.
-
-
-\begin{figure}[H]
-\centerline{\includegraphics[width=7.9cm]{Figuras/UNS_Parris_Ignition}}
-\caption{Método de Parris Estructurado en Ignition}
-\label{fig:unsParrisig}
-\end{figure}
-
-
-
-\subsection{Aplicación Ignition Plataforma IIoT}
-
-La plataforma Ignition actúa como interfaz de visualización dentro de la arquitectura IIoT basada en Unified Namespace, proporcionando al usuario final acceso estructurado a los datos del sistema. En esta etapa, se detalla el diseño del \textit{Front-End} de la aplicación, incluyendo la disposición de vistas, widgets e indicadores interactivos que permiten la supervisión, análisis y control operativo en tiempo real de forma eficiente e intuitiva.
-
-La vista principal de la aplicación corresponde al Home, como se muestra en la Figura \ref{fig:homeUNS}. Esta pantalla centraliza el acceso a los distintos módulos de monitoreo, permitiendo navegar de forma intuitiva entre los distintos sites y componentes del sistema.
-
-\begin{figure}[H]
-\centerline{\includegraphics[width=15cm]{Figuras/HomeUNS}}
-\caption{Vista del Home en la aplicación de Ignition}
-\label{fig:homeUNS}
-\end{figure}
-
-
-La Figura \ref{fig:casiriView} muestra la visualización correspondiente a Casiri, dentro del área Radiogis del site Central. En esta vista, se monitorean variables ambientales capturadas por la Estación Ambiental y se obtienen las imágenes capturadas por la Cámara espectral, presentando los datos en tiempo real mediante gráficos e indicadores analógicos y datos históricos.
-
-
-\begin{figure}[H]
-\centerline{\includegraphics[width=14.1cm]{Figuras/ViewCasiri}}
-\caption{Vista de Casiri en la aplicación de Ignition}
-\label{fig:casiriView}
-\end{figure}
-
-
-En la Figura \ref{fig:microrredView}, se ilustra la vista de la Microrred, ubicada en el área LIE del site Guatiguará. Esta vista permite observar el comportamiento eléctrico de cada una de las fases de la Microrred que permite leer el PLC GroovEpic, representando variables claves del sistema.
-
-\begin{figure}[H]
-\centerline{\includegraphics[width=14.1cm]{Figuras/ViewMicrorred}}
-\caption{Vista de la Microrred en la aplicación de Ignition}
-\label{fig:microrredView}
-\end{figure}
-
-
-
-Finalmente, la Figura \ref{fig:viveroView} corresponde a la vista del Vivero, parte del área Cenivam del site Central. En esta interfaz se visualizan parámetros ambientales recolectados por el termo-higrómetro a través del PLC GroovRio, permitiendo una supervisión detallada de las condiciones del entorno y un historial de cada una de ellas.
-
-\begin{figure}[H]
-\centerline{\includegraphics[width=15cm]{Figuras/ViewCenivam}}
-\caption{Vista del Vivero en la aplicación de Ignition}
-\label{fig:viveroView}
-\end{figure}
-
-Estas interfaces gráficas están diseñadas para ofrecer una interacción eficiente y en tiempo real entre el usuario y el sistema, permitiendo la supervisión y análisis de los datos mediante una visualización estructurada según la jerarquía definida en el UNS. La presentación contextualiza a nivel general la información proveniente de cada unos de los dispositivos integrados en cada caso de estudio dentro de la plataforma de entrenamiento IIoT.
-
-Adicionalmente, la aplicación incorpora un mecanismo de acceso seguro basado en credenciales, lo que permite gestionar permisos según el perfil de cada usuario. La navegación se organiza mediante un árbol jerárquico que facilita el ingreso personalizado a cada una de las vistas disponibles, asegurando una experiencia flexible, escalable y orientada al rol del operador dentro del entorno industrial.
-
-
-
-
-
-
+El ejemplo de la Sección~\ref{flujoconsultaintegrado} mostró estas piezas ante una pregunta que
+combina tiempo real e histórico, sin que los dos servidores MCP se comuniquen entre sí. Con
+esto, la arquitectura planteada desde la justificación de este trabajo
+(Figura~\ref{fig:flujo_uns_llm}) queda implementada y validada contra datos reales de la
+planta. El capítulo siguiente evalúa esa implementación frente a los requerimientos planteados
+en el Capítulo~\ref{cap:caso_estudio}.
