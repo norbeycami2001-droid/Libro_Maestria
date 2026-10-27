@@ -303,22 +303,24 @@ las tablas de \texttt{mes\_core} que necesita. La Tabla~\ref{tab:tools_historico
 \label{tab:tools_historico}
 \small
 \renewcommand{\arraystretch}{1.4}
-\begin{tabular}{@{}p{4.4cm}p{4.4cm}p{3.6cm}@{}}
+\begin{tabular}{@{}p{3.9cm}p{5.4cm}p{3.1cm}@{}}
 \hline
 \textbf{Tool / Resource} & \textbf{Parámetros} & \textbf{Tablas consultadas} \\
 \hline
 \texttt{get\_oee\_history} & \texttt{area}, \texttt{line}, \texttt{date\_from},
-\texttt{date\_to} & \texttt{run} \\
+\texttt{date\_to}, \texttt{granularity} (opcional) & \texttt{run}, \texttt{schedule} \\
 \texttt{get\_downtime\_events} & \texttt{area}, \texttt{line}, \texttt{date\_from},
-\texttt{date\_to} & \texttt{statehistory}, \texttt{statereason} \\
+\texttt{date\_to}, \texttt{granularity} (opcional) & \texttt{statehistory},
+\texttt{statereason} \\
 \texttt{get\_production\_}\allowbreak\texttt{orders} & \texttt{area}, \texttt{line},
 \texttt{date\_from}, \texttt{date\_to} & \texttt{workorder}, \texttt{schedule},
 \texttt{productcode} \\
 \texttt{get\_standard\_rate} & \texttt{area}, \texttt{line} & \texttt{standardrate},
 \texttt{productcode} \\
 \texttt{get\_count\_history} & \texttt{area}, \texttt{line}, \texttt{date\_from},
-\texttt{date\_to}, \texttt{count\_type} (opcional) & \texttt{counthistory},
-\texttt{counttag}, \texttt{counttype} \\
+\texttt{date\_to}, \texttt{count\_type} (opcional), \texttt{cell} (opcional),
+\texttt{granularity} (opcional) & \texttt{counthistory}, \texttt{counttag},
+\texttt{counttype}, \texttt{node} \\
 \texttt{query\_table} & \texttt{table}, \texttt{filters} (opcional),
 \texttt{date\_from}/\texttt{date\_to} (opcional), \texttt{limit} (opcional) & Una de las 13
 tablas en alcance, según \texttt{table} \\
@@ -331,8 +333,16 @@ Las primeras cinco Tools responden las preguntas más frecuentes sobre el histó
 producción: eficiencia (\texttt{get\_oee\_history}, que incluye la disponibilidad calculada
 por corrida como parte del OEE), paros (\texttt{get\_downtime\_events}), órdenes de trabajo
 ejecutadas (\texttt{get\_production\_orders}), tasas estándar de referencia
-(\texttt{get\_standard\_rate}) y conteos más granulares que los totales de una corrida
-(\texttt{get\_count\_history}). Cada una devuelve, para cada columna de cada fila, el valor
+(\texttt{get\_standard\_rate}) y producción por intervalo de tiempo
+(\texttt{get\_count\_history}). Esta última distingue el total producido
+(\texttt{Infeed}), las unidades buenas (\texttt{Outfeed}) y el desperdicio
+(\texttt{Waste}), que se relacionan así: el total es la suma de las buenas y el
+desperdicio. Como un usuario habla de \textit{total}, \textit{buenas} o
+\textit{desperdicio} y no de \texttt{Infeed} u \texttt{Outfeed}, la Tool acepta ambos
+nombres. También puede consultar una celda concreta (\texttt{Empacadora 1},
+\texttt{Empacadora 2} o \texttt{Enfardadora}) y solo cuenta la producción que
+pertenece a una corrida, de modo que sus totales coinciden con los de
+\texttt{get\_oee\_history}. Cada una devuelve, para cada columna de cada fila, el valor
 junto con la documentación y la unidad cargadas en el catálogo, con el mismo patrón que siguen
 \texttt{get\_context} y \texttt{get\_tags} en \texttt{uns-mcp}
 (Sección~\ref{disenotoolsresources}). Además, todas las Tools de \texttt{mes-history-mcp},
@@ -350,6 +360,35 @@ cotas se detallan en el apartado~\ref{alcanceseguridadhistorico}. \texttt{mes-hi
 no recibe parámetros y ofrece el mapa de referencia del esquema, por lo que es un Resource; su
 contenido y su papel en la orientación del modelo se describen en la
 Sección~\ref{contextualizacionmodelomeshistory}.
+
+\subsubsection{Granularidad según el rango de consulta}
+\label{granularidadconsulta}
+
+El desafío D3.2 del Capítulo~\ref{cap:caso_estudio} pide que el sistema use datos finos
+para periodos cortos y datos agregados para periodos largos, sin que el usuario lo
+indique. Para cumplirlo, \texttt{get\_oee\_history}, \texttt{get\_downtime\_events} y
+\texttt{get\_count\_history} reciben el parámetro opcional \texttt{granularity}, con los
+valores \texttt{minute}, \texttt{hour}, \texttt{shift}, \texttt{day} y \texttt{auto}, que
+es el predeterminado.
+
+Con \texttt{auto}, el servidor elige según la duración del rango consultado. Hasta 2
+horas usa minutos, hasta 48 horas usa horas y por encima de ese límite usa días. La
+decisión se toma en el servidor y no en el modelo, de modo que la misma consulta da
+siempre el mismo resultado y se puede verificar. Los umbrales se configuran con variables
+de entorno. La granularidad por turno solo se usa cuando el usuario la pide. Los turnos
+son tres, A de 06:00 a 14:00, B de 14:00 a 22:00 y C de 22:00 a 06:00, y el C pertenece
+al día en que empieza. Las fechas se interpretan en hora de Colombia, la zona en que se
+guardan en \texttt{mes\_core}, y una fecha sin hora en \texttt{date\_to} incluye el día
+completo.
+
+La agregación se hace en SQL, con consultas parametrizadas, y depende del tipo de
+columna. Los conteos y las duraciones se suman. Las razones del OEE (disponibilidad,
+rendimiento y calidad) no se promedian: se suman sus componentes y se recalculan. Un paro
+cuenta completo en el intervalo donde empieza. Si la fuente es más gruesa que la
+granularidad pedida, como ocurre con el OEE, que tiene una fila por corrida, el servidor
+devuelve la más fina disponible. Los intervalos sin datos se omiten. Cada respuesta indica
+la granularidad que usó y el motivo, la resolución de la fuente, el número de filas y
+los intervalos omitidos, y se trunca a 1000 filas.
 
 \subsubsection{Alcance y seguridad}
 \label{alcanceseguridadhistorico}
