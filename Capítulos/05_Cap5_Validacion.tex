@@ -1,0 +1,63 @@
+\section{Capítulo 5: Validación del sistema integrado}
+\label{validacionsistema}
+
+Este capítulo responde al quinto objetivo específico: validar el funcionamiento del sistema integrado mediante métricas de desempeño. El Capítulo~\ref{implementacionintegracion} mostró que cada pieza funciona por separado y que el flujo de consulta integrado produce una respuesta. Falta establecer qué tan bien responde el sistema de forma sostenida y si cumple lo que el caso de estudio exigió. Para ello se hacen dos validaciones: una de desempeño, con las cuatro métricas definidas en la propuesta, y una de cumplimiento, contra los requerimientos del Capítulo~1.
+
+\subsection{Alcance y criterios de validación}
+\label{alcancevalidacion}
+
+La validación de desempeño mide el comportamiento del sistema sobre un conjunto de preguntas de referencia. Cada métrica evalúa un aspecto distinto: la precisión y la tasa de alucinaciones miden si la respuesta es correcta y está fundamentada en los datos del UNS, la latencia mide el tiempo que espera el usuario, y la calidad semántica mide si la respuesta es coherente y suficiente para el contexto industrial. La Sección~\ref{disenoevaluacion} define cada una.
+
+La validación de cumplimiento contrasta el sistema con los tres requerimientos y los ocho desafíos identificados en el Capítulo~1. Las métricas no reemplazan esa contrastación, la alimentan: cada pregunta del conjunto de referencia se asocia al desafío que pone a prueba, y el veredicto sobre el desafío se apoya en los resultados de esas preguntas. La Sección~\ref{cumplimientorequerimientos} presenta ese resultado.
+
+Dos desafíos quedan fuera de la medición porque no se implementaron: la adaptación del reporte al perfil del usuario (D2.3) y la selección automática de la granularidad (D3.2). El capítulo los declara como no cumplidos y los traslada al trabajo futuro.
+
+\subsection{Diseño de la evaluación}
+\label{disenoevaluacion}
+
+\subsubsection{Entorno de prueba}
+
+Las pruebas se ejecutaron en un entorno controlado que reproduce la estructura del caso de estudio. Los valores de los tags del Tag Provider y los registros de la base \texttt{mes\_core} se generaron mediante scripts, de modo que la jerarquía, las unidades y las reglas de negocio corresponden al caso real, pero los valores no provienen de una planta en operación. Esta condición tiene una ventaja y un límite. La ventaja es que la respuesta correcta de cada pregunta se conoce con exactitud, porque se puede calcular directamente sobre los datos cargados. El límite es que los resultados no describen el comportamiento del sistema frente al ruido, los huecos y las irregularidades de datos reales de planta. La validación en operación real queda como trabajo futuro.
+
+El sistema evaluado está compuesto por Claude Desktop como cliente, los servidores \texttt{uns-mcp} y \texttt{mes-history-mcp}, los endpoints del Web Dev Module en Ignition y la base PostgreSQL \texttt{mes\_core}, tal como se describió en el Capítulo~\ref{implementacionintegracion}. \textcolor{blue}{[Completar: versión del modelo, fecha de las pruebas y configuración del cliente.]}
+
+\subsubsection{Conjunto de preguntas de referencia}
+
+El conjunto de preguntas se diseñó a partir de los requerimientos del Capítulo~1. Cada pregunta tiene una respuesta de referencia calculada sobre los datos cargados y se etiqueta con la categoría y el desafío que pone a prueba. Las categorías son cinco:
+
+\begin{itemize}
+    \item \textbf{Tiempo real:} consultas sobre el estado actual de una línea o celda, que se resuelven con \texttt{uns-mcp}.
+    \item \textbf{Histórico:} consultas sobre producción, paros u órdenes en un periodo pasado, que se resuelven con \texttt{mes-history-mcp}.
+    \item \textbf{Combinadas:} consultas que exigen cruzar el estado actual con el histórico, como el flujo de la Sección~\ref{flujoconsultaintegrado}.
+    \item \textbf{Ambiguas:} consultas con una referencia incompleta, como \textit{la Línea A}, que el sistema debe resolver con el glosario o aclarar con el usuario.
+    \item \textbf{Fuera de alcance:} consultas que los datos disponibles no permiten responder, en las que la respuesta correcta es reconocer que no hay información.
+\end{itemize}
+
+\textcolor{blue}{[Completar: número total de preguntas, distribución por categoría y tabla resumen. El listado completo va en un anexo.]}
+
+\subsubsection{Métricas}
+
+La Tabla~\ref{tab:metricas_validacion} resume las cuatro métricas definidas en la propuesta, con la forma en que se calculó cada una en este trabajo.
+
+\begin{table}[H]
+\centering
+\caption{Métricas de desempeño para la validación del sistema integrado. Elaboración propia.}
+\label{tab:metricas_validacion}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{3cm}p{3cm}p{8cm}}
+\hline
+\textbf{Métrica} & \textbf{Tipo} & \textbf{Cálculo} \\
+\hline
+Precisión y F1 & Cuantitativa & Proporción de respuestas correctas frente a la respuesta de referencia de cada pregunta. \textcolor{blue}{[Definir qué cuenta como acierto y cómo se calcula el F1 en respuestas con varios datos.]} \\
+Latencia de respuesta & Cuantitativa & Tiempo desde el envío de la consulta hasta la respuesta completa, en milisegundos. Se reportan promedio, mediana y percentil 95. \\
+Calidad semántica & Cualitativa & Puntuación de coherencia, pertinencia y suficiencia según una rúbrica. \textcolor{blue}{[Incluir la rúbrica y su escala.]} \\
+Tasa de alucinaciones & Cuantitativa & Proporción de respuestas con información no respaldada por los datos del UNS, verificada contra los datos cargados. \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Procedimiento}
+
+Cada pregunta se ejecutó \textcolor{blue}{[n]} veces, en conversaciones independientes, para observar la variabilidad de las respuestas del modelo. La latencia se registró en cada ejecución. La precisión y las alucinaciones se determinaron contrastando la respuesta con la referencia calculada sobre los datos. La calidad semántica se puntuó con la rúbrica.
+
+La puntuación con la rúbrica estuvo a cargo del tutor técnico, que es también el autor de este trabajo y trabaja en DAUTOM, empresa del caso de estudio, por lo que conoce el proceso evaluado. Esta coincidencia es una limitación de la evaluación cualitativa, que se discute en la Sección~\ref{discusionvalidacion}. Para acotarla, las métricas de precisión, alucinaciones y latencia no dependen del juicio del evaluador, porque se calculan contra los datos o se miden con instrumentación. \textcolor{blue}{[Opcional: indicar la muestra puntuada por un segundo evaluador, si se hace.]}
