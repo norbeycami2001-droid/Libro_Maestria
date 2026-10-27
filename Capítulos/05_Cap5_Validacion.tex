@@ -1,14 +1,14 @@
 \section{Capítulo 5: Validación del sistema integrado}
 \label{validacionsistema}
 
-Este capítulo responde al quinto objetivo específico: validar el funcionamiento del sistema integrado mediante métricas de desempeño. El Capítulo~\ref{implementacionintegracion} mostró que cada pieza funciona por separado y que el flujo de consulta integrado produce una respuesta. Falta establecer qué tan bien responde el sistema de forma sostenida y si cumple lo que el caso de estudio exigió. Para ello se hacen dos validaciones: una de desempeño, con las cuatro métricas definidas en la propuesta, y una de cumplimiento, contra los requerimientos del Capítulo~1.
+Este capítulo responde al quinto objetivo específico: validar el funcionamiento del sistema integrado mediante métricas de desempeño. El Capítulo~\ref{implementacionintegracion} mostró que cada pieza funciona por separado y que el flujo de consulta integrado produce una respuesta. Falta establecer qué tan bien responde el sistema de forma sostenida y si cumple lo que el caso de estudio exigió. Para ello se hacen dos validaciones: una de desempeño, con las cuatro métricas definidas en la propuesta, y una de cumplimiento, contra los requerimientos de la Sección~\ref{requerimientosdesafios}.
 
 \subsection{Alcance y criterios de validación}
 \label{alcancevalidacion}
 
 La validación de desempeño mide el comportamiento del sistema sobre un conjunto de preguntas de referencia. Cada métrica evalúa un aspecto distinto: la precisión y la tasa de alucinaciones miden si la respuesta es correcta y está fundamentada en los datos del UNS, la latencia mide el tiempo que espera el usuario, y la calidad semántica mide si la respuesta es coherente y suficiente para el contexto industrial. La Sección~\ref{disenoevaluacion} define cada una.
 
-La validación de cumplimiento contrasta el sistema con los tres requerimientos y los ocho desafíos identificados en el Capítulo~1. Las métricas no reemplazan esa contrastación, la alimentan: cada pregunta del conjunto de referencia se asocia al desafío que pone a prueba, y el veredicto sobre el desafío se apoya en los resultados de esas preguntas. La Sección~\ref{cumplimientorequerimientos} presenta ese resultado.
+La validación de cumplimiento contrasta el sistema con los tres requerimientos y los ocho desafíos identificados en la Sección~\ref{requerimientosdesafios}. Las métricas no reemplazan esa contrastación, la alimentan: cada pregunta del conjunto de referencia se asocia al desafío que pone a prueba, y el veredicto sobre el desafío se apoya en los resultados de esas preguntas. La Sección~\ref{cumplimientorequerimientos} presenta ese resultado.
 
 Dos desafíos quedan fuera de la medición porque no se implementaron: la adaptación del reporte al perfil del usuario (D2.3) y la selección automática de la granularidad (D3.2). El capítulo los declara como no cumplidos y los traslada al trabajo futuro.
 
@@ -23,7 +23,7 @@ El sistema evaluado está compuesto por Claude Desktop como cliente, los servido
 
 \subsubsection{Conjunto de preguntas de referencia}
 
-El conjunto de preguntas se diseñó a partir de los requerimientos del Capítulo~1. Cada pregunta tiene una respuesta de referencia calculada sobre los datos cargados y se etiqueta con la categoría y el desafío que pone a prueba. Las categorías son cinco:
+El conjunto de preguntas se diseñó a partir de los requerimientos de la Sección~\ref{requerimientosdesafios}. Cada pregunta tiene una respuesta de referencia calculada sobre los datos cargados y se etiqueta con la categoría y el desafío que pone a prueba. Las categorías son cinco:
 
 \begin{itemize}
     \item \textbf{Tiempo real:} consultas sobre el estado actual de una línea o celda, que se resuelven con \texttt{uns-mcp}.
