@@ -17,7 +17,7 @@ La validación de cumplimiento verifica si el sistema satisface los tres requeri
 
 Las pruebas se ejecutaron en un entorno controlado que reproduce la estructura del caso de estudio. Los valores de los tags del Tag Provider y los registros de la base \texttt{mes\_core} se generaron con scripts. La jerarquía, las unidades, la nomenclatura y las reglas de negocio corresponden al caso real, y las corridas simuladas respetan las tasas estándar de producción de cada línea. Los valores, en cambio, no provienen de una planta en operación. Esto tiene una ventaja y un límite. La ventaja es que la respuesta correcta de cada pregunta se conoce con exactitud, porque se calcula directamente sobre los datos cargados. El límite es que los resultados no describen el comportamiento del sistema ante el ruido, los vacíos y las irregularidades de datos reales, que queda como trabajo futuro.
 
-El sistema evaluado está compuesto por Claude Desktop como cliente, los servidores \texttt{uns-mcp} y \texttt{mes-history-mcp}, los endpoints del Web Dev Module en Ignition y la base PostgreSQL \texttt{mes\_core}, tal como se describió en el Capítulo~\ref{implementacionintegracion}. Las preguntas que usan fechas relativas, como \textit{ayer} o \textit{la semana pasada}, se ejecutaron un mismo día de prueba, \textcolor{blue}{[fecha]}, para que sus respuestas de referencia sean estables. \textcolor{blue}{[Completar: modelo y configuración del cliente.]}
+El sistema evaluado está compuesto por Claude Desktop como cliente, los servidores \texttt{uns-mcp} y \texttt{mes-history-mcp}, los endpoints del Web Dev Module en Ignition y la base PostgreSQL \texttt{mes\_core}, tal como se describió en el Capítulo~\ref{implementacionintegracion}. Las preguntas históricas usan fechas fijas del periodo con registros completos, del 15 al 21 de septiembre de 2026, por lo que su respuesta de referencia no cambia. Las de tiempo real se ejecutaron el \textcolor{blue}{[fecha]}, con una corrida abierta en cada línea. \textcolor{blue}{[Completar: modelo y configuración del cliente.]}
 
 \subsubsection{Banco de preguntas}
 
@@ -38,14 +38,14 @@ Histórica & Producción, paros y órdenes de un periodo pasado, con la granular
 Combinada & Cruce del estado actual con el histórico, como el flujo de la Sección~\ref{flujoconsultaintegrado}. & Ambos & 4 \\
 Ambigua & Referencias incompletas, como \textit{la Línea A}, que el sistema debe resolver o aclarar. & Ambos & 3 \\
 Causal & Explicación de un cambio relacionando varias variables. & Ambos & 3 \\
-Fuera de alcance & Preguntas sin datos disponibles, donde lo correcto es reconocer que no hay información. & Ninguno & 3 \\
+Sin datos & Preguntas sobre días o periodos sin registros en \texttt{mes\_core}, donde lo correcto es reconocer que no hay información. & Ninguno & 3 \\
 \hline
 \textbf{Total} & & & \textbf{25} \\
 \hline
 \end{tabular}
 \end{table}
 
-La respuesta de referencia no se obtiene con las Tools del sistema, para evitar que la validación dependa de lo que se está validando. Las de tipo histórico se calculan con consultas SQL directas sobre \texttt{mes\_core}. Las de tiempo real se toman de una lectura de los tags de Ignition justo antes de formular la pregunta. En las categorías ambigua y fuera de alcance, la respuesta correcta es pedir una aclaración o reconocer que no hay datos.
+La respuesta de referencia no se obtiene con las Tools del sistema, para evitar que la validación dependa de lo que se está validando. Las de tipo histórico se calculan con consultas SQL directas sobre \texttt{mes\_core}. Las de tiempo real se toman de una lectura de los tags de Ignition antes y después de cada ejecución, y la respuesta es correcta si coincide con alguna de las dos lecturas o cae entre ellas. En las categorías ambigua y sin datos, la respuesta correcta es pedir una aclaración o reconocer que no hay datos.
 
 \subsubsection{Métricas}
 
@@ -64,7 +64,7 @@ La Tabla~\ref{tab:metricas_validacion} resume las cuatro métricas definidas en 
 Precisión y F1 & Cuantitativa & Cada pregunta tiene una lista de datos clave. Un dato es correcto si coincide con la referencia: exacto en conteos y estados, y con tolerancia de 0,5 puntos porcentuales en razones como el OEE. La precisión es la proporción de respuestas con todos sus datos clave correctos. El F1 se calcula sobre los datos individuales, con precisión igual a datos correctos sobre datos afirmados y exhaustividad igual a datos correctos sobre datos esperados. \\
 Latencia de respuesta & Cuantitativa & Tiempo desde el envío de la pregunta en Claude Desktop hasta que la respuesta está completa, en segundos. Se reporta aparte el tiempo que tardan los servidores MCP, que registran sus propios logs. Se informan promedio, mediana y percentil 95. \\
 Calidad semántica & Cualitativa & Puntuación de 1 a 5 en coherencia, pertinencia y suficiencia, según la rúbrica de la Tabla~\ref{tab:rubrica}. La puntuación de una respuesta es el promedio de los tres criterios. \\
-Tasa de alucinaciones & Cuantitativa & Proporción de respuestas con al menos una afirmación (cifra, nombre, estado o causa) que no aparece en las salidas de las Tools ni en los datos cargados. En las preguntas fuera de alcance, dar una respuesta inventada cuenta como alucinación. \\
+Tasa de alucinaciones & Cuantitativa & Proporción de respuestas con al menos una afirmación (cifra, nombre, estado o causa) que no aparece en las salidas de las Tools ni en los datos cargados. En las preguntas sin datos, dar una respuesta inventada cuenta como alucinación. \\
 \hline
 \end{tabular}
 \end{table}
@@ -86,7 +86,7 @@ Suficiencia & Faltan datos esenciales. & Da los datos principales sin unidades o
 \end{tabular}
 \end{table}
 
-En las preguntas ambiguas y fuera de alcance, pedir una aclaración o reconocer que no hay datos se califica como pertinente y suficiente.
+En las preguntas ambiguas y sin datos, pedir una aclaración o reconocer que no hay datos se califica como pertinente y suficiente.
 
 \subsubsection{Procedimiento}
 
@@ -118,7 +118,7 @@ Histórica & 24 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blu
 Combinada & 12 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 Ambigua & 9 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 Causal & 9 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Fuera de alcance & 9 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
+Sin datos & 9 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 \hline
 \textbf{Total} & \textbf{75} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 \hline
@@ -144,7 +144,7 @@ Histórica & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ 
 Combinada & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 Ambigua & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 Causal & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Fuera de alcance & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
+Sin datos & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 \hline
 \textbf{Total} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 \hline
@@ -170,7 +170,7 @@ Histórica & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ 
 Combinada & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 Ambigua & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 Causal & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Fuera de alcance & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
+Sin datos & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 \hline
 \textbf{Total} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
 \hline

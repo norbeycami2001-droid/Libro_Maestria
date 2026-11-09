@@ -3,12 +3,99 @@
 \addcontentsline{toc}{section}{Anexo B: Banco de preguntas de la validación}
 \label{anexo:banco_preguntas}
 
-Este anexo reproduce el banco de 25 preguntas de la Sección~\ref{disenoevaluacion}. Para cada una se indica su categoría, el desafío que pone a prueba, la Tool que debería usar el modelo, la respuesta de referencia con la forma en que se calculó, y la respuesta del sistema en cada una de las tres ejecuciones con su veredicto, su latencia y su puntuación de calidad semántica. Las fechas relativas se calcularon respecto al día de prueba \textcolor{blue}{[fecha]}.
+Este anexo reproduce el banco de 25 preguntas de la Sección~\ref{disenoevaluacion}. Para cada una se indica su categoría, el desafío que pone a prueba, la Tool que debería usar el modelo, la respuesta de referencia con la forma en que se calculó, y la respuesta del sistema en cada una de las tres ejecuciones con su veredicto, su latencia y su puntuación de calidad semántica.
 
-% ------------------------------------------------------------------
-% Ejemplo de uso (se reemplaza por las 25 preguntas cuando estén ejecutadas).
-% ------------------------------------------------------------------
-\fichapregunta{1}{Tiempo real}{\textcolor{blue}{[texto de la pregunta]}}{\textcolor{blue}{[D1.3]}}{\texttt{get\_equipment\_status}}{\textcolor{blue}{[respuesta de referencia]}}{\textcolor{blue}{[lectura de tags de Ignition antes de la pregunta]}}
-\ejecucion{1}{\textcolor{blue}{[respuesta]}}{\textcolor{blue}{[correcta/incorrecta]}}{\textcolor{blue}{[ ]}}{\textcolor{blue}{[ / / ]}}
-\ejecucion{2}{\textcolor{blue}{[respuesta]}}{\textcolor{blue}{[correcta/incorrecta]}}{\textcolor{blue}{[ ]}}{\textcolor{blue}{[ / / ]}}
-\ejecucion{3}{\textcolor{blue}{[respuesta]}}{\textcolor{blue}{[correcta/incorrecta]}}{\textcolor{blue}{[ ]}}{\textcolor{blue}{[ / / ]}}
+Las preguntas se ejecutaron en dos fases. Las de la primera (históricas, ambiguas, causales y sin datos) usan fechas fijas dentro del periodo con registros completos en \texttt{mes\_core}, del 15 al 21 de septiembre de 2026, por lo que su respuesta de referencia no cambia con el tiempo. Las de la segunda (tiempo real y combinadas) se ejecutaron el \textcolor{blue}{[fecha]} con una corrida abierta en cada una de las cuatro líneas, y su referencia se tomó con una lectura de los tags antes y después de cada ejecución.
+
+\newcommand{\ejecucionesvacias}{%
+  \ejecucion{1}{\textcolor{blue}{[respuesta]}}{\textcolor{blue}{[correcta/incorrecta]}}{\textcolor{blue}{[ ]}}{\textcolor{blue}{[ / / ]}}
+  \ejecucion{2}{\textcolor{blue}{[respuesta]}}{\textcolor{blue}{[correcta/incorrecta]}}{\textcolor{blue}{[ ]}}{\textcolor{blue}{[ / / ]}}
+  \ejecucion{3}{\textcolor{blue}{[respuesta]}}{\textcolor{blue}{[correcta/incorrecta]}}{\textcolor{blue}{[ ]}}{\textcolor{blue}{[ / / ]}}
+}
+
+\subsection*{Preguntas históricas}
+
+\fichapregunta{1}{Histórica}{¿Cuál fue el OEE de la Línea A de Empaque Maíz el 18 de septiembre de 2026?}{D3.2}{\texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Componentes sumados de las corridas que empiezan el 18/09 en \texttt{run}. El OEE es disponibilidad por rendimiento por calidad.}
+\ejecucionesvacias
+
+\fichapregunta{2}{Histórica}{¿Cuántas unidades buenas y cuánto desperdicio produjo la Línea B de Empaque Trigo del 15 al 21 de septiembre de 2026?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma de \texttt{goodcount} y \texttt{wastecount} de las corridas de la línea entre el 15 y el 21/09 en \texttt{run}.}
+\ejecucionesvacias
+
+\fichapregunta{3}{Histórica}{¿Cuántos paros no programados tuvo la Línea A de Empaque Maíz el 19 de septiembre de 2026 y cuál fue el más largo?}{D1.1}{\texttt{get\_downtime\_events}}{\textcolor{blue}{[respuesta de referencia]}}{Eventos de \texttt{statehistory} con motivo de paro no programado el 19/09. Número de eventos y mayor duración.}
+\ejecucionesvacias
+
+\fichapregunta{4}{Histórica}{¿Cuánto produjo cada hora la Empacadora 2 de la Línea A de Empaque Maíz el 17 de septiembre de 2026 entre las 8:00 y las 12:00?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma por hora de \texttt{counthistory} (conteo total) de la celda entre las 08:00 y las 12:00 del 17/09.}
+\ejecucionesvacias
+
+\fichapregunta{5}{Histórica}{¿Cuántas unidades buenas produjo cada turno el 20 de septiembre de 2026 en la Línea B de Empaque Maíz?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma de unidades buenas de \texttt{counthistory} por turno (A, B y C) el 20/09.}
+\ejecucionesvacias
+
+\fichapregunta{6}{Histórica}{¿Qué órdenes de trabajo se ejecutaron en la Línea B de Empaque Trigo entre el 15 y el 21 de septiembre de 2026?}{D1.3}{\texttt{get\_production\_orders}}{\textcolor{blue}{[respuesta de referencia]}}{Órdenes de \texttt{workorder} con corridas de la línea entre el 15 y el 21/09, con su código y su producto.}
+\ejecucionesvacias
+
+\fichapregunta{7}{Histórica}{¿Cuánto produjo la Línea A de Empaque Maíz minuto a minuto entre las 10:00 y las 11:00 del 16 de septiembre de 2026?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma por minuto de \texttt{counthistory} (conteo total) entre las 10:00 y las 11:00 del 16/09.}
+\ejecucionesvacias
+
+\fichapregunta{8}{Histórica}{¿Qué línea de Empaque Maíz tuvo mejor OEE entre el 15 y el 21 de septiembre de 2026?}{D2.1}{\texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{OEE de cada línea de Empaque Maíz con los componentes sumados de sus corridas del periodo.}
+\ejecucionesvacias
+
+\subsection*{Preguntas ambiguas}
+
+\fichapregunta{9}{Ambigua}{¿Cuánto produjo la Línea A el 18 de septiembre de 2026?}{D1.3}{aclarar o ambas áreas}{\textcolor{blue}{[respuesta de referencia]}}{Existe una Línea A en cada área. Lo correcto es pedir la aclaración o responder para ambas.}
+\ejecucionesvacias
+
+\fichapregunta{10}{Ambigua}{¿Cuántas unidades produjo la empacadora el 18 de septiembre de 2026?}{D1.3}{aclarar}{\textcolor{blue}{[respuesta de referencia]}}{No se indica área, línea ni celda y hay seis empacadoras. Lo correcto es pedir la aclaración o responder para todas.}
+\ejecucionesvacias
+
+\fichapregunta{11}{Ambigua}{Dame el OEE de la línea de maíz el 18 de septiembre de 2026.}{D1.3}{ambas líneas de Maíz}{\textcolor{blue}{[respuesta de referencia]}}{Hay dos líneas en Empaque Maíz. Lo correcto es responder con el OEE de ambas el 18/09.}
+\ejecucionesvacias
+
+\subsection*{Preguntas causales}
+
+\fichapregunta{12}{Causal}{¿Por qué bajó el OEE de la Línea A de Empaque Maíz el 17 de septiembre de 2026 frente al 16?}{D1.2}{\texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Descomposición del OEE del 16 y del 17/09 en disponibilidad, rendimiento y calidad, con los componentes de \texttt{run}.}
+\ejecucionesvacias
+
+\fichapregunta{13}{Causal}{¿Qué día entre el 15 y el 21 de septiembre de 2026 tuvo más desperdicio la Línea A de Empaque Maíz y por qué?}{D1.2}{\texttt{get\_count\_history} y \texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Desperdicio diario de la línea entre el 15 y el 21/09 (\texttt{wastecount} de \texttt{run}), día con mayor valor y su calidad.}
+\ejecucionesvacias
+
+\fichapregunta{14}{Causal}{¿Qué paro afectó más la disponibilidad de la Línea B de Empaque Trigo el 17 de septiembre de 2026?}{D1.2}{\texttt{get\_downtime\_events}}{\textcolor{blue}{[respuesta de referencia]}}{Paros del 17/09 en \texttt{statehistory}, agrupados por motivo (\texttt{statereason}) y ordenados por duración.}
+\ejecucionesvacias
+
+\subsection*{Preguntas sin datos}
+
+\fichapregunta{15}{Sin datos}{¿Cuál fue el OEE de la Línea A de Empaque Maíz el 10 de septiembre de 2026?}{Detección de alucinaciones}{ninguna (no hay datos)}{\textcolor{blue}{[respuesta de referencia]}}{No hay corridas ni conteos registrados ese día. Lo correcto es reconocer que no hay datos.}
+\ejecucionesvacias
+
+\fichapregunta{16}{Sin datos}{¿Cuántas unidades produjo la Línea B de Empaque Maíz el 22 de septiembre de 2026?}{Detección de alucinaciones}{ninguna (no hay datos)}{\textcolor{blue}{[respuesta de referencia]}}{No hay corridas ni conteos registrados ese día en esa línea. Lo correcto es reconocer que no hay datos.}
+\ejecucionesvacias
+
+\fichapregunta{17}{Sin datos}{¿Cuántos paros tuvo la Línea B de Empaque Trigo en octubre de 2026?}{Detección de alucinaciones}{ninguna (no hay datos)}{\textcolor{blue}{[respuesta de referencia]}}{No hay datos de esa línea en octubre de 2026. Lo correcto es reconocer que no hay datos.}
+\ejecucionesvacias
+
+\subsection*{Preguntas de tiempo real}
+
+\fichapregunta{18}{Tiempo real}{¿Cuál es el estado actual de la Línea A de Empaque Maíz?}{D1.3}{\texttt{get\_equipment\_status}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura del Tag Provider antes y después de cada ejecución. La respuesta es correcta si coincide con alguna de las dos lecturas.}
+\ejecucionesvacias
+
+\fichapregunta{19}{Tiempo real}{¿Cuántas unidades lleva la Empacadora 1 de la Línea B de Empaque Trigo en la corrida actual?}{D1.3}{\texttt{get\_equipment\_status} o \texttt{get\_context}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura del conteo de la corrida antes y después de cada ejecución. La respuesta es correcta si cae entre las dos lecturas.}
+\ejecucionesvacias
+
+\fichapregunta{20}{Tiempo real}{¿Qué producto se empaca ahora en la Línea A de Empaque Trigo y cuál es su OEE actual?}{D1.1}{\texttt{get\_context}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura de la orden en curso y del OEE antes y después de cada ejecución. El producto debe coincidir y el OEE caer entre las dos lecturas.}
+\ejecucionesvacias
+
+\fichapregunta{21}{Tiempo real}{¿En qué unidad se mide el conteo de la Enfardadora?}{D1.1}{\texttt{get\_tags}}{\textcolor{blue}{[respuesta de referencia]}}{Unidad de ingeniería definida en los metadatos del tag de conteo de la Enfardadora.}
+\ejecucionesvacias
+
+\subsection*{Preguntas combinadas}
+
+\fichapregunta{22}{Combinada}{¿Cómo está el OEE actual de la Línea A de Empaque Maíz frente a su OEE del 15 al 21 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{get\_context} y \texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura en vivo del OEE y suma de los componentes de \texttt{run} del periodo, antes y después de cada ejecución.}
+\ejecucionesvacias
+
+\fichapregunta{23}{Combinada}{¿Cuántas unidades lleva la Línea A de Empaque Maíz en la corrida actual y cuántas produjo en total el 18 de septiembre de 2026?}{D2.2}{\texttt{get\_context} y \texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura en vivo del conteo de la corrida y suma de \texttt{run} del 18/09.}
+\ejecucionesvacias
+
+\fichapregunta{24}{Combinada}{¿Cuál es el OEE actual de la Línea B de Empaque Trigo y cómo se compara con el del 18 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{get\_context} y \texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura en vivo del OEE y OEE del 18/09 calculado desde \texttt{run}.}
+\ejecucionesvacias
+
+\fichapregunta{25}{Combinada}{¿Qué orden corre ahora en la Línea B de Empaque Maíz y cuántas órdenes tuvo esa línea del 15 al 21 de septiembre de 2026?}{D2.2}{\texttt{get\_context} y \texttt{get\_production\_orders}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura en vivo de la orden en curso y órdenes de \texttt{workorder} de la línea entre el 15 y el 21/09.}
+\ejecucionesvacias
