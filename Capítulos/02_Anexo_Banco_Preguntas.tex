@@ -24,7 +24,7 @@ Las preguntas se ejecutaron en dos fases. Las de la primera (históricas, ambigu
 \fichapregunta{3}{Histórica}{¿Cuántos paros no programados tuvo la Línea A de Empaque Maíz el 19 de septiembre de 2026 y cuál fue el más largo?}{D1.1}{\texttt{get\_downtime\_events}}{\textcolor{blue}{[respuesta de referencia]}}{Eventos de \texttt{statehistory} con motivo de paro no programado el 19/09. Número de eventos y mayor duración.}
 \ejecucionesvacias
 
-\fichapregunta{4}{Histórica}{¿Cuánto produjo cada hora la Empacadora 2 de la Línea A de Empaque Maíz el 17 de septiembre de 2026 entre las 8:00 y las 12:00?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma por hora de \texttt{counthistory} (conteo total) de la celda entre las 08:00 y las 12:00 del 17/09.}
+\fichapregunta{4}{Histórica}{¿Cuánto produjo cada hora la Línea A de Empaque Maíz el 17 de septiembre de 2026 entre las 14:00 y las 18:00?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma por hora de \texttt{counthistory} (conteo total de la línea) entre las 14:00 y las 18:00 del 17/09.}
 \ejecucionesvacias
 
 \fichapregunta{5}{Histórica}{¿Cuántas unidades buenas produjo cada turno el 20 de septiembre de 2026 en la Línea B de Empaque Maíz?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma de unidades buenas de \texttt{counthistory} por turno (A, B y C) el 20/09.}
@@ -33,7 +33,7 @@ Las preguntas se ejecutaron en dos fases. Las de la primera (históricas, ambigu
 \fichapregunta{6}{Histórica}{¿Qué órdenes de trabajo se ejecutaron en la Línea B de Empaque Trigo entre el 15 y el 21 de septiembre de 2026?}{D1.3}{\texttt{get\_production\_orders}}{\textcolor{blue}{[respuesta de referencia]}}{Órdenes de \texttt{workorder} con corridas de la línea entre el 15 y el 21/09, con su código y su producto.}
 \ejecucionesvacias
 
-\fichapregunta{7}{Histórica}{¿Cuánto produjo la Línea A de Empaque Maíz minuto a minuto entre las 10:00 y las 11:00 del 16 de septiembre de 2026?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma por minuto de \texttt{counthistory} (conteo total) entre las 10:00 y las 11:00 del 16/09.}
+\fichapregunta{7}{Histórica}{¿Cuánto produjo cada día la Línea A de Empaque Maíz del 15 al 21 de septiembre de 2026?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma diaria de \texttt{counthistory} (conteo total de la línea) del 15 al 21/09.}
 \ejecucionesvacias
 
 \fichapregunta{8}{Histórica}{¿Qué línea de Empaque Maíz tuvo mejor OEE entre el 15 y el 21 de septiembre de 2026?}{D2.1}{\texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{OEE de cada línea de Empaque Maíz con los componentes sumados de sus corridas del periodo.}
