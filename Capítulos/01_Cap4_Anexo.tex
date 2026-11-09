@@ -3,10 +3,55 @@
 \addcontentsline{toc}{section}{Anexo A: Conversación completa del flujo de consulta integrado}
 \label{anexo:conversacion_flujo}
 
-Este anexo reproduce la conversación de la Sección~\ref{flujoconsultaintegrado}, ejecutada en
-Claude Desktop con los servidores \texttt{uns-mcp} y \texttt{mes-history-mcp} conectados. Se
-incluye completa, tal como la exportó el cliente, con la pregunta del usuario y la respuesta del LLM.
+Este anexo reproduce la conversación de la Sección~\ref{flujoconsultaintegrado}, ejecutada en Claude Desktop con los servidores \texttt{uns-mcp} y \texttt{mes-history-mcp} conectados. Se incluye completa, con la pregunta del usuario y la respuesta del LLM tal como la entregó el cliente. La exportación original en PDF se conserva en el repositorio del libro como \texttt{conversacion\_flujo.pdf}.
 
-% Requiere \usepackage{pdfpages} en el preámbulo.
-% Ajustar la ruta si el PDF quedó en otra carpeta de Overleaf.
-\includepdf[pages=-, scale=0.9, frame, pagecommand={\thispagestyle{plain}}]{conversacion_flujo.pdf}
+\fichaconsulta{Combinada (tiempo real e histórica)}{¿Cómo va la Línea A de Empaque Trigo ahora mismo, y cómo se compara su OEE con el de la última semana?}{D2.1 y D2.2, requerimiento R3}{\texttt{get\_context} (\texttt{uns-mcp}, contexto \texttt{mes}) y \texttt{get\_oee\_history} (\texttt{mes-history-mcp})}{Claude Desktop, 24 de septiembre de 2026, 16:57}
+
+\noindent\textbf{Respuesta del sistema}\par\smallskip
+
+\begin{quote}
+\small
+
+\textbf{Línea A de Empaque Trigo en este momento (16:57)}
+
+La línea está en marcha (\texttt{State} = 2) y las tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) reportan \texttt{Running}. Está ejecutando la orden WO91 (corrida 354), producto Trigo, Libra, 24 bolsas por fardo, que arrancó a las 16:31:42.
+
+En los 26 minutos de corrida (\texttt{RunTime} = 1565 s) lleva 129 fardos buenos, sin desperdicio y sin paros. Con la velocidad estándar de 5 fardos por minuto, la meta a esta hora es 130,4 fardos. Eso da:
+
+\medskip
+\begin{tabular}{@{}lc@{}}
+\hline
+\textbf{Indicador} & \textbf{Ahora (corrida 354)} \\
+\hline
+Disponibilidad & 100 \% \\
+Rendimiento & 98,9 \% (129 / 130,4) \\
+Calidad & 100 \% \\
+OEE & 98,9 \% \\
+\hline
+\end{tabular}
+\medskip
+
+Hice el cálculo a mano a partir de \texttt{GoodCount}, \texttt{RunTime} y \texttt{StandardRate}, y coincide con los tags \texttt{OEE} y \texttt{Performance}, que esta vez sí se están actualizando en tiempo real (\textit{timestamp} 16:57:48), no quedaron congelados al inicio. De la orden faltan 871 fardos. Al ritmo actual (unos 297 fardos por hora) terminaría hacia las 19:53, dos minutos después del fin programado (19:51).
+
+\textbf{Comparación con la última semana (17 a 24 de septiembre)}
+
+Hubo 18 corridas cerradas. Las 15 corridas de turno regular (310 a 324) dan una referencia limpia. Las otras tres son atípicas. La 346 duró 17,5 h con un rendimiento de apenas 27 \% (OEE 26,5 \%), y la 349 y la 353 duraron menos de 3 minutos cada una, así que parecen pruebas.
+
+\medskip
+\begin{tabular}{@{}lcccc@{}}
+\hline
+ & \textbf{OEE} & \textbf{Disp.} & \textbf{Rend.} & \textbf{Calidad} \\
+\hline
+Promedio semana (15 turnos regulares) & 80,6 \% & 95,8 \% & 85,8 \% & 98,2 \% \\
+Rango semanal & 71,1 \% a 91,4 \% & & & \\
+Ahora & 98,9 \% & 100 \% & 98,9 \% & 100 \% \\
+\hline
+\end{tabular}
+\medskip
+
+La corrida actual va unos 18 puntos por encima del promedio semanal y supera la mejor corrida de la semana (322, 91,4 \%). La diferencia viene sobre todo del rendimiento. La semana rondó el 86 \% y ahora está casi en el estándar.
+
+Hay que tomar esta comparación con cautela. La corrida lleva solo 26 minutos, y las de la semana duraron entre 2,5 y 4 horas, tiempo en el que se acumulan paros (la disponibilidad bajó a 89 a 93 \% en seis de ellas) y desperdicio (entre 1 \% y 3 \%). Una cifra al inicio de la corrida suele ser optimista. Si incluyo la corrida 346, el promedio semanal cae a 78,2 \%, y ponderado por duración a 67,1 \%.
+
+Dos detalles menores de los datos. El valor de OEE que guarda la base del MES para la corrida 354 (98,47 \%) va un poco rezagado frente al tag en vivo (98,91 \%), algo normal porque el histórico se actualiza con menos frecuencia. Además, \texttt{Line/Cycle Time} marca 10 s, pero con 5 fardos por minuto el ciclo estándar sería de 12 s. Conviene revisar qué representa ese tag antes de usarlo en algún cálculo.
+\end{quote}

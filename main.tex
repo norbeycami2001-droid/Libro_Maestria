@@ -20,6 +20,37 @@
 \usepackage{forest}
 \usepackage{hyperref}
 \usepackage{float}
+
+% Fichas de los anexos A y B.
+\newcommand{\fichaconsulta}[5]{%
+  \par\medskip\noindent
+  \begin{tabular}{@{}p{2.2cm}p{11.6cm}@{}}
+    \hline
+    \textbf{Consulta} & #2 \\
+    \textbf{Categoría} & #1 \\
+    \textbf{Desafío} & #3 \\
+    \textbf{Tools} & #4 \\
+    \textbf{Ejecución} & #5 \\
+    \hline
+  \end{tabular}\par\bigskip
+}
+\newcommand{\fichapregunta}[7]{%
+  \par\medskip\noindent
+  \begin{tabular}{@{}p{2.2cm}p{11.6cm}@{}}
+    \hline
+    \textbf{Pregunta #1} & #3 \\
+    \textbf{Categoría} & #2 \\
+    \textbf{Desafío} & #4 \\
+    \textbf{Tool esperada} & #5 \\
+    \textbf{Referencia} & #6 \\
+    \textbf{Cálculo} & #7 \\
+    \hline
+  \end{tabular}\par\smallskip
+}
+\newcommand{\ejecucion}[5]{%
+  \noindent\textbf{Ejecución #1.} #2\par
+  \noindent\small Veredicto: #3. Latencia: #4~s. Calidad (coherencia/pertinencia/suficiencia): #5.\normalsize\par\smallskip
+}
 \usepackage[normalem]{ulem}
 \usepackage[spanish]{babel}
 \addto\captionsspanish{\renewcommand{\tablename}{Tabla}}

@@ -5,31 +5,6 @@
 
 Este anexo reproduce el banco de 25 preguntas de la Sección~\ref{disenoevaluacion}. Para cada una se indica su categoría, el desafío que pone a prueba, la Tool que debería usar el modelo, la respuesta de referencia con la forma en que se calculó, y la respuesta del sistema en cada una de las tres ejecuciones con su veredicto, su latencia y su puntuación de calidad semántica. Las fechas relativas se calcularon respecto al día de prueba \textcolor{blue}{[fecha]}.
 
-% Ficha de una pregunta.
-% #1 número, #2 categoría, #3 texto de la pregunta, #4 desafío, #5 Tool esperada,
-% #6 respuesta de referencia, #7 cómo se calculó la referencia.
-\newcommand{\fichapregunta}[7]{%
-  \par\medskip\noindent
-  \begin{tabular}{@{}p{2.2cm}p{11.6cm}@{}}
-    \hline
-    \textbf{Pregunta #1} & #3 \\
-    \textbf{Categoría} & #2 \\
-    \textbf{Desafío} & #4 \\
-    \textbf{Tool esperada} & #5 \\
-    \textbf{Referencia} & #6 \\
-    \textbf{Cálculo} & #7 \\
-    \hline
-  \end{tabular}\par\smallskip
-}
-
-% Resultado de una ejecución.
-% #1 número de ejecución, #2 respuesta del sistema, #3 veredicto, #4 latencia (s),
-% #5 coherencia/pertinencia/suficiencia.
-\newcommand{\ejecucion}[5]{%
-  \noindent\textbf{Ejecución #1.} #2\par
-  \noindent\small Veredicto: #3. Latencia: #4~s. Calidad (coherencia/pertinencia/suficiencia): #5.\normalsize\par\smallskip
-}
-
 % ------------------------------------------------------------------
 % Ejemplo de uso (se reemplaza por las 25 preguntas cuando estén ejecutadas).
 % ------------------------------------------------------------------
