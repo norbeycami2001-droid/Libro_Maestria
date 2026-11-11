@@ -2234,7 +2234,7 @@ Si quieres, puedo revisar los paros de hoy o la producción por empacadora para 
 
 \fichapregunta{25}{Combinada}{¿Qué orden corre ahora en la Línea B de Empaque Maíz y cuántas órdenes tuvo esa línea del 15 al 21 de septiembre de 2026?}{D2.2}{\texttt{uns-mcp y mes-history-mcp}}{En la Línea B de Empaque Maíz corre la orden WO93 (producto 100201, Maíz, Kilo). Del 15 al 21 de septiembre de 2026 esa línea tuvo 21 órdenes (3 de ellas iniciadas el 21).}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{17,38}{1,55}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,03~s \;\textbullet\; \texttt{get\_production\_orders} 0,90~s \;\textbullet\; \texttt{get\_production\_orders} 0,60~s}{{\footnotesize\textbf{Lectura de referencia (12:37:25 y 12:37:55).} orden WO93, producto 100201.}\par\smallskip \textbf{Orden actual:} la Línea B de Empaque Maíz está corriendo la \textbf{WO93} (corrida 356), que arrancó hoy a las 11:46. La meta es de 2.000 unidades y a las 12:37 llevaba 115 producidas (111 buenas, 4 defectuosas), con un OEE de 54,2 \%. Lo que más lo baja es el rendimiento: 62,8 \%, a 130 u/h contra un estándar de 4 u/min (240 u/h).
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{17,38}{1,55}{5/4/5}{\texttt{get\_context} 0,03~s \;\textbullet\; \texttt{get\_production\_orders} 0,90~s \;\textbullet\; \texttt{get\_production\_orders} 0,60~s}{{\footnotesize\textbf{Lectura de referencia (12:37:25 y 12:37:55).} orden WO93, producto 100201.}\par\smallskip \textbf{Orden actual:} la Línea B de Empaque Maíz está corriendo la \textbf{WO93} (corrida 356), que arrancó hoy a las 11:46. La meta es de 2.000 unidades y a las 12:37 llevaba 115 producidas (111 buenas, 4 defectuosas), con un OEE de 54,2 \%. Lo que más lo baja es el rendimiento: 62,8 \%, a 130 u/h contra un estándar de 4 u/min (240 u/h).
 
 
 
@@ -2265,7 +2265,7 @@ De esas 21 órdenes, 14 fueron de Maíz Libra (100200) y 7 de Maíz Kilo (100201
 
 Para traer las órdenes del 21 tuve que hacer una segunda consulta hasta las 23:59 de ese día. La primera, con fecha final "2026-09-21", solo devolvió 18 órdenes porque el sistema toma esa fecha como la medianoche del 21. Conviene tenerlo en cuenta si se hacen consultas por rango directamente en el MES.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{16,46}{0,57}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_production\_orders} 0,54~s}{{\footnotesize\textbf{Lectura de referencia (12:44:50 y 12:45:19).} orden WO93, producto 100201.}\par\smallskip \textbf{Orden actual:} la Línea B de Empaque Maíz está corriendo la \textbf{WO93} (corrida 356). Arrancó hoy a las 11:46 a. m. con una meta de 2.000 unidades. A las 12:45 p. m. llevaba 138 unidades: 133 buenas y 5 defectuosas.
+\ejecucion{2}{Incorrecta\normalfont{} \;\textbar\; Alucinación: No}{16,46}{0,57}{5/4/5}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_production\_orders} 0,54~s}{{\footnotesize\textbf{Lectura de referencia (12:44:50 y 12:45:19).} orden WO93, producto 100201.}\par\smallskip \textbf{Orden actual:} la Línea B de Empaque Maíz está corriendo la \textbf{WO93} (corrida 356). Arrancó hoy a las 11:46 a. m. con una meta de 2.000 unidades. A las 12:45 p. m. llevaba 138 unidades: 133 buenas y 5 defectuosas.
 
 
 
@@ -2283,7 +2283,7 @@ El OEE de la corrida va en \textbf{56,8 \%}. Lo que más lo baja es el rendimien
 \item La última orden fue la WO71. Empezó la noche del 20 y terminó el 21 a las 00:57. El historial no muestra órdenes que hayan iniciado durante el día 21.
 \end{itemize}}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{17,57}{1,07}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_production\_orders} 0,60~s \;\textbullet\; \texttt{get\_production\_orders} 0,43~s}{{\footnotesize\textbf{Lectura de referencia (12:47:21 y 12:47:52).} orden WO93, producto 100201.}\par\smallskip \textbf{Orden actual en la Línea B:} se está corriendo la \textbf{WO93} (corrida \#356), que arrancó hoy a las 11:46 a. m. En la última lectura (12:47 p. m.) llevaba 145 unidades: 138 buenas y 7 defectuosas, de una cantidad de 2.000. Va algo por debajo de lo esperado, porque a esa hora la meta acumulada era de 223 unidades. El OEE está en 56,4 \%, y el rendimiento (65 \%) es lo que más lo baja.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{17,57}{1,07}{5/4/5}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_production\_orders} 0,60~s \;\textbullet\; \texttt{get\_production\_orders} 0,43~s}{{\footnotesize\textbf{Lectura de referencia (12:47:21 y 12:47:52).} orden WO93, producto 100201.}\par\smallskip \textbf{Orden actual en la Línea B:} se está corriendo la \textbf{WO93} (corrida \#356), que arrancó hoy a las 11:46 a. m. En la última lectura (12:47 p. m.) llevaba 145 unidades: 138 buenas y 7 defectuosas, de una cantidad de 2.000. Va algo por debajo de lo esperado, porque a esa hora la meta acumulada era de 223 unidades. El OEE está en 56,4 \%, y el rendimiento (65 \%) es lo que más lo baja.
 
 
 
@@ -2296,4 +2296,6 @@ Una advertencia: si se consulta el histórico con la fecha final "2026-09-21" si
 
 
 ¿Quieres que te arme la tabla de esas 21 órdenes con las cantidades planeadas frente a las reales?}
+
+\notaeval{Las tres identifican la orden WO93. La línea tuvo 21 órdenes del 15 al 21 de septiembre; E1 y E3 llegan a 21 con una segunda consulta que incluye el día completo, y E3 explica por qué la primera devuelve solo 18. E2 responde 18 porque la herramienta get\_production\_orders trata la fecha final «2026-09-21» como la medianoche del día 21 y deja por fuera las tres órdenes iniciadas ese día; es el mismo defecto de la pregunta 6 y no una cifra inventada. La pertinencia es 4 en las tres porque agregan datos de la corrida actual o de las órdenes que no se pedían.}
 \end{singlespace}
