@@ -125,9 +125,11 @@ El rendimiento es lo que más bajó el OEE. La línea produjo cerca del 80 \% de
 
 ¿Quieres que revise la producción hora a hora o por corrida para ver dónde se perdió rendimiento?}
 
+\notaeval{En la ejecución 1 la pertinencia es 4: agrega una salvedad sobre la asignación de corridas al día que no se pedía.}
+
 \fichapregunta{2}{Histórica}{¿Cuántas unidades buenas y cuánto desperdicio produjo la Línea B de Empaque Trigo del 15 al 21 de septiembre de 2026?}{D3.2}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, 15 al 21 de septiembre de 2026: 117.698 buenas, 2.494 desperdicio, 120.192 total.}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{13,01}{1,2}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,19~s}{Del 15 al 21 de septiembre de 2026, la \textbf{Línea B de Empaque Trigo} produjo \textbf{117.698 unidades buenas} y \textbf{2.494 unidades de desperdicio}, de un total de 120.192 unidades producidas. El desperdicio fue el \textbf{2,08 \%} del total.
+\ejecucion{1}{Correcta \;\textbullet\; Alucinación: No}{13,01}{1,2}{5/4/5}{\texttt{get\_count\_history} 1,19~s}{Del 15 al 21 de septiembre de 2026, la \textbf{Línea B de Empaque Trigo} produjo \textbf{117.698 unidades buenas} y \textbf{2.494 unidades de desperdicio}, de un total de 120.192 unidades producidas. El desperdicio fue el \textbf{2,08 \%} del total.
 
 
 
@@ -159,7 +161,7 @@ El viernes 18 tuvo la mayor producción. El lunes 21 tuvo el mayor desperdicio, 
 
 Si quiere, puedo revisar los paros o el OEE del lunes 21 para buscar la causa del aumento de desperdicio.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{11,64}{1,23}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,22~s}{Entre el 15 y el 21 de septiembre de 2026, la Línea B de Empaque Trigo produjo \textbf{117.698 unidades buenas} y \textbf{2.494 unidades de desperdicio}. El total fue de 120.192 unidades, así que el desperdicio equivale al 2,08 \%.
+\ejecucion{2}{Correcta \;\textbullet\; Alucinación: No}{11,64}{1,23}{5/4/5}{\texttt{get\_count\_history} 1,22~s}{Entre el 15 y el 21 de septiembre de 2026, la Línea B de Empaque Trigo produjo \textbf{117.698 unidades buenas} y \textbf{2.494 unidades de desperdicio}. El total fue de 120.192 unidades, así que el desperdicio equivale al 2,08 \%.
 
 
 
@@ -182,7 +184,7 @@ Si quiere, puedo revisar los paros o el OEE del lunes 21 para buscar la causa de
 
 El 21 de septiembre tuvo el mayor desperdicio de la semana, tanto en unidades como en porcentaje. El 18 fue el día de mayor producción. Estos conteos son los de la línea, que coinciden con los de la Enfardadora, y solo incluyen la producción asignada a corridas.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{13,23}{0,97}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 0,96~s}{Entre el 15 y el 21 de septiembre de 2026, la \textbf{Línea B de Empaque Trigo} produjo \textbf{117.698 unidades buenas} y \textbf{2.494 unidades de desperdicio}, de un total de \textbf{120.192 unidades}. El desperdicio fue del \textbf{2,08 \%} del total.
+\ejecucion{3}{Correcta \;\textbullet\; Alucinación: No}{13,23}{0,97}{5/4/5}{\texttt{get\_count\_history} 0,96~s}{Entre el 15 y el 21 de septiembre de 2026, la \textbf{Línea B de Empaque Trigo} produjo \textbf{117.698 unidades buenas} y \textbf{2.494 unidades de desperdicio}, de un total de \textbf{120.192 unidades}. El desperdicio fue del \textbf{2,08 \%} del total.
 
 
 
@@ -204,6 +206,8 @@ Lun 21 & 19.749 & 19.262 & 487 & 2,47 \% \\
 
 
 El lunes 21 tuvo la tasa de desperdicio más alta de la semana (2,47 \%). El viernes 18 fue el día de mayor producción. Las cifras corresponden al conteo de línea (Enfardadora) y solo incluyen la producción asociada a corridas, en hora de Colombia.}
+
+\notaeval{En las tres ejecuciones la pertinencia es 4: agregan el desglose diario y el día de mayor producción y de mayor desperdicio, que no se pedían. Las sumas diarias coinciden con la referencia.}
 
 \fichapregunta{3}{Histórica}{¿Cuántos paros no programados tuvo la Línea A de Empaque Maíz el 19 de septiembre de 2026 y cuál fue el más largo?}{D1.1}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 19 de septiembre de 2026: 2 paros no programados (16:52 (29 min 38 s); 22:34 (11 min 47 s)). El más largo: 16:52 (29 min 38 s).}
 
