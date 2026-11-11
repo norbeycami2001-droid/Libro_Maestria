@@ -596,7 +596,7 @@ Si quieres, puedo revisar los paros de esa semana para ver qué explica el falta
 
 \fichapregunta{7}{Histórica}{¿Cuánto produjo cada día la Línea A de Empaque Maíz del 15 al 21 de septiembre de 2026?}{D3.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, total por día del 15 al 21 de septiembre de 2026: 15 15.584; 16 22.693; 17 18.814; 18 12.578; 19 16.317; 20 21.299; 21 20.288; suma 127.573 total (124.914 buenas, 2.659 desperdicio).}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{13,78}{1,16}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,15~s}{La Línea A de Empaque Maíz produjo \textbf{127.573 unidades en total} entre el 15 y el 21 de septiembre de 2026. De ellas, 124.914 fueron unidades buenas y 2.659 fueron desperdicio, un 2,1 \%.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{13,78}{1,16}{5/4/5}{\texttt{get\_count\_history} 1,15~s}{La Línea A de Empaque Maíz produjo \textbf{127.573 unidades en total} entre el 15 y el 21 de septiembre de 2026. De ellas, 124.914 fueron unidades buenas y 2.659 fueron desperdicio, un 2,1 \%.
 
 
 
@@ -628,7 +628,7 @@ Los datos son de las 00:00 a las 24:00 de cada día, en hora de Colombia, con el
 
 ¿Quieres que revise los paros o el OEE del viernes 18 para entender por qué la producción cayó ese día?}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{13,97}{0,93}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 0,92~s}{La Línea A de Empaque Maíz produjo \textbf{127.573 unidades} en total entre el 15 y el 21 de septiembre de 2026. De ellas, 124.914 fueron buenas y 2.659 fueron desperdicio (2,1 \%).
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{13,97}{0,93}{5/4/5}{\texttt{get\_count\_history} 0,92~s}{La Línea A de Empaque Maíz produjo \textbf{127.573 unidades} en total entre el 15 y el 21 de septiembre de 2026. De ellas, 124.914 fueron buenas y 2.659 fueron desperdicio (2,1 \%).
 
 
 
@@ -656,7 +656,7 @@ El día de mayor producción fue el miércoles 16, con 22.693 unidades. El viern
 
 Los totales corresponden al conteo de la línea, que es el mismo de la Enfardadora, y solo incluyen la producción registrada dentro de corridas. Los días van de medianoche a medianoche, hora de Colombia.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{13,57}{1,02}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,01~s}{Producción diaria de la Línea A de Empaque Maíz del 15 al 21 de septiembre de 2026, en unidades y hora de Colombia, según el conteo de línea (Enfardadora):
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{13,57}{1,02}{5/4/5}{\texttt{get\_count\_history} 1,01~s}{Producción diaria de la Línea A de Empaque Maíz del 15 al 21 de septiembre de 2026, en unidades y hora de Colombia, según el conteo de línea (Enfardadora):
 
 
 
@@ -683,6 +683,8 @@ En la semana la línea produjo 127.573 unidades, un promedio de unas 18.200 por 
 
 
 Estos valores solo incluyen la producción registrada dentro de corridas. ¿Quieres que revise los paros o el OEE del viernes 18 para ver por qué bajó la producción?}
+
+\notaeval{En las tres ejecuciones la pertinencia es 4: además de la producción diaria agregan comentarios sobre el mejor y el peor día y sobre el desperdicio, que no se pedían.}
 
 \fichapregunta{8}{Histórica}{¿Qué línea de Empaque Maíz tuvo mejor OEE entre el 15 y el 21 de septiembre de 2026?}{D2.1}{\texttt{mes-history-mcp}}{15 al 21 de septiembre de 2026. Línea A de Empaque Maíz: OEE 80,0 \% (disponibilidad 95,4 \%, rendimiento 85,5 \%, calidad 97,9 \%); 21 corridas, 131.184 total, 128.486 buenas, 2.698 desperdicio. Línea B de Empaque Maíz: OEE 78,1 \% (disponibilidad 95,6 \%, rendimiento 83,3 \%, calidad 98,1 \%); 21 corridas, 126.432 total, 124.056 buenas, 2.376 desperdicio. Mejor OEE: Línea A de Empaque Maíz.}
 
