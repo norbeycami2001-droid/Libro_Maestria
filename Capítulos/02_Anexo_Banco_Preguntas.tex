@@ -1598,7 +1598,7 @@ Si quieres, puedo revisar la Línea A ese mismo día para ver si hubo producció
 
 \fichapregunta{17}{Sin datos}{¿Cuántos paros tuvo la Línea B de Empaque Trigo en octubre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, octubre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{10,87}{0,78}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,35~s \;\textbullet\; \texttt{get\_production\_orders} 0,42~s}{El historial del MES no registra \textbf{ningún paro} para la Línea B de Empaque Trigo entre el 1 y el 31 de octubre de 2026 (hora de Colombia): los 31 días salen vacíos.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{10,87}{0,78}{5/5/5}{\texttt{get\_downtime\_events} 0,35~s \;\textbullet\; \texttt{get\_production\_orders} 0,42~s}{El historial del MES no registra \textbf{ningún paro} para la Línea B de Empaque Trigo entre el 1 y el 31 de octubre de 2026 (hora de Colombia): los 31 días salen vacíos.
 
 
 
@@ -1608,7 +1608,7 @@ Ese cero hay que tomarlo con cautela. En el mismo periodo tampoco aparece \textb
 
 Puedo revisar septiembre o noviembre para ver si la línea sí tiene registros en otros meses, o hacer la misma consulta para la Línea A y comparar.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{15,64}{1,46}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,52~s \;\textbullet\; \texttt{get\_oee\_history} 0,48~s \;\textbullet\; \texttt{get\_downtime\_events} 0,44~s}{En octubre de 2026 el MES no registra \textbf{ningún paro} para la Línea B de Empaque Trigo. Pero ese cero no significa que la línea trabajó sin paros: en octubre tampoco hay ninguna corrida de producción registrada. Lo más probable es que la línea no operó ese mes o que no se capturaron datos.
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{15,64}{1,46}{5/4/5}{\texttt{get\_downtime\_events} 0,52~s \;\textbullet\; \texttt{get\_oee\_history} 0,48~s \;\textbullet\; \texttt{get\_downtime\_events} 0,44~s}{En octubre de 2026 el MES no registra \textbf{ningún paro} para la Línea B de Empaque Trigo. Pero ese cero no significa que la línea trabajó sin paros: en octubre tampoco hay ninguna corrida de producción registrada. Lo más probable es que la línea no operó ese mes o que no se capturaron datos.
 
 
 
@@ -1618,7 +1618,7 @@ Busqué entre el 1 de septiembre y hoy (9 de noviembre), y los únicos registros
 
 Si la línea sí estuvo produciendo en octubre, vale la pena revisar la captura de datos del MES para esa línea.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{16,29}{1,11}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,37~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s \;\textbullet\; \texttt{get\_downtime\_events} 0,33~s}{Según el MES, \textbf{no hay ningún paro registrado} para la Línea B de Empaque Trigo en octubre de 2026 (del 1 al 31, hora de Colombia).
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{16,29}{1,11}{5/4/5}{\texttt{get\_downtime\_events} 0,37~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s \;\textbullet\; \texttt{get\_downtime\_events} 0,33~s}{Según el MES, \textbf{no hay ningún paro registrado} para la Línea B de Empaque Trigo en octubre de 2026 (del 1 al 31, hora de Colombia).
 
 
 
@@ -1631,6 +1631,8 @@ Revisé todo 2026 hasta hoy. Los únicos datos de esta línea son del \textbf{15
 
 
 Si esperabas datos de octubre, conviene confirmar con el equipo de planta o de sistemas si la línea estuvo detenida o si hubo una falla en la captura de datos. ¿Quieres que te dé el detalle de la semana de septiembre o que revise la Línea A en octubre para comparar?}
+
+\notaeval{En E2 y E3 la pertinencia es 4: agregan los paros de la semana del 15 al 22 de septiembre (19 paros; E3 además 286 minutos), que no se pedían. Esas cifras coinciden con el historial. Las tres presentan primero que no hay ningún paro registrado y luego aclaran que ese cero no equivale a que no hubiera paros.}
 
 \fichapregunta{18}{Tiempo real}{¿Cuál es el estado actual de la Línea A de Empaque Maíz?}{D1.3}{\texttt{uns-mcp}}{La Línea A de Empaque Maíz está en marcha (\texttt{State} = 2) y sus tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) están en \texttt{Running}. Ejecuta la orden WO92, producto 100200 (Maíz, Libra). Según la hora de cada ejecución, la corrida lleva entre 144 y 190 unidades (143 a 188 buenas y 1 a 2 de desperdicio) y su OEE está entre 59,3 \% y 62,5 \%.}
 
