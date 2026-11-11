@@ -1478,7 +1478,7 @@ Los dos paros están registrados solo con el motivo genérico "Unplanned". El ME
 
 \fichapregunta{15}{Sin datos}{¿Cuál fue el OEE de la Línea A de Empaque Maíz el 10 de septiembre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 10 de septiembre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{23,66}{2,68}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,27~s \;\textbullet\; \texttt{get\_oee\_history} 0,29~s \;\textbullet\; \texttt{get\_count\_history} 1,41~s \;\textbullet\; \texttt{get\_downtime\_events} 0,43~s \;\textbullet\; \texttt{get\_oee\_history} 0,25~s}{No hay un OEE para ese día: el MES no tiene ningún registro de la Línea A de Empaque Maíz el 10 de septiembre de 2026. Revisé el OEE, los conteos de producción y los paros de ese día, y todas las consultas volvieron vacías. Tampoco hay corridas entre el 8 y el 12 de septiembre, así que no se trata de una corrida que empezó la víspera y siguió durante el 10.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{23,66}{2,68}{5/4/5}{\texttt{get\_oee\_history} 0,27~s \;\textbullet\; \texttt{get\_oee\_history} 0,29~s \;\textbullet\; \texttt{get\_count\_history} 1,41~s \;\textbullet\; \texttt{get\_downtime\_events} 0,43~s \;\textbullet\; \texttt{get\_oee\_history} 0,25~s}{No hay un OEE para ese día: el MES no tiene ningún registro de la Línea A de Empaque Maíz el 10 de septiembre de 2026. Revisé el OEE, los conteos de producción y los paros de ese día, y todas las consultas volvieron vacías. Tampoco hay corridas entre el 8 y el 12 de septiembre, así que no se trata de una corrida que empezó la víspera y siguió durante el 10.
 
 
 
@@ -1505,7 +1505,7 @@ Ese día hubo 3 corridas, con 16.730 unidades procesadas, de las cuales 16.407 f
 
 Si no buscaba la Línea A o Empaque Maíz, puedo consultar la Línea B o Empaque Trigo. También puedo mostrarle los días con datos, del 15 al 23 de septiembre.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{15,91}{1,14}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,31~s \;\textbullet\; \texttt{get\_oee\_history} 0,43~s \;\textbullet\; \texttt{get\_oee\_history} 0,38~s}{No hay un OEE para la Línea A de Empaque Maíz el 10 de septiembre de 2026: el MES no tiene ninguna corrida registrada ese día. Revisé también toda esa semana (7 al 13 de septiembre) y tampoco hay datos.
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{15,91}{1,14}{5/3/5}{\texttt{get\_oee\_history} 0,31~s \;\textbullet\; \texttt{get\_oee\_history} 0,43~s \;\textbullet\; \texttt{get\_oee\_history} 0,38~s}{No hay un OEE para la Línea A de Empaque Maíz el 10 de septiembre de 2026: el MES no tiene ninguna corrida registrada ese día. Revisé también toda esa semana (7 al 13 de septiembre) y tampoco hay datos.
 
 
 
@@ -1533,7 +1533,7 @@ Busqué desde junio hasta hoy, y el primer registro de esta línea es del \textb
 
 Si la fecha que te interesa es otra, o se trata de otra línea o área, dime y lo consulto.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{35,24}{1,06}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,41~s \;\textbullet\; \texttt{get\_oee\_history} 0,25~s \;\textbullet\; \texttt{get\_oee\_history} 0,38~s}{No hay OEE registrado para la Línea A de Empaque Maíz el 10 de septiembre de 2026: el MES no tiene corridas ese día, ni en toda esa semana (7 al 13 de septiembre).
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{35,24}{1,06}{5/4/5}{\texttt{get\_oee\_history} 0,41~s \;\textbullet\; \texttt{get\_oee\_history} 0,25~s \;\textbullet\; \texttt{get\_oee\_history} 0,38~s}{No hay OEE registrado para la Línea A de Empaque Maíz el 10 de septiembre de 2026: el MES no tiene corridas ese día, ni en toda esa semana (7 al 13 de septiembre).
 
 
 
@@ -1559,6 +1559,8 @@ Si te sirve como referencia, estos son los días más cercanos con datos:
 
 
 ¿Quieres que revise si la Línea B o Empaque Trigo tienen datos del 10 de septiembre, o que busque órdenes de producción de esa fecha?}
+
+\notaeval{En E2 la pertinencia es 3: junto con la respuesta de que no hay datos agrega una tabla de ocho días con OEE que no se pedía. En E1 y E3 es 4: agregan el OEE de los días más cercanos con datos.}
 
 \fichapregunta{16}{Sin datos}{¿Cuántas unidades produjo la Línea B de Empaque Maíz el 25 de septiembre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea B de Empaque Maíz, 25 de septiembre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
 
