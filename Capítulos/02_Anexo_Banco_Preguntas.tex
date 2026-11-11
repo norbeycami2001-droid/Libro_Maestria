@@ -688,7 +688,7 @@ Estos valores solo incluyen la producción registrada dentro de corridas. ¿Quie
 
 \fichapregunta{8}{Histórica}{¿Qué línea de Empaque Maíz tuvo mejor OEE entre el 15 y el 21 de septiembre de 2026?}{D2.1}{\texttt{mes-history-mcp}}{15 al 21 de septiembre de 2026. Línea A de Empaque Maíz: OEE 80,0 \% (disponibilidad 95,4 \%, rendimiento 85,5 \%, calidad 97,9 \%); 21 corridas, 131.184 total, 128.486 buenas, 2.698 desperdicio. Línea B de Empaque Maíz: OEE 78,1 \% (disponibilidad 95,6 \%, rendimiento 83,3 \%, calidad 98,1 \%); 21 corridas, 126.432 total, 124.056 buenas, 2.376 desperdicio. Mejor OEE: Línea A de Empaque Maíz.}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{22,11}{0,92}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,52~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s}{La \textbf{Línea A} de Empaque Maíz tuvo el mejor OEE de la semana del 15 al 21 de septiembre de 2026: \textbf{80,0 \%}, frente a \textbf{78,1 \%} de la Línea B.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{22,11}{0,92}{5/4/5}{\texttt{get\_oee\_history} 0,52~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s}{La \textbf{Línea A} de Empaque Maíz tuvo el mejor OEE de la semana del 15 al 21 de septiembre de 2026: \textbf{80,0 \%}, frente a \textbf{78,1 \%} de la Línea B.
 
 
 
@@ -718,7 +718,7 @@ Día a día la pelea fue pareja. La Línea A ganó el 15, 16, 20 y 21; su mejor 
 
 El OEE semanal lo calculé sumando tiempos y conteos de las 21 corridas de cada línea y recalculando cada componente a partir de esas sumas, no promediando los porcentajes diarios. ¿Quieres que revise los motivos de paro o el rendimiento por producto para entender la brecha?}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{20,3}{0,75}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,32~s \;\textbullet\; \texttt{get\_oee\_history} 0,41~s}{La \textbf{Línea A} tuvo mejor OEE en Empaque Maíz entre el 15 y el 21 de septiembre de 2026: \textbf{80,0 \%}, frente a \textbf{78,1 \%} de la Línea B.
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{20,3}{0,75}{5/4/5}{\texttt{get\_oee\_history} 0,32~s \;\textbullet\; \texttt{get\_oee\_history} 0,41~s}{La \textbf{Línea A} tuvo mejor OEE en Empaque Maíz entre el 15 y el 21 de septiembre de 2026: \textbf{80,0 \%}, frente a \textbf{78,1 \%} de la Línea B.
 
 
 
@@ -747,7 +747,7 @@ Por día, la Línea A tuvo su mejor jornada el 15 de septiembre (86,2 \%) y la p
 
 El OEE semanal lo recalculé sumando tiempos y conteos de los siete días; no es un promedio de los porcentajes diarios. Las corridas se asignan al día en que empiezan.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{20,36}{1,07}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,47~s \;\textbullet\; \texttt{get\_oee\_history} 0,59~s}{\textbf{La Línea A tuvo el mejor OEE en Empaque Maíz del 15 al 21 de septiembre de 2026: 80,0 \% frente a 78,1 \% de la Línea B.}
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{20,36}{1,07}{5/4/5}{\texttt{get\_oee\_history} 0,47~s \;\textbullet\; \texttt{get\_oee\_history} 0,59~s}{\textbf{La Línea A tuvo el mejor OEE en Empaque Maíz del 15 al 21 de septiembre de 2026: 80,0 \% frente a 78,1 \% de la Línea B.}
 
 
 
@@ -781,6 +781,8 @@ Por días, la Línea A fue más irregular. Su mejor día fue el 15 de septiembre
 
 
 ¿Quieres que revise los motivos de paro de alguno de esos días?}
+
+\notaeval{En las tres ejecuciones la pertinencia es 4: además de la línea con mejor OEE agregan análisis día a día, con mejores y peores jornadas, que no se pedía.}
 
 \fichapregunta{9}{Ambigua}{¿Cuánto produjo la Línea A el 18 de septiembre de 2026?}{D1.3}{\texttt{mes-history-mcp}}{Pregunta ambigua: hay dos Líneas A. 18 de septiembre de 2026 (total/buenas/desperdicio): Empaque Maíz 12.578/12.340/238; Empaque Trigo 19.898/19.454/444.}
 
