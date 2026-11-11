@@ -3,99 +3,2253 @@
 \addcontentsline{toc}{section}{Anexo B: Banco de preguntas de la validación}
 \label{anexo:banco_preguntas}
 
-Este anexo reproduce el banco de 25 preguntas de la Sección~\ref{disenoevaluacion}. Para cada una se indica su categoría, el desafío que pone a prueba, la Tool que debería usar el modelo, la respuesta de referencia con la forma en que se calculó, y la respuesta del sistema en cada una de las tres ejecuciones con su veredicto, su latencia y su puntuación de calidad semántica.
+\begin{singlespace}
+\setlength{\parskip}{0.5em}
+Este anexo reproduce el banco de 25 preguntas de la Sección~\ref{disenoevaluacion}. Para cada una se indica el servidor MCP que debe responderla y la respuesta de referencia, y se transcribe la respuesta del sistema en cada una de las tres ejecuciones (75 en total), con su veredicto, su latencia, su calidad semántica y las Tools que usó.
 
-Las preguntas se ejecutaron en dos fases. Las de la primera (históricas, ambiguas, causales y sin datos) usan fechas fijas dentro del periodo con registros completos en \texttt{mes\_core}, del 15 al 21 de septiembre de 2026, por lo que su respuesta de referencia no cambia con el tiempo. Las de la segunda (tiempo real y combinadas) se ejecutaron el \textcolor{blue}{[fecha]} con una corrida abierta en cada una de las cuatro líneas, y su referencia se tomó con una lectura de los tags antes y después de cada ejecución.
+Las preguntas se ejecutaron en dos fases. Las de la primera (históricas, ambiguas, causales y sin datos, preguntas 1 a 17) usan fechas fijas dentro del periodo con registros completos en \texttt{mes\_core}, del 15 al 21 de septiembre de 2026, por lo que su referencia no cambia con el tiempo. Las de la segunda (tiempo real y combinadas, preguntas 18 a 25) se ejecutaron el 10 de noviembre de 2026 con una corrida abierta en cada una de las cuatro líneas; como esos valores cambian con el tiempo, su referencia se tomó con una lectura de los tags antes y después de cada ejecución.
 
-\newcommand{\ejecucionesvacias}{%
-  \ejecucion{1}{\textcolor{blue}{[respuesta]}}{\textcolor{blue}{[correcta/incorrecta]}}{\textcolor{blue}{[ ]}}{\textcolor{blue}{[ / / ]}}
-  \ejecucion{2}{\textcolor{blue}{[respuesta]}}{\textcolor{blue}{[correcta/incorrecta]}}{\textcolor{blue}{[ ]}}{\textcolor{blue}{[ / / ]}}
-  \ejecucion{3}{\textcolor{blue}{[respuesta]}}{\textcolor{blue}{[correcta/incorrecta]}}{\textcolor{blue}{[ ]}}{\textcolor{blue}{[ / / ]}}
-}
+\subsection*{Cómo se evaluó cada ejecución}
+Cada pregunta se ejecutó tres veces en una conversación nueva. Cada ejecución se evaluó con los criterios de la Tabla~\ref{tab:criterios_anexo} y se registra en la cabecera de su caja: veredicto, latencia y calidad (coherencia / pertinencia / suficiencia). La referencia de cada pregunta se calculó con consultas directas a la base \texttt{mes\_core}, sin usar los servidores evaluados. El tiempo total es lo que tarda la respuesta completa desde que se envía la pregunta, y el tiempo de Tools es la suma de lo que tardó cada Tool en responder; cada Tool usada se lista con su propio tiempo.
 
-\subsection*{Preguntas históricas}
+\begin{table}[H]
+\centering\small\renewcommand{\arraystretch}{1.25}
+\caption{Criterios de evaluación de cada ejecución.}\label{tab:criterios_anexo}
+\begin{tabular}{@{}p{2.6cm}p{2.4cm}p{9.2cm}@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Criterio} & \textbf{Escala} & \textbf{Cómo se asigna}\\
+\midrule
+Veredicto & Correcta / incorrecta & Correcta si los datos clave coinciden con la referencia (tolerancia de 0,5 puntos porcentuales en OEE y conteos). En las preguntas sin datos, correcta si el modelo indica que no hay información. Una respuesta vacía es incorrecta.\\
+\rowcolor{tblzebra}Coherencia (C) & 1 a 5 & 5: clara y sin contradicciones. 3: se entiende, con partes confusas. 1: se contradice o no se entiende.\\
+Pertinencia (P) & 1 a 5 & 5: responde exactamente lo preguntado. 3: responde, pero mezcla información que no se pidió. 1: trata otro tema.\\
+\rowcolor{tblzebra}Suficiencia (S) & 1 a 5 & 5: incluye el dato con fecha, línea y unidad. 3: incluye el dato, pero falta contexto. 1: no alcanza para usarse.\\
+Alucinación & Sí / no & Sí si afirma una cifra, orden, paro o causa que no se encuentra en los datos. No si todo lo afirmado se puede rastrear a los datos.\\
+\bottomrule
+\end{tabular}
+\end{table}
+La calidad se puntúa sin tener en cuenta si el dato es correcto, que ya lo recoge el veredicto. Una respuesta vacía recibe 1/1/1.
+\fichapregunta{1}{Histórica}{¿Cuál fue el OEE de la Línea A de Empaque Maíz el 18 de septiembre de 2026?}{D3.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 18 de septiembre de 2026: OEE 79,1 \% (disponibilidad 100,0 \%, rendimiento 80,5 \%, calidad 98,3 \%); 3 corridas, 11.796 total, 11.590 buenas, 206 desperdicio}
 
-\fichapregunta{1}{Histórica}{¿Cuál fue el OEE de la Línea A de Empaque Maíz el 18 de septiembre de 2026?}{D3.2}{\texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Componentes sumados de las corridas que empiezan el 18/09 en \texttt{run}. El OEE es disponibilidad por rendimiento por calidad.}
-\ejecucionesvacias
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{10,45}{0,41}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,40~s}{El \textbf{OEE de la Línea A de Empaque Maíz el 18 de septiembre de 2026 fue de 79,1 \%}.
 
-\fichapregunta{2}{Histórica}{¿Cuántas unidades buenas y cuánto desperdicio produjo la Línea B de Empaque Trigo del 15 al 21 de septiembre de 2026?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma de \texttt{goodcount} y \texttt{wastecount} de las corridas de la línea entre el 15 y el 21/09 en \texttt{run}.}
-\ejecucionesvacias
 
-\fichapregunta{3}{Histórica}{¿Cuántos paros no programados tuvo la Línea A de Empaque Maíz el 19 de septiembre de 2026 y cuál fue el más largo?}{D1.1}{\texttt{get\_downtime\_events}}{\textcolor{blue}{[respuesta de referencia]}}{Eventos de \texttt{statehistory} con motivo de paro no programado el 19/09. Número de eventos y mayor duración.}
-\ejecucionesvacias
 
-\fichapregunta{4}{Histórica}{¿Cuánto produjo cada hora la Línea A de Empaque Maíz el 17 de septiembre de 2026 entre las 14:00 y las 18:00?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma por hora de \texttt{counthistory} (conteo total de la línea) entre las 14:00 y las 18:00 del 17/09.}
-\ejecucionesvacias
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{Valor} \\
+\midrule
+Disponibilidad & 100,0 \% \\
+\rowcolor{tblzebra}Rendimiento & 80,5 \% \\
+Calidad & 98,3 \% \\
+\rowcolor{tblzebra}\textbf{OEE} & \textbf{79,1 \%} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
 
-\fichapregunta{5}{Histórica}{¿Cuántas unidades buenas produjo cada turno el 20 de septiembre de 2026 en la Línea B de Empaque Maíz?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma de unidades buenas de \texttt{counthistory} por turno (A, B y C) el 20/09.}
-\ejecucionesvacias
 
-\fichapregunta{6}{Histórica}{¿Qué órdenes de trabajo se ejecutaron en la Línea B de Empaque Trigo entre el 15 y el 21 de septiembre de 2026?}{D1.3}{\texttt{get\_production\_orders}}{\textcolor{blue}{[respuesta de referencia]}}{Órdenes de \texttt{workorder} con corridas de la línea entre el 15 y el 21/09, con su código y su producto.}
-\ejecucionesvacias
 
-\fichapregunta{7}{Histórica}{¿Cuánto produjo cada día la Línea A de Empaque Maíz del 15 al 21 de septiembre de 2026?}{D3.2}{\texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Suma diaria de \texttt{counthistory} (conteo total de la línea) del 15 al 21/09.}
-\ejecucionesvacias
+Ese día arrancaron 3 corridas, con unas 9,7 horas en marcha (35.002 s). Se procesaron 11.796 unidades: 11.590 buenas y 206 de desperdicio.
 
-\fichapregunta{8}{Histórica}{¿Qué línea de Empaque Maíz tuvo mejor OEE entre el 15 y el 21 de septiembre de 2026?}{D2.1}{\texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{OEE de cada línea de Empaque Maíz con los componentes sumados de sus corridas del periodo.}
-\ejecucionesvacias
 
-\subsection*{Preguntas ambiguas}
 
-\fichapregunta{9}{Ambigua}{¿Cuánto produjo la Línea A el 18 de septiembre de 2026?}{D1.3}{aclarar o ambas áreas}{\textcolor{blue}{[respuesta de referencia]}}{Existe una Línea A en cada área. Lo correcto es pedir la aclaración o responder para ambas.}
-\ejecucionesvacias
+La pérdida principal fue el \textbf{rendimiento}: la línea produjo alrededor de un 20 \% por debajo de su velocidad ideal. La calidad fue alta.
 
-\fichapregunta{10}{Ambigua}{¿Cuántas unidades produjo la empacadora el 18 de septiembre de 2026?}{D1.3}{aclarar}{\textcolor{blue}{[respuesta de referencia]}}{No se indica área, línea ni celda y hay seis empacadoras. Lo correcto es pedir la aclaración o responder para todas.}
-\ejecucionesvacias
 
-\fichapregunta{11}{Ambigua}{Dame el OEE de la línea de maíz el 18 de septiembre de 2026.}{D1.3}{ambas líneas de Maíz}{\textcolor{blue}{[respuesta de referencia]}}{Hay dos líneas en Empaque Maíz. Lo correcto es responder con el OEE de ambas el 18/09.}
-\ejecucionesvacias
 
-\subsection*{Preguntas causales}
+Hay dos cosas a tener en cuenta sobre estas cifras:
 
-\fichapregunta{12}{Causal}{¿Por qué bajó el OEE de la Línea A de Empaque Maíz el 17 de septiembre de 2026 frente al 16?}{D1.2}{\texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Descomposición del OEE del 16 y del 17/09 en disponibilidad, rendimiento y calidad, con los componentes de \texttt{run}.}
-\ejecucionesvacias
 
-\fichapregunta{13}{Causal}{¿Qué día entre el 15 y el 21 de septiembre de 2026 tuvo más desperdicio la Línea A de Empaque Maíz y por qué?}{D1.2}{\texttt{get\_count\_history} y \texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Desperdicio diario de la línea entre el 15 y el 21/09 (\texttt{wastecount} de \texttt{run}), día con mayor valor y su calidad.}
-\ejecucionesvacias
 
-\fichapregunta{14}{Causal}{¿Qué paro afectó más la disponibilidad de la Línea B de Empaque Trigo el 17 de septiembre de 2026?}{D1.2}{\texttt{get\_downtime\_events}}{\textcolor{blue}{[respuesta de referencia]}}{Paros del 17/09 en \texttt{statehistory}, agrupados por motivo (\texttt{statereason}) y ordenados por duración.}
-\ejecucionesvacias
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Disponibilidad del 100 \%.} No hay paros registrados dentro de las corridas, ni programados ni no programados. Si en realidad hubo microparos o paros cortos que no se reportaron, podrían estar escondidos dentro de la pérdida de rendimiento.
+\item \textbf{Cómo se asignan las corridas al día.} Cada corrida cuenta completa en el día en que empieza. Si alguna empezó el 18 y terminó el 19, toda su producción aparece en el 18.
+\end{itemize}
 
-\subsection*{Preguntas sin datos}
 
-\fichapregunta{15}{Sin datos}{¿Cuál fue el OEE de la Línea A de Empaque Maíz el 10 de septiembre de 2026?}{Detección de alucinaciones}{ninguna (no hay datos)}{\textcolor{blue}{[respuesta de referencia]}}{No hay corridas ni conteos registrados ese día. Lo correcto es reconocer que no hay datos.}
-\ejecucionesvacias
 
-\fichapregunta{16}{Sin datos}{¿Cuántas unidades produjo la Línea B de Empaque Maíz el 22 de septiembre de 2026?}{Detección de alucinaciones}{ninguna (no hay datos)}{\textcolor{blue}{[respuesta de referencia]}}{No hay corridas ni conteos registrados ese día en esa línea. Lo correcto es reconocer que no hay datos.}
-\ejecucionesvacias
+¿Quieres que revise los paros del día o la producción hora por hora para entender de dónde viene la pérdida de rendimiento?}
 
-\fichapregunta{17}{Sin datos}{¿Cuántos paros tuvo la Línea B de Empaque Trigo en octubre de 2026?}{Detección de alucinaciones}{ninguna (no hay datos)}{\textcolor{blue}{[respuesta de referencia]}}{No hay datos de esa línea en octubre de 2026. Lo correcto es reconocer que no hay datos.}
-\ejecucionesvacias
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{10,5}{0,41}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,40~s}{El \textbf{OEE de la Línea A de Empaque Maíz el 18 de septiembre de 2026 fue de 79,1 \%}.
 
-\subsection*{Preguntas de tiempo real}
 
-\fichapregunta{18}{Tiempo real}{¿Cuál es el estado actual de la Línea A de Empaque Maíz?}{D1.3}{\texttt{get\_equipment\_status}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura del Tag Provider antes y después de cada ejecución. La respuesta es correcta si coincide con alguna de las dos lecturas.}
-\ejecucionesvacias
 
-\fichapregunta{19}{Tiempo real}{¿Cuántas unidades lleva la Empacadora 1 de la Línea B de Empaque Trigo en la corrida actual?}{D1.3}{\texttt{get\_equipment\_status} o \texttt{get\_context}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura del conteo de la corrida antes y después de cada ejecución. La respuesta es correcta si cae entre las dos lecturas.}
-\ejecucionesvacias
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{Valor} \\
+\midrule
+Disponibilidad & 100,0 \% \\
+\rowcolor{tblzebra}Rendimiento & 80,5 \% \\
+Calidad & 98,3 \% \\
+\rowcolor{tblzebra}\textbf{OEE} & \textbf{79,1 \%} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
 
-\fichapregunta{20}{Tiempo real}{¿Qué producto se empaca ahora en la Línea A de Empaque Trigo y cuál es su OEE actual?}{D1.1}{\texttt{get\_context}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura de la orden en curso y del OEE antes y después de cada ejecución. El producto debe coincidir y el OEE caer entre las dos lecturas.}
-\ejecucionesvacias
 
-\fichapregunta{21}{Tiempo real}{¿En qué unidad se mide el conteo de la Enfardadora?}{D1.1}{\texttt{get\_tags}}{\textcolor{blue}{[respuesta de referencia]}}{Unidad de ingeniería definida en los metadatos del tag de conteo de la Enfardadora.}
-\ejecucionesvacias
 
-\subsection*{Preguntas combinadas}
+Ese día hubo 3 corridas, con unas 9 h 43 min de marcha en total. Se procesaron 11.796 unidades: 11.590 buenas y 206 de desperdicio.
 
-\fichapregunta{22}{Combinada}{¿Cómo está el OEE actual de la Línea A de Empaque Maíz frente a su OEE del 15 al 21 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{get\_context} y \texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura en vivo del OEE y suma de los componentes de \texttt{run} del periodo, antes y después de cada ejecución.}
-\ejecucionesvacias
 
-\fichapregunta{23}{Combinada}{¿Cuántas unidades lleva la Línea A de Empaque Maíz en la corrida actual y cuántas produjo en total el 18 de septiembre de 2026?}{D2.2}{\texttt{get\_context} y \texttt{get\_count\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura en vivo del conteo de la corrida y suma de \texttt{run} del 18/09.}
-\ejecucionesvacias
 
-\fichapregunta{24}{Combinada}{¿Cuál es el OEE actual de la Línea B de Empaque Trigo y cómo se compara con el del 18 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{get\_context} y \texttt{get\_oee\_history}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura en vivo del OEE y OEE del 18/09 calculado desde \texttt{run}.}
-\ejecucionesvacias
+El rendimiento es lo que más bajó el OEE. La línea produjo a cerca del 80 \% de su velocidad ideal.
 
-\fichapregunta{25}{Combinada}{¿Qué orden corre ahora en la Línea B de Empaque Maíz y cuántas órdenes tuvo esa línea del 15 al 21 de septiembre de 2026?}{D2.2}{\texttt{get\_context} y \texttt{get\_production\_orders}}{\textcolor{blue}{[respuesta de referencia]}}{Lectura en vivo de la orden en curso y órdenes de \texttt{workorder} de la línea entre el 15 y el 21/09.}
-\ejecucionesvacias
+
+
+La disponibilidad aparece en 100 \% porque el MES no registró ningún paro (ni programado ni no programado) dentro de las corridas. Si sabes que hubo paros ese día, puede que no se hayan registrado o que hayan ocurrido entre corridas, y en ese caso la disponibilidad real sería menor.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{9,58}{0,36}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,36~s}{El \textbf{OEE de la Línea A de Empaque Maíz el 18 de septiembre de 2026 fue de 79,1 \%}.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{Valor} \\
+\midrule
+Disponibilidad & 100,0 \% \\
+\rowcolor{tblzebra}Rendimiento & 80,5 \% \\
+Calidad & 98,3 \% \\
+\rowcolor{tblzebra}\textbf{OEE} & \textbf{79,1 \%} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Ese día empezaron 3 corridas, todas cerradas, con un tiempo total en marcha de unas 9,7 horas (35.002 s). Se procesaron 11.796 unidades: 11.590 buenas y 206 de desperdicio.
+
+
+
+El rendimiento es lo que más bajó el OEE. La línea produjo cerca del 80 \% de lo que permitía su velocidad estándar. La disponibilidad de 100 \% sale de que las corridas no tienen paros registrados, ni programados ni no programados. Vale la pena confirmar que en efecto no hubo paros y que no faltan registros, porque eso afectaría el cálculo.
+
+
+
+¿Quieres que revise la producción hora a hora o por corrida para ver dónde se perdió rendimiento?}
+
+\fichapregunta{2}{Histórica}{¿Cuántas unidades buenas y cuánto desperdicio produjo la Línea B de Empaque Trigo del 15 al 21 de septiembre de 2026?}{D3.2}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, 15 al 21 de septiembre de 2026: 117.698 buenas, 2.494 desperdicio, 120.192 total.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{13,01}{1,2}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,19~s}{Del 15 al 21 de septiembre de 2026, la \textbf{Línea B de Empaque Trigo} produjo \textbf{117.698 unidades buenas} y \textbf{2.494 unidades de desperdicio}, de un total de 120.192 unidades producidas. El desperdicio fue el \textbf{2,08 \%} del total.
+
+
+
+Detalle por día:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Total producido} & \textbf{Buenas} & \textbf{Desperdicio} & \textbf{\% desperdicio} \\
+\midrule
+Mar 15 & 17.799 & 17.461 & 338 & 1,90 \% \\
+\rowcolor{tblzebra}Mié 16 & 15.781 & 15.475 & 306 & 1,94 \% \\
+Jue 17 & 16.010 & 15.647 & 363 & 2,27 \% \\
+\rowcolor{tblzebra}Vie 18 & 20.633 & 20.237 & 396 & 1,92 \% \\
+Sáb 19 & 13.990 & 13.712 & 278 & 1,99 \% \\
+\rowcolor{tblzebra}Dom 20 & 16.230 & 15.904 & 326 & 2,01 \% \\
+Lun 21 & 19.749 & 19.262 & 487 & 2,47 \% \\
+\rowcolor{tblzebra}\textbf{Total} & \textbf{120.192} & \textbf{117.698} & \textbf{2.494} & \textbf{2,08 \%} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+El viernes 18 tuvo la mayor producción. El lunes 21 tuvo el mayor desperdicio, tanto en unidades como en porcentaje (2,47 \%). Los conteos son de la línea (Enfardadora) y solo incluyen la producción dentro de corridas, en hora de Colombia.
+
+
+
+Si quiere, puedo revisar los paros o el OEE del lunes 21 para buscar la causa del aumento de desperdicio.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{11,64}{1,23}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,22~s}{Entre el 15 y el 21 de septiembre de 2026, la Línea B de Empaque Trigo produjo \textbf{117.698 unidades buenas} y \textbf{2.494 unidades de desperdicio}. El total fue de 120.192 unidades, así que el desperdicio equivale al 2,08 \%.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Buenas} & \textbf{Desperdicio} & \textbf{\% desperdicio} \\
+\midrule
+15 sep & 17.461 & 338 & 1,90 \% \\
+\rowcolor{tblzebra}16 sep & 15.475 & 306 & 1,94 \% \\
+17 sep & 15.647 & 363 & 2,27 \% \\
+\rowcolor{tblzebra}18 sep & 20.237 & 396 & 1,92 \% \\
+19 sep & 13.712 & 278 & 1,99 \% \\
+\rowcolor{tblzebra}20 sep & 15.904 & 326 & 2,01 \% \\
+21 sep & 19.262 & 487 & 2,47 \% \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+El 21 de septiembre tuvo el mayor desperdicio de la semana, tanto en unidades como en porcentaje. El 18 fue el día de mayor producción. Estos conteos son los de la línea, que coinciden con los de la Enfardadora, y solo incluyen la producción asignada a corridas.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{13,23}{0,97}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 0,96~s}{Entre el 15 y el 21 de septiembre de 2026, la \textbf{Línea B de Empaque Trigo} produjo \textbf{117.698 unidades buenas} y \textbf{2.494 unidades de desperdicio}, de un total de \textbf{120.192 unidades}. El desperdicio fue del \textbf{2,08 \%} del total.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Total} & \textbf{Buenas} & \textbf{Desperdicio} & \textbf{\% desperdicio} \\
+\midrule
+Mar 15 & 17.799 & 17.461 & 338 & 1,90 \% \\
+\rowcolor{tblzebra}Mié 16 & 15.781 & 15.475 & 306 & 1,94 \% \\
+Jue 17 & 16.010 & 15.647 & 363 & 2,27 \% \\
+\rowcolor{tblzebra}Vie 18 & 20.633 & 20.237 & 396 & 1,92 \% \\
+Sáb 19 & 13.990 & 13.712 & 278 & 1,99 \% \\
+\rowcolor{tblzebra}Dom 20 & 16.230 & 15.904 & 326 & 2,01 \% \\
+Lun 21 & 19.749 & 19.262 & 487 & 2,47 \% \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+El lunes 21 tuvo la tasa de desperdicio más alta de la semana (2,47 \%). El viernes 18 fue el día de mayor producción. Las cifras corresponden al conteo de línea (Enfardadora) y solo incluyen la producción asociada a corridas, en hora de Colombia.}
+
+\fichapregunta{3}{Histórica}{¿Cuántos paros no programados tuvo la Línea A de Empaque Maíz el 19 de septiembre de 2026 y cuál fue el más largo?}{D1.1}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 19 de septiembre de 2026: 2 paros no programados (16:52 (29 min 38 s); 22:34 (11 min 47 s)). El más largo: 16:52 (29 min 38 s).}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{10,96}{0,26}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,25~s}{La Línea A de Empaque Maíz tuvo \textbf{2 paros no programados} el 19 de septiembre de 2026, ambos registrados con el motivo genérico "Unplanned":
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Inicio} & \textbf{Duración} \\
+\midrule
+\textbf{16:52} & \textbf{29 min 38 s} (1.778 s), el más largo \\
+\rowcolor{tblzebra}22:34 & 11 min 47 s (707 s) \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Entre los dos suman \textbf{41 min 25 s} de paro no programado.
+
+
+
+Ese día también hubo 2 paros programados por mantenimiento preventivo, a las 08:06 (9 min 33 s) y a las 23:43 (8 min 30 s). No los incluí en el conteo.
+
+
+
+Los paros no programados están registrados solo como "Unplanned", sin una causa más específica. Si quieres saber qué equipo los originó, puedo revisar el estado por celda (Empacadoras o Enfardadora) en esos horarios.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{8,42}{0,43}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,43~s}{La Línea A de Empaque Maíz tuvo \textbf{2 paros no programados} el 19 de septiembre de 2026, que sumaron 41 min 25 s.
+
+
+
+El más largo \textbf{empezó a las 16:52 y duró 29 min 38 s} (1.778 s), así que terminó hacia las 17:22. El sistema lo registró con el motivo genérico "Unplanned", sin una causa más específica. El otro empezó a las 22:34 y duró 11 min 47 s.
+
+
+
+Ese día también hubo 2 paros programados por mantenimiento preventivo, a las 08:06 (9 min 33 s) y a las 23:43 (8 min 30 s), que no entran en el conteo anterior.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{9,96}{0,34}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,34~s}{El 19 de septiembre de 2026 la \textbf{Línea A de Empaque Maíz tuvo 2 paros no programados}, que sumaron 41 min 25 s:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Inicio} & \textbf{Duración} & \textbf{Motivo} \\
+\midrule
+\textbf{16:52} & \textbf{29 min 38 s} (1.778 s) & Unplanned \\
+\rowcolor{tblzebra}22:34 & 11 min 47 s (707 s) & Unplanned \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{El más largo fue el de las 16:52}, que duró casi media hora (hasta aproximadamente las 17:22).
+
+
+
+Ese día también hubo 2 paros programados por mantenimiento preventivo (08:06, 9 min 33 s, y 23:43, 8 min 30 s), que no entran en el conteo anterior.
+
+
+
+Hay dos limitaciones en estos datos. Primero, ambos paros no programados están registrados solo con el motivo genérico "Unplanned", sin una causa específica, así que el MES no indica qué los provocó. Segundo, la consulta cuenta los paros que empezaron el día 19; si alguno arrancó el 18 y se extendió al 19, no aparecería aquí.}
+
+\fichapregunta{4}{Histórica}{¿Cuánto produjo cada hora la Línea A de Empaque Maíz el 17 de septiembre de 2026 entre las 14:00 y las 18:00?}{D3.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 17 de septiembre de 2026 (total/buenas/desperdicio): 14:00 1.878/1.851/27; 15:00 2.634/2.596/38; 16:00 2.633/2.596/37; 17:00 417/411/6; suma 7.562/7.454/108.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{12,14}{1,22}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,21~s}{Esta fue la producción de la Línea A de Empaque Maíz el 17 de septiembre de 2026, hora por hora (hora de Colombia):
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Hora} & \textbf{Total producido} & \textbf{Unidades buenas} & \textbf{Desperdicio} \\
+\midrule
+14:00–15:00 & 1.878 & 1.851 & 27 \\
+\rowcolor{tblzebra}15:00–16:00 & 2.634 & 2.596 & 38 \\
+16:00–17:00 & 2.633 & 2.596 & 37 \\
+\rowcolor{tblzebra}17:00–18:00 & 417 & 411 & 6 \\
+\textbf{Total} & \textbf{7.562} & \textbf{7.454} & \textbf{108} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+En las cuatro horas la línea produjo 7.562 unidades. De ellas, 7.454 fueron buenas y 108 se desperdiciaron, un 1,4 \%.
+
+
+
+Las horas de 15:00 y 16:00 tuvieron una producción estable, de unas 2.630 unidades cada una. Las horas de 14:00 y 17:00 produjeron bastante menos, sobre todo la de 17:00, con apenas 417 unidades. Como el sistema solo cuenta la producción que pertenece a una corrida, la caída podría deberse a que una corrida empezó después de las 14:00 y terminó poco después de las 17:00, o a un paro. Puedo consultar las corridas o los paros de esa tarde para confirmar la causa, si quieres.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{11,97}{0,99}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 0,99~s}{Producción por hora de la \textbf{Línea A – Empaque Maíz} el 17 de septiembre de 2026 (hora de Colombia):
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Hora} & \textbf{Total producido} & \textbf{Unidades buenas} & \textbf{Desperdicio} \\
+\midrule
+14:00 – 15:00 & 1.878 & 1.851 & 27 \\
+\rowcolor{tblzebra}15:00 – 16:00 & 2.634 & 2.596 & 38 \\
+16:00 – 17:00 & 2.633 & 2.596 & 37 \\
+\rowcolor{tblzebra}17:00 – 18:00 & 417 & 411 & 6 \\
+\textbf{Total} & \textbf{7.562} & \textbf{7.454} & \textbf{108} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Las horas de 15:00 y 16:00 fueron estables, con unas 2.630 unidades cada una. La de 14:00 quedó algo por debajo, y la de 17:00 cayó mucho, a solo 417 unidades. Este conteo incluye únicamente la producción que pertenece a una corrida. Por eso, una caída así suele deberse a que la corrida terminó, a un cambio de referencia o a un paro, pero estos datos no dicen cuál fue la causa. El desperdicio se mantuvo alrededor del 1,4 \% en todas las horas.
+
+
+
+Si quiere, puedo revisar los paros u órdenes de producción de esa tarde para explicar la caída de las 17:00.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{12,76}{1,22}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,21~s}{La Línea A de Empaque Maíz produjo un total de \textbf{7.562 unidades} entre las 14:00 y las 18:00 del 17 de septiembre de 2026. De ellas, 7.454 fueron unidades buenas y 108 fueron desperdicio. Este es el detalle por hora, con el conteo de línea, que es el de la Enfardadora:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Hora} & \textbf{Total producido} & \textbf{Buenas} & \textbf{Desperdicio} \\
+\midrule
+14:00–15:00 & 1.878 & 1.851 & 27 \\
+\rowcolor{tblzebra}15:00–16:00 & 2.634 & 2.596 & 38 \\
+16:00–17:00 & 2.633 & 2.596 & 37 \\
+\rowcolor{tblzebra}17:00–18:00 & 417 & 411 & 6 \\
+\textbf{Total} & \textbf{7.562} & \textbf{7.454} & \textbf{108} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Las horas de 15:00 y 16:00 marcan el ritmo pleno, con unas 2.630 unidades por hora. La hora de 14:00 y sobre todo la de 17:00 producen mucho menos. El sistema solo cuenta la producción que pertenece a una corrida, así que lo más probable es que una corrida empezara después de las 14:00 y terminara poco después de las 17:00, o que hubiera un paro en esos tramos. El desperdicio se mantiene estable, en torno al 1,4 \% cada hora.
+
+
+
+¿Quiere que revise los paros u órdenes de producción de esa tarde para confirmar qué pasó en la última hora?}
+
+\fichapregunta{5}{Histórica}{¿Cuántas unidades buenas produjo cada turno el 20 de septiembre de 2026 en la Línea B de Empaque Maíz?}{D3.2}{\texttt{mes-history-mcp}}{Línea B de Empaque Maíz, 20 de septiembre de 2026, unidades buenas por turno: turno A 6.756; turno B 5.197; turno C 7.740.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{16,68}{3,54}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,99~s \;\textbullet\; \texttt{get\_count\_history} 1,53~s}{Estas son las unidades buenas (Outfeed) de la Línea B de Empaque Maíz en los turnos del 20 de septiembre de 2026:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Turno} & \textbf{Horario} & \textbf{Unidades buenas} \\
+\midrule
+A & 06:00 – 14:00 & 6.756 \\
+\rowcolor{tblzebra}B & 14:00 – 22:00 & 5.197 \\
+C & 22:00 (20 sep) – 06:00 (21 sep) & 7.740 \\
+\rowcolor{tblzebra}\textbf{Total} &  & \textbf{19.693} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+El turno C es el que más produjo y el B el que menos, unas 2.500 unidades por debajo. El sistema asigna cada turno al día en que empieza, por eso el turno C del 20 llega hasta las 06:00 del 21. Si en cambio cuenta solo el día calendario (00:00 a 24:00), el total es 19.754 unidades. Esa cifra incluye 2.226 unidades del final del turno C del 19 y solo 5.575 del turno C del 20.
+
+
+
+Puedo revisar los paros del turno B para ver por qué produjo menos.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{19,52}{3,98}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,64~s \;\textbullet\; \texttt{get\_count\_history} 2,33~s}{El 20 de septiembre de 2026, la Línea B de Empaque Maíz produjo estas unidades buenas (Outfeed) por turno:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Turno} & \textbf{Horario} & \textbf{Unidades buenas} \\
+\midrule
+A & 06:00 – 14:00 & 6.756 \\
+\rowcolor{tblzebra}B & 14:00 – 22:00 & 5.197 \\
+C & 22:00 – 06:00 (del 21) & 7.740 \\
+\rowcolor{tblzebra}\textbf{Total} &  & \textbf{19.693} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+El turno C empieza el 20 y termina a las 06:00 del 21. Lo conté completo y lo asigné al día en que empieza, como hace el MES.
+
+
+
+Si en cambio necesitas el día calendario (00:00 a 24:00), el total es 19.754 unidades buenas. Esa cifra se compone de:
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item 2.226 unidades del turno C que empezó el 19, producidas en la madrugada del 20.
+\item Los turnos A y B completos.
+\item Solo 5.575 de las 7.740 unidades del turno C del 20, las que se hicieron antes de medianoche.
+\end{itemize}}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{19,4}{3,38}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,73~s \;\textbullet\; \texttt{get\_count\_history} 1,64~s}{Para la Línea B de Empaque Maíz, estos son los turnos que \textbf{empezaron} el 20 de septiembre de 2026 (unidades buenas, conteo Outfeed de la línea, hora de Colombia):
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Turno} & \textbf{Horario} & \textbf{Unidades buenas} \\
+\midrule
+A & 06:00 – 14:00 & 6.756 \\
+\rowcolor{tblzebra}B & 14:00 – 22:00 & 5.197 \\
+C & 22:00 – 06:00 (del 21) & 7.740 \\
+\rowcolor{tblzebra}\textbf{Total} &  & \textbf{19.693} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+El turno C fue el más productivo y el B el más bajo, con unos 2.500 unidades menos que el C.
+
+
+
+Cada turno se cuenta completo, aunque el C termine el 21 de septiembre. Si se toma solo el día calendario (00:00 a 24:00 del 20), las cifras cambian así. Entre las 00:00 y las 06:00 corrió el final del turno C del 19, que aportó 2.226 unidades. Entre las 22:00 y las 24:00 corrieron las primeras dos horas del turno C del 20, que aportaron 5.575 unidades.
+
+
+
+¿Quiere que revise el desperdicio o los paros de esos turnos para ver por qué el B quedó por debajo?}
+
+\fichapregunta{6}{Histórica}{¿Qué órdenes de trabajo se ejecutaron en la Línea B de Empaque Trigo entre el 15 y el 21 de septiembre de 2026?}{D1.3}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, corridas iniciadas del 15 al 21 de septiembre de 2026: 21 órdenes (WO02, WO06, WO10, WO15, WO20, WO21, WO25, WO31, WO36, WO39, WO43, WO47, WO52, WO56, WO59, WO63, WO66, WO72, WO75, WO79, WO84). Iniciadas el 21: WO75, WO79, WO84. Terminan después del 21: WO84.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{27,87}{0,4}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_production\_orders} 0,39~s}{Entre el 15 y el 21 de septiembre de 2026 se ejecutaron \textbf{18 órdenes de trabajo} en la Línea B de Empaque Trigo: tres por día (una por turno) del 15 al 20 de septiembre. El día 21 solo aparece el cierre de la WO72, que empezó la noche anterior; no hay órdenes que comiencen ese día.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{OT} & \textbf{Producto} & \textbf{Inicio real} & \textbf{Fin real} & \textbf{Planeado} & \textbf{Real} & \textbf{Cumplimiento} \\
+\midrule
+WO02 & 100202 – Libra & 15/09 06:00 & 15/09 09:41 & 5.343 & 5.116 & 95,8 \% \\
+\rowcolor{tblzebra}WO06 & 100203 – Kilo & 15/09 14:03 & 15/09 17:03 & 8.967 & 8.657 & 96,5 \% \\
+WO10 & 100202 – Libra & 15/09 22:01 & 16/09 01:47 & 7.110 & 6.876 & 96,7 \% \\
+\rowcolor{tblzebra}WO15 & 100202 – Libra & 16/09 06:05 & 16/09 09:58 & 4.039 & 3.979 & 98,5 \% \\
+WO20 & 100203 – Kilo & 16/09 14:09 & 16/09 17:59 & 6.293 & 5.956 & 94,6 \% \\
+\rowcolor{tblzebra}WO21 & 100202 – Libra & 16/09 22:04 & 17/09 00:40 & 4.067 & 4.034 & 99,2 \% \\
+WO25 & 100202 – Libra & 17/09 06:00 & 17/09 10:09 & 3.451 & 3.420 & 99,1 \% \\
+\rowcolor{tblzebra}WO31 & 100203 – Kilo & 17/09 14:06 & 17/09 18:09 & 8.215 & 7.610 & 92,6 \% \\
+WO36 & 100202 – Libra & 17/09 22:08 & 18/09 01:34 & 7.453 & 7.280 & 97,7 \% \\
+\rowcolor{tblzebra}WO39 & 100202 – Libra & 18/09 06:09 & 18/09 10:12 & 4.950 & 4.702 & 95,0 \% \\
+WO43 & 100203 – Kilo & 18/09 14:02 & 18/09 17:52 & 7.006 & 6.849 & 97,8 \% \\
+\rowcolor{tblzebra}WO47 & 100202 – Libra & 18/09 22:07 & 19/09 00:46 & 8.396 & 8.120 & 96,7 \% \\
+WO52 & 100202 – Libra & 19/09 06:08 & 19/09 09:08 & 3.754 & 3.584 & 95,5 \% \\
+\rowcolor{tblzebra}WO56 & 100203 – Kilo & 19/09 14:09 & 19/09 17:39 & 5.413 & 5.230 & 96,6 \% \\
+WO59 & 100202 – Libra & 19/09 22:00 & 20/09 01:28 & 5.264 & 4.875 & 92,6 \% \\
+\rowcolor{tblzebra}WO63 & 100202 – Libra & 20/09 06:10 & 20/09 09:27 & 5.546 & 5.278 & 95,2 \% \\
+WO66 & 100203 – Kilo & 20/09 14:01 & 20/09 17:51 & 4.416 & 4.317 & 97,8 \% \\
+\rowcolor{tblzebra}WO72 & 100202 – Libra & 20/09 22:08 & 21/09 00:58 & 6.643 & 6.311 & 95,0 \% \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Los productos son 100202 (Trigo – Libra – 24 Bags per Baler) y 100203 (Trigo – Kilo – 20 Bags per Baler). Las cantidades están en unidades.
+
+
+
+\textbf{Resumen de la semana:}
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Total:} 106.326 unidades planeadas y 102.194 producidas, un cumplimiento del 96,1 \%.
+\item \textbf{Producto 100202 (12 órdenes):} 63.575 de 66.016 unidades, un 96,3 \%.
+\item \textbf{Producto 100203 (6 órdenes):} 38.619 de 40.310 unidades, un 95,8 \%.
+\item \textbf{Mejor orden:} WO21, con 99,2 \%.
+\item \textbf{Órdenes más bajas:} WO59 y WO31, ambas con 92,6 \%.
+\end{itemize}
+
+
+
+Ninguna orden alcanzó la cantidad planeada. Sin embargo, todas terminaron entre 3 y 4 horas después de empezar, aunque cada una tenía programada una ventana de 8 horas. Esto podría deberse a cómo se registra el cierre en el MES o a paros al final del turno. Si quieres, reviso los paros de la línea en esas mismas fechas para ver si explican la diferencia.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{31,24}{0,38}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_production\_orders} 0,37~s}{Entre el 15 y el 21 de septiembre de 2026, la Línea B de Empaque Trigo ejecutó \textbf{18 órdenes de trabajo}, tres por día, una por turno (alrededor de las 06:00, las 14:00 y las 22:00):
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{OT} & \textbf{Producto} & \textbf{Inicio real} & \textbf{Fin real} & \textbf{Planeado} & \textbf{Real} & \textbf{Cumpl.} \\
+\midrule
+WO02 & Libra (100202) & 15-sep 06:00 & 15-sep 09:41 & 5.343 & 5.116 & 95,8 \% \\
+\rowcolor{tblzebra}WO06 & Kilo (100203) & 15-sep 14:03 & 15-sep 17:03 & 8.967 & 8.657 & 96,5 \% \\
+WO10 & Libra & 15-sep 22:01 & 16-sep 01:47 & 7.110 & 6.876 & 96,7 \% \\
+\rowcolor{tblzebra}WO15 & Libra & 16-sep 06:05 & 16-sep 09:58 & 4.039 & 3.979 & 98,5 \% \\
+WO20 & Kilo & 16-sep 14:09 & 16-sep 17:59 & 6.293 & 5.956 & 94,6 \% \\
+\rowcolor{tblzebra}WO21 & Libra & 16-sep 22:04 & 17-sep 00:40 & 4.067 & 4.034 & 99,2 \% \\
+WO25 & Libra & 17-sep 06:00 & 17-sep 10:09 & 3.451 & 3.420 & 99,1 \% \\
+\rowcolor{tblzebra}WO31 & Kilo & 17-sep 14:06 & 17-sep 18:09 & 8.215 & 7.610 & 92,6 \% \\
+WO36 & Libra & 17-sep 22:08 & 18-sep 01:34 & 7.453 & 7.280 & 97,7 \% \\
+\rowcolor{tblzebra}WO39 & Libra & 18-sep 06:09 & 18-sep 10:12 & 4.950 & 4.702 & 95,0 \% \\
+WO43 & Kilo & 18-sep 14:02 & 18-sep 17:52 & 7.006 & 6.849 & 97,8 \% \\
+\rowcolor{tblzebra}WO47 & Libra & 18-sep 22:07 & 19-sep 00:46 & 8.396 & 8.120 & 96,7 \% \\
+WO52 & Libra & 19-sep 06:08 & 19-sep 09:08 & 3.754 & 3.584 & 95,5 \% \\
+\rowcolor{tblzebra}WO56 & Kilo & 19-sep 14:09 & 19-sep 17:39 & 5.413 & 5.230 & 96,6 \% \\
+WO59 & Libra & 19-sep 22:00 & 20-sep 01:28 & 5.264 & 4.875 & 92,6 \% \\
+\rowcolor{tblzebra}WO63 & Libra & 20-sep 06:10 & 20-sep 09:27 & 5.546 & 5.278 & 95,2 \% \\
+WO66 & Kilo & 20-sep 14:01 & 20-sep 17:51 & 4.416 & 4.317 & 97,8 \% \\
+\rowcolor{tblzebra}WO72 & Libra & 20-sep 22:08 & 21-sep 00:58 & 6.643 & 6.311 & 95,0 \% \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Libra corresponde a "Trigo - Libra - 24 Bags per Baler" y Kilo a "Trigo - Kilo - 20 Bags per Baler". Las cantidades están en unidades.
+
+
+
+\textbf{Totales de la semana:} se planearon 106.326 unidades y se produjeron 102.194, un cumplimiento del \textbf{96,1 \%}. Por producto:
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Libra:} 12 órdenes, 63.575 de 66.016 unidades (96,3 \%).
+\item \textbf{Kilo:} 6 órdenes, 38.619 de 40.310 unidades (95,8 \%).
+\end{itemize}
+
+
+
+\textbf{Puntos a tener en cuenta:}
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Ninguna orden alcanzó la cantidad planeada.} Los cumplimientos más bajos son los de \textbf{WO31} y \textbf{WO59}, ambos con un 92,6 \%.
+\item \textbf{Las órdenes terminaron mucho antes de lo previsto.} Todas duraron entre 2,5 y 4 horas, frente a ventanas planeadas de 8 horas. Es posible que esas ventanas representen el turno completo y no el tiempo de corrida esperado. También podría haber paros o un cierre anticipado de las órdenes.
+\item \textbf{No aparece ninguna orden que haya iniciado el 21 de septiembre.} Esto puede deberse a que la consulta solo tomó hasta las 00:00 de ese día, o a que la línea no programó producción ese domingo.
+\end{itemize}
+
+
+
+¿Quieres que revise los paros u el OEE de la línea en esa semana para explicar las diferencias entre lo planeado y lo real?}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{30,46}{0,87}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_production\_orders} 0,39~s \;\textbullet\; \texttt{get\_production\_orders} 0,47~s}{En la \textbf{Línea B de Empaque Trigo} se ejecutaron \textbf{21 órdenes de trabajo} entre el 15 y el 21 de septiembre de 2026, con tres turnos diarios y alternancia entre las dos presentaciones de producto.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{OT} & \textbf{Producto} & \textbf{Planeado} & \textbf{Real} & \textbf{Cumpl.} & \textbf{Inicio real} & \textbf{Fin real} \\
+\midrule
+WO02 & 100202 Libra & 5.343 & 5.116 & 95,8\% & 15-sep 06:00 & 15-sep 09:41 \\
+\rowcolor{tblzebra}WO06 & 100203 Kilo & 8.967 & 8.657 & 96,5\% & 15-sep 14:03 & 15-sep 17:03 \\
+WO10 & 100202 Libra & 7.110 & 6.876 & 96,7\% & 15-sep 22:01 & 16-sep 01:47 \\
+\rowcolor{tblzebra}WO15 & 100202 Libra & 4.039 & 3.979 & 98,5\% & 16-sep 06:05 & 16-sep 09:58 \\
+WO20 & 100203 Kilo & 6.293 & 5.956 & 94,6\% & 16-sep 14:09 & 16-sep 17:59 \\
+\rowcolor{tblzebra}WO21 & 100202 Libra & 4.067 & 4.034 & 99,2\% & 16-sep 22:04 & 17-sep 00:40 \\
+WO25 & 100202 Libra & 3.451 & 3.420 & 99,1\% & 17-sep 06:00 & 17-sep 10:09 \\
+\rowcolor{tblzebra}WO31 & 100203 Kilo & 8.215 & 7.610 & 92,6\% & 17-sep 14:06 & 17-sep 18:09 \\
+WO36 & 100202 Libra & 7.453 & 7.280 & 97,7\% & 17-sep 22:08 & 18-sep 01:34 \\
+\rowcolor{tblzebra}WO39 & 100202 Libra & 4.950 & 4.702 & 95,0\% & 18-sep 06:09 & 18-sep 10:12 \\
+WO43 & 100203 Kilo & 7.006 & 6.849 & 97,8\% & 18-sep 14:02 & 18-sep 17:52 \\
+\rowcolor{tblzebra}WO47 & 100202 Libra & 8.396 & 8.120 & 96,7\% & 18-sep 22:07 & 19-sep 00:46 \\
+WO52 & 100202 Libra & 3.754 & 3.584 & 95,5\% & 19-sep 06:08 & 19-sep 09:08 \\
+\rowcolor{tblzebra}WO56 & 100203 Kilo & 5.413 & 5.230 & 96,6\% & 19-sep 14:09 & 19-sep 17:39 \\
+WO59 & 100202 Libra & 5.264 & 4.875 & 92,6\% & 19-sep 22:00 & 20-sep 01:28 \\
+\rowcolor{tblzebra}WO63 & 100202 Libra & 5.546 & 5.278 & 95,2\% & 20-sep 06:10 & 20-sep 09:27 \\
+WO66 & 100203 Kilo & 4.416 & 4.317 & 97,8\% & 20-sep 14:01 & 20-sep 17:51 \\
+\rowcolor{tblzebra}WO72 & 100202 Libra & 6.643 & 6.311 & 95,0\% & 20-sep 22:08 & 21-sep 00:58 \\
+WO75 & 100202 Libra & 6.762 & 6.621 & 97,9\% & 21-sep 06:06 & 21-sep 09:00 \\
+\rowcolor{tblzebra}WO79 & 100203 Kilo & 8.624 & 8.161 & 94,6\% & 21-sep 14:04 & 21-sep 17:33 \\
+WO84 & 100202 Libra & 7.050 & 6.780 & 96,2\% & 21-sep 22:04 & 22-sep 02:17 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{Resumen de la semana:} se planearon 128.762 unidades y se produjeron 123.756, un cumplimiento global del \textbf{96,1\%}. Por producto, Trigo Libra 24 Bags (14 órdenes) llegó al 96,4\% (76.976 de 79.828), y Trigo Kilo 20 Bags (7 órdenes) al 95,6\% (46.780 de 48.934). Las órdenes con menor cumplimiento fueron WO31 y WO59 (ambas 92,6\%), y las mejores WO21 y WO25 (más del 99\%). Ninguna orden alcanzó el 100\% de lo planeado.
+
+
+
+Hay dos detalles que conviene tener en cuenta. Todas las órdenes terminaron entre 2,5 y 4 horas después de iniciar, aunque cada una tenía programada una ventana de 8 horas, así que la línea quedó sin producir buena parte de cada turno. Además, WO84 empezó el 21 pero cerró el 22 de septiembre a las 02:17.
+
+
+
+Si quieres, puedo revisar los paros de esa semana para ver qué explica el faltante en WO31 y WO59.}
+
+\fichapregunta{7}{Histórica}{¿Cuánto produjo cada día la Línea A de Empaque Maíz del 15 al 21 de septiembre de 2026?}{D3.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, total por día del 15 al 21 de septiembre de 2026: 15 15.584; 16 22.693; 17 18.814; 18 12.578; 19 16.317; 20 21.299; 21 20.288; suma 127.573 total (124.914 buenas, 2.659 desperdicio).}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{13,78}{1,16}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,15~s}{La Línea A de Empaque Maíz produjo \textbf{127.573 unidades en total} entre el 15 y el 21 de septiembre de 2026. De ellas, 124.914 fueron unidades buenas y 2.659 fueron desperdicio, un 2,1 \%.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Total producido} & \textbf{Unidades buenas} & \textbf{Desperdicio} & \textbf{\% desperdicio} \\
+\midrule
+Mar 15 & 15.584 & 15.277 & 307 & 2,0 \% \\
+\rowcolor{tblzebra}Mié 16 & 22.693 & 22.288 & 405 & 1,8 \% \\
+Jue 17 & 18.814 & 18.426 & 388 & 2,1 \% \\
+\rowcolor{tblzebra}Vie 18 & 12.578 & 12.340 & 238 & 1,9 \% \\
+Sáb 19 & 16.317 & 15.904 & 413 & 2,5 \% \\
+\rowcolor{tblzebra}Dom 20 & 21.299 & 20.737 & 562 & 2,6 \% \\
+Lun 21 & 20.288 & 19.942 & 346 & 1,7 \% \\
+\rowcolor{tblzebra}\textbf{Total} & \textbf{127.573} & \textbf{124.914} & \textbf{2.659} & \textbf{2,1 \%} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+El día de mayor producción fue el miércoles 16, con 22.693 unidades. El de menor producción fue el viernes 18, con 12.578, casi la mitad. El fin de semana (sábado 19 y domingo 20) tuvo el desperdicio relativo más alto de la semana, por encima del 2,5 \%.
+
+
+
+Los datos son de las 00:00 a las 24:00 de cada día, en hora de Colombia, con el conteo de la Enfardadora. Solo incluyen la producción registrada dentro de una corrida.
+
+
+
+¿Quieres que revise los paros o el OEE del viernes 18 para entender por qué la producción cayó ese día?}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{13,97}{0,93}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 0,92~s}{La Línea A de Empaque Maíz produjo \textbf{127.573 unidades} en total entre el 15 y el 21 de septiembre de 2026. De ellas, 124.914 fueron buenas y 2.659 fueron desperdicio (2,1 \%).
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Total producido} & \textbf{Unidades buenas} & \textbf{Desperdicio} & \textbf{\% desperdicio} \\
+\midrule
+Mar 15 sep & 15.584 & 15.277 & 307 & 2,0 \% \\
+\rowcolor{tblzebra}Mié 16 sep & 22.693 & 22.288 & 405 & 1,8 \% \\
+Jue 17 sep & 18.814 & 18.426 & 388 & 2,1 \% \\
+\rowcolor{tblzebra}Vie 18 sep & 12.578 & 12.340 & 238 & 1,9 \% \\
+Sáb 19 sep & 16.317 & 15.904 & 413 & 2,5 \% \\
+\rowcolor{tblzebra}Dom 20 sep & 21.299 & 20.737 & 562 & 2,6 \% \\
+Lun 21 sep & 20.288 & 19.942 & 346 & 1,7 \% \\
+\rowcolor{tblzebra}\textbf{Total} & \textbf{127.573} & \textbf{124.914} & \textbf{2.659} & \textbf{2,1 \%} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+El día de mayor producción fue el miércoles 16, con 22.693 unidades. El viernes 18 fue el más bajo, con 12.578, cerca de un 45 \% menos. El domingo 20 tuvo el desperdicio más alto, tanto en unidades (562) como en porcentaje (2,6 \%).
+
+
+
+Los totales corresponden al conteo de la línea, que es el mismo de la Enfardadora, y solo incluyen la producción registrada dentro de corridas. Los días van de medianoche a medianoche, hora de Colombia.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{13,57}{1,02}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,01~s}{Producción diaria de la Línea A de Empaque Maíz del 15 al 21 de septiembre de 2026, en unidades y hora de Colombia, según el conteo de línea (Enfardadora):
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Total producido} & \textbf{Unidades buenas} & \textbf{Desperdicio} & \textbf{\% desperdicio} \\
+\midrule
+Mar 15 & 15.584 & 15.277 & 307 & 1,97 \% \\
+\rowcolor{tblzebra}Mié 16 & \textbf{22.693} & 22.288 & 405 & 1,78 \% \\
+Jue 17 & 18.814 & 18.426 & 388 & 2,06 \% \\
+\rowcolor{tblzebra}Vie 18 & 12.578 & 12.340 & 238 & 1,89 \% \\
+Sáb 19 & 16.317 & 15.904 & 413 & 2,53 \% \\
+\rowcolor{tblzebra}Dom 20 & 21.299 & 20.737 & 562 & 2,64 \% \\
+Lun 21 & 20.288 & 19.942 & 346 & 1,71 \% \\
+\rowcolor{tblzebra}\textbf{Total} & \textbf{127.573} & \textbf{124.914} & \textbf{2.659} & \textbf{2,08 \%} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+En la semana la línea produjo 127.573 unidades, un promedio de unas 18.200 por día. El día más alto fue el miércoles 16, con 22.693 unidades. El más bajo fue el viernes 18, con 12.578 unidades, cerca de un 30 \% por debajo del promedio. El desperdicio estuvo por encima del promedio el fin de semana: 2,5 \% el sábado y 2,6 \% el domingo.
+
+
+
+Estos valores solo incluyen la producción registrada dentro de corridas. ¿Quieres que revise los paros o el OEE del viernes 18 para ver por qué bajó la producción?}
+
+\fichapregunta{8}{Histórica}{¿Qué línea de Empaque Maíz tuvo mejor OEE entre el 15 y el 21 de septiembre de 2026?}{D2.1}{\texttt{mes-history-mcp}}{15 al 21 de septiembre de 2026. Línea A de Empaque Maíz: OEE 80,0 \% (disponibilidad 95,4 \%, rendimiento 85,5 \%, calidad 97,9 \%); 21 corridas, 131.184 total, 128.486 buenas, 2.698 desperdicio. Línea B de Empaque Maíz: OEE 78,1 \% (disponibilidad 95,6 \%, rendimiento 83,3 \%, calidad 98,1 \%); 21 corridas, 126.432 total, 124.056 buenas, 2.376 desperdicio. Mejor OEE: Línea A de Empaque Maíz.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{22,11}{0,92}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,52~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s}{La \textbf{Línea A} de Empaque Maíz tuvo el mejor OEE de la semana del 15 al 21 de septiembre de 2026: \textbf{80,0 \%}, frente a \textbf{78,1 \%} de la Línea B.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Indicador} & \textbf{Línea A} & \textbf{Línea B} \\
+\midrule
+\textbf{OEE} & \textbf{80,0 \%} & 78,1 \% \\
+\rowcolor{tblzebra}Disponibilidad & 95,4 \% & 95,6 \% \\
+Rendimiento & 85,5 \% & 83,3 \% \\
+\rowcolor{tblzebra}Calidad & 97,9 \% & 98,1 \% \\
+Unidades producidas & 131.184 & 126.432 \\
+\rowcolor{tblzebra}Desperdicio & 2.698 & 2.376 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+La diferencia viene del \textbf{rendimiento}: la Línea A produjo más cerca de su velocidad estándar (85,5 \% frente a 83,3 \%). En disponibilidad y calidad la Línea B fue ligeramente mejor, pero no lo suficiente para compensar.
+
+
+
+Día a día la pelea fue pareja. La Línea A ganó el 15, 16, 20 y 21; su mejor día fue el 15 (86,2 \%). La Línea B ganó el 17, 18 y 19; el 18 fue su mejor día (83,3 \%). El día más flojo de la semana fue el 20 para la Línea B (71,1 \%), por cerca de 57 minutos de paros no programados.
+
+
+
+El OEE semanal lo calculé sumando tiempos y conteos de las 21 corridas de cada línea y recalculando cada componente a partir de esas sumas, no promediando los porcentajes diarios. ¿Quieres que revise los motivos de paro o el rendimiento por producto para entender la brecha?}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{20,3}{0,75}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,32~s \;\textbullet\; \texttt{get\_oee\_history} 0,41~s}{La \textbf{Línea A} tuvo mejor OEE en Empaque Maíz entre el 15 y el 21 de septiembre de 2026: \textbf{80,0 \%}, frente a \textbf{78,1 \%} de la Línea B.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Indicador (semana)} & \textbf{Línea A} & \textbf{Línea B} \\
+\midrule
+Disponibilidad & 95,4 \% & 95,6 \% \\
+\rowcolor{tblzebra}Rendimiento & 85,5 \% & 83,3 \% \\
+Calidad & 97,9 \% & 98,1 \% \\
+\rowcolor{tblzebra}\textbf{OEE} & \textbf{80,0 \%} & \textbf{78,1 \%} \\
+Unidades buenas & 128.486 & 124.056 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+La ventaja de la Línea A viene casi toda del \textbf{rendimiento}: en disponibilidad y calidad la Línea B fue incluso un poco mejor, pero corrió más lejos de su velocidad estándar.
+
+
+
+Por día, la Línea A tuvo su mejor jornada el 15 de septiembre (86,2 \%) y la peor el 19 (74,2 \%). La Línea B tuvo su mejor día el 18 (83,3 \%) y la peor el 20 (71,1 \%), con más paros no programados y menor rendimiento.
+
+
+
+El OEE semanal lo recalculé sumando tiempos y conteos de los siete días; no es un promedio de los porcentajes diarios. Las corridas se asignan al día en que empiezan.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{20,36}{1,07}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,47~s \;\textbullet\; \texttt{get\_oee\_history} 0,59~s}{\textbf{La Línea A tuvo el mejor OEE en Empaque Maíz del 15 al 21 de septiembre de 2026: 80,0 \% frente a 78,1 \% de la Línea B.}
+
+
+
+El OEE semanal está recalculado a partir de los tiempos y conteos sumados de las 21 corridas de cada línea, no como promedio de los OEE diarios.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Indicador} & \textbf{Línea A} & \textbf{Línea B} \\
+\midrule
+\textbf{OEE} & \textbf{80,0 \%} & 78,1 \% \\
+\rowcolor{tblzebra}Disponibilidad & 95,4 \% & 95,6 \% \\
+Rendimiento & 85,5 \% & 83,3 \% \\
+\rowcolor{tblzebra}Calidad & 97,9 \% & 98,1 \% \\
+Unidades totales & 131.184 & 126.432 \\
+\rowcolor{tblzebra}Unidades buenas & 128.486 & 124.056 \\
+Desperdicio & 2.698 & 2.376 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+La diferencia viene casi toda del rendimiento. La Línea A trabajó más cerca de la velocidad estándar y produjo unas 4.400 unidades buenas más. La Línea B fue un poco mejor en disponibilidad y en calidad, pero no lo suficiente para compensar.
+
+
+
+Por días, la Línea A fue más irregular. Su mejor día fue el 15 de septiembre, con 86,2 \%, y el peor el 19, con 74,2 \%. La Línea B se mantuvo entre 77 \% y 83 \% casi toda la semana, pero cayó a 71,1 \% el 20 de septiembre por paros no programados.
+
+
+
+¿Quieres que revise los motivos de paro de alguno de esos días?}
+
+\fichapregunta{9}{Ambigua}{¿Cuánto produjo la Línea A el 18 de septiembre de 2026?}{D1.3}{\texttt{mes-history-mcp}}{Pregunta ambigua: hay dos Líneas A. 18 de septiembre de 2026 (total/buenas/desperdicio): Empaque Maíz 12.578/12.340/238; Empaque Trigo 19.898/19.454/444.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{17,5}{3,53}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,94~s \;\textbullet\; \texttt{get\_count\_history} 1,57~s}{Hay una Línea A en cada área de empaque, así que te dejo las dos para el 18 de septiembre de 2026 (día calendario, 00:00 a 24:00 hora de Colombia):
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Área} & \textbf{Total producido (Infeed)} & \textbf{Unidades buenas (Outfeed)} & \textbf{Desperdicio} & \textbf{\% desperdicio} \\
+\midrule
+Empaque Maíz – Línea A & 12.578 & 12.340 & 238 & 1,9 \% \\
+\rowcolor{tblzebra}Empaque Trigo – Línea A & 19.898 & 19.454 & 444 & 2,2 \% \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+En Empaque Maíz, el desglose por turno dentro de ese día fue el siguiente:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Tramo del día} & \textbf{Turno} & \textbf{Unidades buenas} & \textbf{Desperdicio} \\
+\midrule
+00:00–06:00 & Final del turno C del 17 & 1.800 & 51 \\
+\rowcolor{tblzebra}06:00–14:00 & A & 4.082 & 61 \\
+14:00–22:00 & B & 4.050 & 83 \\
+\rowcolor{tblzebra}22:00–24:00 & Inicio del turno C del 18 & 2.408 & 43 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+El conteo es el de la Enfardadora y solo incluye producción asociada a una corrida.
+
+
+
+¿Cuál de las dos líneas te interesa? Así puedo darte el detalle por turno o por empacadora.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{13,58}{3,79}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,76~s \;\textbullet\; \texttt{get\_count\_history} 2,02~s}{Hay dos "Línea A" en el sistema, una en cada área de empaque, así que te dejo ambas. Estos son los datos del 18 de septiembre de 2026, de 00:00 a 24:00 en hora de Colombia:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Área} & \textbf{Total producido} & \textbf{Unidades buenas} & \textbf{Desperdicio} \\
+\midrule
+Empaque Maíz – Línea A & 12.578 & 12.340 & 238 ($\approx$1,9 \%) \\
+\rowcolor{tblzebra}Empaque Trigo – Línea A & 19.898 & 19.454 & 444 ($\approx$2,2 \%) \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Las cifras corresponden al conteo de la línea, que es el de la Enfardadora, y solo incluyen la producción asociada a corridas.
+
+
+
+¿Quieres que lo desglose por hora o turno, o por cada Empacadora?}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{13,17}{3,16}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,58~s \;\textbullet\; \texttt{get\_count\_history} 1,57~s}{Hay una Línea A en dos áreas (Empaque Maíz y Empaque Trigo), así que consulto ambas.
+
+
+
+Hay una Línea A en cada área, así que aquí tienes las dos para el 18 de septiembre de 2026 (día completo, hora de Colombia):
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Línea A} & \textbf{Total producido} & \textbf{Unidades buenas} & \textbf{Desperdicio} \\
+\midrule
+Empaque Maíz & 12.578 & 12.340 & 238 ($\approx$1,9 \%) \\
+\rowcolor{tblzebra}Empaque Trigo & 19.898 & 19.454 & 444 ($\approx$2,2 \%) \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Estas cifras son el conteo de la línea (el mismo de la Enfardadora) y solo incluyen la producción asociada a corridas.
+
+
+
+¿Quieres el detalle por turno u hora, o el desglose por empacadora?}
+
+\fichapregunta{10}{Ambigua}{¿Cuántas unidades produjo la empacadora el 18 de septiembre de 2026?}{D1.3}{\texttt{mes-history-mcp}}{Pregunta ambigua: hay ocho empacadoras (Empacadora 1 y 2 en cada una de las cuatro líneas). Las celdas de empacadora no tienen conteos el 18 de septiembre de 2026 (0 filas en counthistory). Total por línea ese día: Línea A de Empaque Maíz 12.578; Línea B de Empaque Maíz 19.956; Línea A de Empaque Trigo 19.898; Línea B de Empaque Trigo 20.633.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{70,08}{24,16}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 2,11~s \;\textbullet\; \texttt{get\_count\_history} 2,33~s \;\textbullet\; \texttt{get\_count\_history} 1,89~s \;\textbullet\; \texttt{get\_count\_history} 2,21~s \;\textbullet\; \texttt{get\_count\_history} 1,69~s \;\textbullet\; \texttt{get\_count\_history} 1,71~s \;\textbullet\; \texttt{get\_count\_history} 1,79~s \;\textbullet\; \texttt{get\_count\_history} 2,22~s \;\textbullet\; \texttt{get\_oee\_history} 0,43~s \;\textbullet\; \texttt{get\_count\_history} 1,12~s \;\textbullet\; \texttt{get\_count\_history} 1,69~s \;\textbullet\; \texttt{get\_count\_history} 1,54~s \;\textbullet\; \texttt{get\_count\_history} 3,36~s}{"La empacadora" puede ser cualquiera de las 8 (2 áreas $\times$ 2 líneas $\times$ Empacadora 1 y 2), así que consulto todas para ese día.
+
+
+
+Ninguna empacadora tiene producción registrada ese día. Reviso si hubo corridas en las líneas para descartar un problema de datos.
+
+
+
+La línea sí produjo ese día, pero el conteo por empacadora vino vacío. Verifico si hay datos por celda en otros días.
+
+
+
+El historial por empacadora solo empieza el 23 de septiembre, así que para el 18 únicamente hay conteo a nivel de línea. Consulto las demás líneas.
+
+
+
+No tengo un dato por empacadora para el 18 de septiembre de 2026: el historial a nivel de Empacadora 1 y Empacadora 2 está vacío ese día en las cuatro líneas. El conteo por celda empieza el 23 de septiembre (ese día la Empacadora 1 de Maíz Línea A registró apenas 299 unidades), así que antes de esa fecha solo existe el conteo de línea.
+
+
+
+Las líneas sí produjeron el 18 de septiembre. Este es su conteo, que corresponde a la Enfardadora, no a cada empacadora:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Área / Línea} & \textbf{Total producido} & \textbf{Buenas} & \textbf{Desperdicio} \\
+\midrule
+Empaque Maíz – Línea A & 11.796 & 11.590 & 206 \\
+\rowcolor{tblzebra}Empaque Maíz – Línea B & 19.956 & 19.631 & 325 \\
+Empaque Trigo – Línea A & 19.898 & 19.454 & 444 \\
+\rowcolor{tblzebra}Empaque Trigo – Línea B & 20.633 & 20.237 & 396 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Si me dices a qué línea te refieres, puedo revisar sus órdenes de producción o el OEE de ese día. Si necesitas el dato por empacadora, habría que buscarlo fuera del MES, por ejemplo en registros del PLC o reportes de turno.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{41,27}{11,69}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,88~s \;\textbullet\; \texttt{get\_count\_history} 1,87~s \;\textbullet\; \texttt{get\_count\_history} 2,08~s \;\textbullet\; \texttt{get\_count\_history} 1,83~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s \;\textbullet\; \texttt{get\_count\_history} 1,80~s \;\textbullet\; \texttt{get\_count\_history} 1,79~s}{No pude encontrar un conteo por empacadora para el 18 de septiembre de 2026. Consulté la Empacadora 1 y la Empacadora 2 en Empaque Maíz Línea A, la Empacadora 1 en Maíz Línea B y las dos de Empaque Trigo Línea A. Todas devolvieron cero registros ese día. No se trata de producción cero, porque la línea sí trabajó. Parece que el sistema no guardó el historial a nivel de celda (empacadora) para esa fecha.
+
+
+
+Para Empaque Maíz, Línea A, sí hay datos de toda la línea. Ese conteo es el de la Enfardadora, al final del proceso:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Conteo} & \textbf{Unidades} \\
+\midrule
+Total producido & 12.578 \\
+\rowcolor{tblzebra}Unidades buenas & 12.340 \\
+Desperdicio & 238 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+El reporte de OEE de ese mismo día da una cifra menor: 11.796 producidas, 11.590 buenas, 206 de desperdicio, en 3 corridas y con un OEE de 79,1 \%. La diferencia probablemente viene de cómo se asigna cada corrida al día. El OEE cuenta cada corrida completa en el día en que empezó. El conteo por muestras, en cambio, suma solo lo que se produjo dentro del 18. Si una corrida empezó el 17 y siguió el 18, su producción del 18 entra en la primera cifra pero no en la segunda.
+
+
+
+¿A qué área y línea pertenece la empacadora que te interesa? Con eso reviso esa línea en detalle, o miro si hay datos de la empacadora en días cercanos.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{38,05}{10,24}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,60~s \;\textbullet\; \texttt{get\_count\_history} 1,63~s \;\textbullet\; \texttt{get\_count\_history} 2,17~s \;\textbullet\; \texttt{get\_count\_history} 1,55~s \;\textbullet\; \texttt{get\_oee\_history} 0,52~s \;\textbullet\; \texttt{get\_count\_history} 1,75~s \;\textbullet\; \texttt{get\_count\_history} 1,00~s}{No encontré registros de producción de ninguna empacadora para el 18 de septiembre de 2026. Revisé la Empacadora 1 y la Empacadora 2 de Empaque Maíz Línea A, la Empacadora 1 de Maíz Línea B y la Empacadora 1 de Trigo Línea A, y ninguna tiene muestras ese día. Además, el historial por celda está casi vacío: la Empacadora 1 de Maíz A solo tiene datos del 23 de septiembre (299 unidades) entre el 1 de septiembre y hoy. Parece que el conteo de las empacadoras no se está guardando con regularidad en el historial.
+
+
+
+Lo que sí está registrado es el conteo de la línea, que corresponde a la Enfardadora. Para \textbf{Empaque Maíz, Línea A}, el 18 de septiembre fue:
+
+
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{12.578 unidades} en total (Infeed)
+\item \textbf{12.340 unidades buenas} (Outfeed)
+\item \textbf{238 de desperdicio}
+\end{itemize}
+
+
+
+El reporte de OEE de ese día muestra una cifra un poco menor (11.796 unidades) porque asigna cada corrida completa al día en que empezó. En cambio, el conteo por intervalo suma solo lo que se produjo dentro del día.
+
+
+
+¿Te refieres a una línea o empacadora específica, por ejemplo de Trigo o de la Línea B? Así te saco el dato exacto de esa.}
+
+\fichapregunta{11}{Ambigua}{Dame el OEE de la línea de maíz el 18 de septiembre de 2026.}{D1.3}{\texttt{mes-history-mcp}}{Pregunta ambigua: hay dos líneas de maíz. 18 de septiembre de 2026. Línea A: OEE 79,1 \% (disponibilidad 100,0 \%, rendimiento 80,5 \%, calidad 98,3 \%); 3 corridas, 11.796 total, 11.590 buenas, 206 desperdicio. Línea B: OEE 83,3 \% (disponibilidad 98,3 \%, rendimiento 86,1 \%, calidad 98,4 \%); 3 corridas, 17.567 total, 17.290 buenas, 277 desperdicio.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{13,35}{0,7}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,24~s \;\textbullet\; \texttt{get\_oee\_history} 0,45~s}{En Empaque Maíz hay dos líneas, así que te dejo el OEE de ambas para el 18 de septiembre de 2026 (día completo, hora de Colombia):
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{} & \textbf{Línea A} & \textbf{Línea B} \\
+\midrule
+\textbf{OEE} & \textbf{79,1 \%} & \textbf{83,3 \%} \\
+\rowcolor{tblzebra}Disponibilidad & 100 \% & 98,3 \% \\
+Rendimiento & 80,5 \% & 86,1 \% \\
+\rowcolor{tblzebra}Calidad & 98,3 \% & 98,4 \% \\
+Producción total & 11.796 und & 17.567 und \\
+\rowcolor{tblzebra}Unidades buenas & 11.590 & 17.290 \\
+Desperdicio & 206 & 277 \\
+\rowcolor{tblzebra}Corridas & 3 & 3 \\
+Tiempo en marcha & $\approx$ 9,7 h & $\approx$ 9,2 h \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+En las dos líneas el factor que más pesa es el \textbf{rendimiento}: la Línea A no tuvo paros registrados pero corrió al 80,5 \% de la velocidad estándar, y la Línea B, con apenas \textasciitilde{}9,5 min de paro no programado y \textasciitilde{}3 min de paro programado, corrió al 86,1 \%. La calidad estuvo pareja en ambas, alrededor del 98 \%.
+
+
+
+Los valores se calculan sumando tiempos y conteos de las corridas que empezaron ese día y recalculando cada factor, sin promediar porcentajes. ¿Quieres que revise los paros o el detalle por corrida para ver de dónde viene la pérdida de rendimiento en la Línea A?}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{30,58}{0,57}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,24~s \;\textbullet\; \texttt{get\_oee\_history} 0,32~s}{El área de Empaque Maíz tiene dos líneas, así que te dejo ambas para el 18 de septiembre de 2026 (día completo, hora de Colombia):
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Indicador} & \textbf{Línea A} & \textbf{Línea B} \\
+\midrule
+\textbf{OEE} & \textbf{79,1 \%} & \textbf{83,3 \%} \\
+\rowcolor{tblzebra}Disponibilidad & 100 \% & 98,3 \% \\
+Rendimiento & 80,5 \% & 86,1 \% \\
+\rowcolor{tblzebra}Calidad & 98,3 \% & 98,4 \% \\
+Unidades totales & 11.796 & 17.567 \\
+\rowcolor{tblzebra}Unidades buenas & 11.590 & 17.290 \\
+Desperdicio & 206 & 277 \\
+\rowcolor{tblzebra}Corridas & 3 & 3 \\
+Tiempo de corridas & 9 h 43 min & 9 h 24 min \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+En ambas líneas el rendimiento es lo que más limita el OEE: la calidad está por encima del 98 \% y la disponibilidad es casi total. La Línea A no tuvo paros registrados, y la Línea B tuvo unos 9,5 minutos de paro no programado y 3 minutos de paro programado.
+
+
+
+¿Quieres que revise los paros de la Línea B o por qué el rendimiento de la Línea A quedó en 80 \%?}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{15,38}{0,89}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,45~s \;\textbullet\; \texttt{get\_oee\_history} 0,42~s}{El área de Empaque Maíz tiene dos líneas, así que te dejo el OEE de ambas para el 18 de septiembre de 2026 (día completo, hora de Colombia):
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Indicador} & \textbf{Línea A} & \textbf{Línea B} \\
+\midrule
+\textbf{OEE} & \textbf{79,1 \%} & \textbf{83,3 \%} \\
+\rowcolor{tblzebra}Disponibilidad & 100,0 \% & 98,3 \% \\
+Rendimiento & 80,5 \% & 86,1 \% \\
+\rowcolor{tblzebra}Calidad & 98,3 \% & 98,4 \% \\
+Corridas & 3 & 3 \\
+\rowcolor{tblzebra}Tiempo total de corridas & 9 h 43 min & 9 h 24 min \\
+Paros no programados & 0 min & 9,5 min \\
+\rowcolor{tblzebra}Paros programados & 0 min & 3 min \\
+Unidades totales & 11.796 & 17.567 \\
+\rowcolor{tblzebra}Unidades buenas & 11.590 & 17.290 \\
+Desperdicio & 206 & 277 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+En las dos líneas la mayor pérdida está en el \textbf{rendimiento}: la Línea A no tuvo ningún paro registrado, pero produjo a un 80 \% de la velocidad ideal, y eso es lo que la deja por debajo de la Línea B. La calidad fue muy parecida en ambas (alrededor de 98 \%).
+
+
+
+Si te refieres a una sola de las líneas, o quieres verlo desglosado por turno o por corrida, dime y lo saco.}
+
+\fichapregunta{12}{Causal}{¿Por qué bajó el OEE de la Línea A de Empaque Maíz el 17 de septiembre de 2026 frente al 16?}{D1.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz. 16 de septiembre: OEE 84,3 \% (disponibilidad 95,2 \%, rendimiento 90,2 \%, calidad 98,2 \%); 3 corridas, 23.420 total, 22.989 buenas, 431 desperdicio. 17 de septiembre: OEE 79,6 \% (disponibilidad 97,3 \%, rendimiento 83,6 \%, calidad 97,9 \%); 3 corridas, 18.792 total, 18.395 buenas, 397 desperdicio. El componente que cae es el rendimiento (90,2 \% a 83,6 \%); la disponibilidad sube (95,2 \% a 97,3 \%) y la calidad casi no cambia (98,2 \% a 97,9 \%). Paros no programados: 16-sep 1 (26 min 27 s), 17-sep 1 (14 min 12 s).}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{43,11}{3,05}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,32~s \;\textbullet\; \texttt{get\_oee\_history} 0,45~s \;\textbullet\; \texttt{get\_production\_orders} 0,38~s \;\textbullet\; \texttt{get\_standard\_rate} 0,42~s \;\textbullet\; \texttt{get\_downtime\_events} 0,36~s \;\textbullet\; \texttt{get\_count\_history} 1,08~s}{El OEE de la Línea A bajó de \textbf{84,3 \% el 16 a 79,6 \% el 17} ($-$4,7 puntos), y la causa es \textbf{el rendimiento (velocidad)}, no los paros ni la calidad.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{16-sep} & \textbf{17-sep} & \textbf{Cambio} \\
+\midrule
+Disponibilidad & 95,2 \% & 97,3 \% & +2,1 \\
+\rowcolor{tblzebra}Rendimiento & 90,2 \% & 83,6 \% & \textbf{$-$6,6} \\
+Calidad & 98,2 \% & 97,9 \% & $-$0,3 \\
+\rowcolor{tblzebra}OEE & 84,3 \% & 79,6 \% & $-$4,7 \\
+Unidades totales & 23.420 & 18.792 & $-$4.628 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{La disponibilidad mejoró.} Cada día hubo un solo paro no programado, en el turno B. El del 17 duró 14 minutos, frente a 26 minutos el 16. Si solo se miraran los paros, el 17 habría sido mejor día.
+
+
+
+\textbf{El rendimiento cayó en los tres turnos, y más en la noche:}
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item Turno A (Libra): de 92,8 \% a 90,0 \%.
+\item Turno B (Kilo): de 94,0 \% a 89,1 \%.
+\item Turno C (Libra): de 83,4 \% a \textbf{76,5 \%}. Es la corrida 270, que empezó el 17 a las 22:03 y es la peor de los dos días, con OEE de 74,4 \%. También tuvo el mayor desperdicio (210 unidades, calidad de 97,3 \%).
+\end{itemize}
+
+
+
+\textbf{No es un efecto de la mezcla de productos.} Ambos días corrieron lo mismo: dos órdenes de Libra (100200) y una de Kilo (100201), en los mismos turnos. La pérdida es de velocidad real, no de qué se programó.
+
+
+
+Hay dos cosas que conviene revisar antes de sacar conclusiones finas:
+
+
+
+\begin{enumerate}[leftmargin=1.5em,itemsep=0pt,topsep=2pt]
+\item \textbf{Hay inconsistencias en el cálculo de rendimiento.} La corrida 268 (turno A del 17) produjo solo 3.584 unidades en unos 179 minutos (unas 20/min). La 265, del mismo producto el 16, hizo 8.977 en 199 minutos (unas 45/min). Aun así, el MES les asigna un rendimiento casi igual (90 \% frente a 93 \%). Además, la velocidad estándar configurada (5 u/min para Libra, 4 para Kilo) no coincide con la escala de los conteos. Puede que el conteo ideal por corrida use otra unidad, como fardos o bolsas, o una base distinta. Valdría la pena confirmarlo con quien administra el MES.
+\item \textbf{Me falta detalle para explicar el porqué de la baja velocidad.} El motivo de los paros está registrado solo como "Unplanned", sin causa específica. Tampoco encontré conteos por celda (Empacadora 1 y 2) para saber si alguna de las dos limitó la línea. Microparos, velocidad reducida en una empacadora o un problema de material en el turno nocturno son hipótesis razonables, pero no las puedo confirmar con estos datos.
+\end{enumerate}
+
+
+
+¿Quiere que profundice en la corrida 270, por ejemplo con los conteos de la Enfardadora minuto a minuto, para ver si la caída fue pareja o concentrada en un tramo?}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{67,84}{6,07}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,45~s \;\textbullet\; \texttt{get\_oee\_history} 0,47~s \;\textbullet\; \texttt{get\_production\_orders} 0,39~s \;\textbullet\; \texttt{get\_standard\_rate} 0,45~s \;\textbullet\; \texttt{get\_downtime\_events} 0,40~s \;\textbullet\; \texttt{get\_count\_history} 1,55~s \;\textbullet\; \texttt{get\_count\_history} 1,58~s \;\textbullet\; \texttt{query\_table} 0,73~s}{\textbf{El OEE bajó de 84,3 \% a 79,6 \% ($-$4,7 puntos), y la causa es el rendimiento.} La disponibilidad y la calidad no explican la caída.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{16 sep} & \textbf{17 sep} & \textbf{Cambio} \\
+\midrule
+Disponibilidad & 95,2 \% & 97,3 \% & +2,1 \\
+\rowcolor{tblzebra}Rendimiento & 90,2 \% & 83,6 \% & \textbf{$-$6,6} \\
+Calidad & 98,2 \% & 97,9 \% & $-$0,3 \\
+\rowcolor{tblzebra}\textbf{OEE} & \textbf{84,3 \%} & \textbf{79,6 \%} & \textbf{$-$4,7} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+La disponibilidad mejoró. Cada día hubo un solo paro no programado, ambos al inicio del turno de la tarde: el del 17 duró 14 minutos y el del 16, 26,5. La calidad casi no cambió. Si el rendimiento se hubiera mantenido en 90,2 \%, el OEE del 17 habría sido de unos 85,9 \%, es decir, mejor que el del 16.
+
+
+
+\textbf{Corridas con menor rendimiento el 17:}
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Noche (WO33, Maíz Libra, 22:03–00:37):} tuvo el rendimiento más bajo, 76,5 \%, frente a 83,4 \% la noche anterior. También fue la corrida con más desperdicio del día (210 unidades, calidad de 97,3 \%). Es la que más pesa en la caída.
+\item \textbf{Tarde (WO29, Maíz Kilo):} 89,1 \%, frente a 94,0 \% del mismo producto el día anterior.
+\item \textbf{Mañana (WO27, Maíz Libra):} 90,0 \%, frente a 92,8 \%.
+\end{itemize}
+
+
+
+\textbf{Una alerta antes de buscar la causa en piso.} El rendimiento que registra el MES no coincide con la velocidad real que muestran los conteos por hora:
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item La corrida de la noche del 17 fue la más rápida de los dos días (unas 2.800–2.970 unidades por hora) y aun así tiene el rendimiento más bajo.
+\item La corrida de la mañana del 17 iba a unas 1.200 unidades por hora, menos de la mitad que la del 16 con el mismo producto (unas 2.700 por hora), y aun así registra 90 \% de rendimiento.
+\end{itemize}
+
+
+
+Si se despeja la velocidad de referencia que implica cada corrida, el MES usó para el mismo producto (100200) unos 22 unidades por minuto en la mañana del 17, unos 49 en la mañana del 16 y unos 65 en la noche del 17. La velocidad estándar configurada hoy es de 5 unidades por minuto, que tampoco coincide con ninguna de estas. Por eso es muy probable que parte de la caída, o toda, venga de la velocidad de referencia que el MES asignó a cada corrida y no de que la línea haya trabajado más lento.
+
+
+
+\textbf{Otros datos útiles:}
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item El 17 se produjeron 18.792 unidades, frente a 23.420 el 16 ($-$20 \%). La mayor parte de esa diferencia es de la mañana, pero esa orden se programó más pequeña (3.737 unidades planeadas frente a 9.675), así que no es una pérdida de eficiencia.
+\item La corrida nocturna que empezó el 16 y terminó el 17 a las 00:44 se cuenta en el día 16, porque el MES asigna cada corrida al día en que empieza.
+\item Los paros solo tienen el motivo genérico "Unplanned", así que no se puede saber qué los causó.
+\item No hay conteos por empacadora en estas fechas, por lo que no puedo decir si alguna de las dos máquinas fue la que frenó la línea.
+\end{itemize}
+
+
+
+Como siguiente paso, recomiendo revisar qué velocidad estándar tenía cargada cada orden (WO27, WO29 y WO33) en el momento de la corrida, y si alguien la cambió entre el 16 y el 17. Si quieres, puedo comparar estas corridas con las de otras fechas para ver cuál es el rendimiento normal del turno de la noche.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{48,36}{3,97}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,45~s \;\textbullet\; \texttt{get\_oee\_history} 0,36~s \;\textbullet\; \texttt{get\_production\_orders} 0,28~s \;\textbullet\; \texttt{get\_production\_orders} 0,30~s \;\textbullet\; \texttt{get\_standard\_rate} 0,46~s \;\textbullet\; \texttt{get\_downtime\_events} 0,39~s \;\textbullet\; \texttt{get\_count\_history} 1,69~s}{El OEE bajó de 84,3 \% a 79,6 \%, y la caída viene del rendimiento (90,2 \% $\rightarrow$ 83,6 \%), no de paros. Reviso corridas, productos y celdas para ver por qué.
+
+
+
+El OEE pasó de \textbf{84,3 \% el 16 a 79,6 \% el 17} ($-$4,7 puntos), y la causa es una \textbf{pérdida de rendimiento (velocidad)}, no paros ni calidad.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{16 sep} & \textbf{17 sep} & \textbf{Efecto} \\
+\midrule
+Disponibilidad & 95,2 \% & 97,3 \% & Mejoró \\
+\rowcolor{tblzebra}Rendimiento & 90,2 \% & 83,6 \% & Cayó 6,6 pts \\
+Calidad & 98,2 \% & 97,9 \% & Casi igual \\
+\rowcolor{tblzebra}OEE & 84,3 \% & 79,6 \% & $-$4,7 pts \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{Qué pasó}
+
+
+
+La línea corrió más lento que su estándar en los tres turnos del 17, y cada corrida quedó por debajo de su equivalente del día anterior: turno A pasó de 92,8 \% a 90,0 \% de rendimiento, turno B de 94,0 \% a 89,1 \%, y turno C de 83,4 \% a 76,5 \%. El turno C (corrida 270, orden WO33, de 22:03 a 00:37) fue el peor de los dos días, con un OEE de 74,4 \%, y es el que más pesa en la caída. Llama la atención que el turno C ya era el más lento el 16, así que parece un patrón del turno nocturno que el 17 se agravó.
+
+
+
+\textbf{Qué se descarta}
+
+
+
+El mix de productos fue idéntico ambos días (Libra en turnos A y C, Kilo en turno B), así que la caída no se explica por producto. Los paros tampoco: cada día hubo un solo paro no programado en el turno B, y el del 17 fue más corto (14 min contra 26 min), por eso la disponibilidad subió. La calidad bajó apenas: hubo menos desperdicio en unidades (397 contra 431), pero sobre menos volumen, así que la tasa subió de 1,8 \% a 2,1 \%.
+
+
+
+\textbf{Lo que no pude determinar}
+
+
+
+No hay historial de conteo por celda (Empacadora 1, Empacadora 2, Enfardadora) para esas fechas, así que no puedo decir qué máquina frenó la línea. Los dos paros tienen como motivo solo "Unplanned", sin causa específica. Además, las velocidades estándar configuradas (5 y 4 unidades/min) no cuadran con los conteos por corrida (unas 20–50 unidades/min), así que usé los valores de rendimiento que reporta el MES sin poder recalcularlos. Vale la pena revisar si el estándar está en otra unidad, por ejemplo fardos en lugar de bolsas.
+
+
+
+Como siguiente paso, revisaría con el turno C del 17 si hubo microparos no registrados, ajustes de velocidad o problemas de material en la WO33. ¿Quieres que mire la producción hora a hora de esa corrida para ver si la velocidad baja de forma continua o en tramos puntuales?}
+
+\fichapregunta{13}{Causal}{¿Qué día entre el 15 y el 21 de septiembre de 2026 tuvo más desperdicio la Línea A de Empaque Maíz y por qué?}{D1.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 15 al 21 de septiembre de 2026. Por día calendario: más desperdicio el 2026-09-20 con 562 unidades sobre 21.299 producidas (2,64 \%). Es el día con la tasa de desperdicio más alta de la semana (rango 1,71 \% a 2,64 \%); el mayor volumen fue el 2026-09-16 (22.693). Por inicio de corrida: el 2026-09-19 con 518 (2,64 \%).}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{56,77}{6,15}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,26~s \;\textbullet\; \texttt{get\_count\_history} 1,10~s \;\textbullet\; \texttt{get\_count\_history} 0,98~s \;\textbullet\; \texttt{get\_count\_history} 1,73~s \;\textbullet\; \texttt{get\_count\_history} 0,93~s \;\textbullet\; \texttt{get\_downtime\_events} 0,41~s \;\textbullet\; \texttt{get\_production\_orders} 0,39~s \;\textbullet\; \texttt{get\_downtime\_events} 0,30~s}{Septiembre 19 sale arriba (518 unidades, 2,64 \%). Reviso qué pasó ese día.
+
+
+
+Hay una discrepancia: por corrida (según su inicio) gana el 19, pero por día calendario gana el 20 (562). Reviso los totales por día calendario y el detalle horario.
+
+
+
+Por día calendario, el 20 de septiembre es el peor en volumen y en tasa. Busco la causa: hora, celda, paros y órdenes.
+
+
+
+La tasa es pareja durante el día (\textasciitilde{}2,6–2,9 \%), no hay un pico puntual. Reviso celdas, paros y órdenes.
+
+
+
+\textbf{Septiembre 20} fue el día con más desperdicio en la Línea A de Empaque Maíz: \textbf{562 unidades}, el \textbf{2,64 \%} de lo producido, frente a un promedio semanal de 2,08 \%.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Desperdicio} & \textbf{Producido} & \textbf{Tasa} \\
+\midrule
+15 sep & 307 & 15.584 & 1,97 \% \\
+\rowcolor{tblzebra}16 sep & 405 & 22.693 & 1,78 \% \\
+17 sep & 388 & 18.814 & 2,06 \% \\
+\rowcolor{tblzebra}18 sep & 238 & 12.578 & 1,89 \% \\
+19 sep & 413 & 16.317 & 2,53 \% \\
+\rowcolor{tblzebra}\textbf{20 sep} & \textbf{562} & \textbf{21.299} & \textbf{2,64 \%} \\
+21 sep & 346 & 20.288 & 1,71 \% \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Un matiz: el reporte de OEE agrupa cada corrida en el día en que \textit{empieza}, y con ese criterio sale el 19 (518 unidades). La diferencia se debe a la corrida nocturna WO58, que empezó el 19 a las 22:04 y terminó el 20 a las 02:21. Las 124 unidades de desperdicio que hizo después de medianoche cuentan para el 20 en el calendario y para el 19 en el reporte de OEE. Por cualquiera de los dos criterios, el problema está en esas mismas horas.
+
+
+
+\textbf{Por qué}
+
+
+
+El MES no registra motivos de desperdicio. Puedo decir dónde y cuándo ocurrió, pero no la causa raíz. Esto es lo que muestran los datos:
+
+
+
+\begin{enumerate}[leftmargin=1.5em,itemsep=0pt,topsep=2pt]
+\item \textbf{Fue una tasa alta y pareja, no un incidente puntual.} Desde la noche del 19 hasta la tarde del 20, cada hora tuvo entre 2,6 \% y 2,9 \% de desperdicio. Eso incluye las órdenes WO58 y WO61 (Libra) y WO68 (Kilo). Ninguna hora tuvo un pico.
+\item \textbf{No depende del producto.} Las dos presentaciones salieron igual de mal. Además, la mezcla Libra/Kilo de ese día fue la misma que el resto de la semana.
+\item \textbf{No coincide con los paros.} El 20 tuvo el mayor paro no programado de la semana (52 min en dos eventos: 06:39 y 23:35). Sin embargo, las horas con paro no muestran más desperdicio que las demás. El 21 tuvo casi el mismo tiempo de paro y la tasa más baja de la semana.
+\item \textbf{Se corrigió esa misma noche.} La corrida WO70, que arrancó a las 22:03 del 20, bajó a 1,9 \%, y el 21 cerró en 1,71 \%.
+\end{enumerate}
+
+
+
+Todo apunta a una condición que duró unas 24 horas y afectó a toda la línea: un lote de material de empaque, un ajuste de la máquina o algo del turno. Lo que cambió entre la tarde del 20 y el turno de la noche sería lo primero que revisaría en la bitácora de turnos o en los lotes de material.
+
+
+
+Intenté separar el desperdicio por Empacadora, pero el historial no tiene conteos a nivel de celda en ese rango. Solo existe el conteo total de la línea, medido en la Enfardadora.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{69,17}{8,16}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,43~s \;\textbullet\; \texttt{get\_downtime\_events} 0,35~s \;\textbullet\; \texttt{get\_count\_history} 1,53~s \;\textbullet\; \texttt{get\_oee\_history} 0,32~s \;\textbullet\; \texttt{get\_count\_history} 1,14~s \;\textbullet\; \texttt{get\_downtime\_events} 0,31~s \;\textbullet\; \texttt{get\_count\_history} 1,74~s \;\textbullet\; \texttt{get\_count\_history} 0,89~s \;\textbullet\; \texttt{get\_production\_orders} 0,25~s \;\textbullet\; \texttt{get\_count\_history} 1,13~s}{El 19 de septiembre fue el día con más desperdicio (518 unidades, 2,64 \%). Reviso qué pasó ese día.
+
+
+
+Ahora miro cómo se repartió el desperdicio por hora y por máquina ese día.
+
+
+
+El día con más desperdicio fue el \textbf{domingo 20 de septiembre}, con 562 unidades, que son el 2,64 \% de las 21.299 producidas. También fue el día con la tasa más alta.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Desperdicio} & \textbf{Producido} & \textbf{Tasa} \\
+\midrule
+15 sep & 307 & 15.584 & 1,97 \% \\
+\rowcolor{tblzebra}16 sep & 405 & 22.693 & 1,78 \% \\
+17 sep & 388 & 18.814 & 2,06 \% \\
+\rowcolor{tblzebra}18 sep & 238 & 12.578 & 1,89 \% \\
+19 sep & 413 & 16.317 & 2,53 \% \\
+\rowcolor{tblzebra}\textbf{20 sep} & \textbf{562} & \textbf{21.299} & \textbf{2,64 \%} \\
+21 sep & 346 & 20.288 & 1,71 \% \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Una aclaración sobre el método: el resumen de OEE por día asigna cada corrida completa al día en que empieza. Con ese criterio, el 19 aparece primero (518) y el 20 segundo (509), porque la corrida nocturna del 19 terminó el 20 a las 02:21. Para la tabla conté el desperdicio por hora real.
+
+
+
+\textbf{Por qué fue tan alto}
+
+
+
+\begin{enumerate}[leftmargin=1.5em,itemsep=0pt,topsep=2pt]
+\item \textbf{La tasa de desperdicio estuvo alta todo el día.} Desde el 19 por la mañana hasta el cierre de la orden WO68 (20 sep, 17:51), el desperdicio se mantuvo entre 2,6 \% y 2,9 \% por hora. En los días normales está entre 1,7 \% y 2,0 \%. Las horas peores fueron de 14:00 a 18:00 (orden WO68, Maíz Kilo), con 2,9 \%, aunque en ese tramo no hubo ningún paro no programado. En la corrida que empezó a las 22:03 (WO70) la tasa volvió a la normalidad, cerca de 1,9 \%.
+\item \textbf{No se explica por el producto.} Toda la semana se repite el mismo patrón: Maíz Libra en la mañana y la noche, Maíz Kilo en la tarde. Las mismas referencias tuvieron menos desperdicio otros días.
+\item \textbf{El día tuvo más horas de producción.} El 20 registró 13 horas con producción, cuando lo usual son 10 u 11. Eso se debe a que la corrida nocturna WO58 siguió después de medianoche y aportó 124 unidades de desperdicio entre las 00:00 y las 02:21.
+\item \textbf{Hubo dos paros no programados largos.} El primero duró unos 24 minutos y fue al inicio del turno de la mañana (06:xx). Las dos horas siguientes tuvieron los conteos más altos del día (57 y 60 unidades), pero eso se debe sobre todo al volumen, ya que su tasa (\textasciitilde{}2,6 \%) es igual a la del resto del día. El segundo paro, de unos 28 minutos, fue a las 23:xx. Además hubo un mantenimiento preventivo de 6,5 minutos a las 17:xx.
+\end{enumerate}
+
+
+
+En resumen, el 20 combinó una calidad degradada durante unas 36 horas (del 19 por la mañana al 20 por la tarde) con un día de mucho volumen. La causa de fondo de esa degradación no aparece en el MES por tres razones: los paros solo tienen el motivo genérico "Unplanned", no hay desperdicio por máquina (Empacadoras 1 y 2) en el histórico, y no hay motivos de rechazo. Para encontrarla conviene revisar las bitácoras de turno y de mantenimiento del 19 y el 20, en especial lo que cambió alrededor de las 22:00 del 20, cuando la tasa se normalizó.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{48,29}{5,13}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,24~s \;\textbullet\; \texttt{get\_count\_history} 1,64~s \;\textbullet\; \texttt{get\_production\_orders} 0,32~s \;\textbullet\; \texttt{get\_count\_history} 1,24~s \;\textbullet\; \texttt{get\_oee\_history} 0,37~s \;\textbullet\; \texttt{get\_downtime\_events} 0,27~s}{\textbf{El domingo 20 de septiembre} fue el día con más desperdicio en la Línea A de Empaque Maíz: \textbf{562 unidades}, el 2,64 \% de lo producido. Es el máximo de la semana tanto en unidades como en porcentaje, así que no se explica solo por haber producido más.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Producido} & \textbf{Desperdicio} & \textbf{\%} \\
+\midrule
+15 sep & 15.584 & 307 & 1,97 \% \\
+\rowcolor{tblzebra}16 sep & 22.693 & 405 & 1,78 \% \\
+17 sep & 18.814 & 388 & 2,06 \% \\
+\rowcolor{tblzebra}18 sep & 12.578 & 238 & 1,89 \% \\
+19 sep & 16.317 & 413 & 2,53 \% \\
+\rowcolor{tblzebra}\textbf{20 sep} & \textbf{21.299} & \textbf{562} & \textbf{2,64 \%} \\
+21 sep & 20.288 & 346 & 1,71 \% \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{De dónde salen las 562 unidades.} El desperdicio está repartido de forma bastante pareja a lo largo del día; no hay un solo pico.
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Final de la WO58} (Libra, turno C del 19, de 00:00 a 02:21): 124 unidades.
+\item \textbf{WO61} (Libra, turno A): 183 unidades, con una calidad de 97,4 \%.
+\item \textbf{WO68} (Kilo, turno B): 189 unidades. Con una calidad de 97,1 \%, fue la peor corrida de toda la semana.
+\item \textbf{Inicio de la WO70} (de 22:00 a 24:00): 66 unidades.
+\end{itemize}
+
+
+
+\textbf{Por qué.} Los datos muestran un deterioro sostenido, no un evento puntual. Desde el turno A del 19 hasta el turno B del 20 hubo cinco corridas seguidas con calidad de 97,5 \% o menos, frente a un 98 \% o más en el resto de la semana. Esto afectó a los dos productos (Libra y Kilo), por lo que no parece un problema de un producto concreto. Algo en la línea estuvo funcionando peor durante unas 36 horas y se normalizó el 21, cuando el porcentaje bajó al 1,71 \%. Ese mismo periodo también tuvo el OEE más bajo de la semana: 66 \% en el turno A del 20 y 69 \% en el turno B del 19.
+
+
+
+Los paros no explican el desperdicio:
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item El 20 hubo unos 52 minutos de paro no programado, pero la WO68, que fue la peor en desperdicio, no tuvo ningún paro.
+\item El 21 tuvo casi la misma cantidad de paros y fue el día con menos desperdicio.
+\end{itemize}
+
+
+
+\textbf{Lo que no puedo determinar con los datos disponibles:}
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{La causa raíz exacta.} El MES no registra motivos de desperdicio.
+\item \textbf{La máquina de origen.} No hay conteos por celda (Empacadora 1, Empacadora 2, Enfardadora) para esas fechas, así que no se puede saber cuál generó el desperdicio.
+\item \textbf{La naturaleza de los paros.} Todos están clasificados solo como "Unplanned", sin un motivo específico.
+\end{itemize}
+
+
+
+Para cerrar el análisis valdría la pena revisar las bitácoras de turno o de mantenimiento del 19 y el 20, y ver si hubo cambios de bobina o de material de empaque, ajustes de máquina o algo similar.}
+
+\fichapregunta{14}{Causal}{¿Qué paro afectó más la disponibilidad de la Línea B de Empaque Trigo el 17 de septiembre de 2026?}{D1.2}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, 17 de septiembre de 2026: 2 paros no programados; el que más afectó la disponibilidad fue el de las 14:38 (26 min 29 s). Otros: 06:17 (21 min 20 s). Paros programados (no afectan la disponibilidad): ninguno.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{15,03}{0,84}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,44~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s}{El paro que más afectó la disponibilidad fue \textbf{el no programado del turno de la tarde}, que empezó entre las 14:00 y las 15:00 y duró \textbf{26,5 minutos} (1.589 s). Fue el paro más largo del día.
+
+
+
+Ese 17 de septiembre la Línea B tuvo solo dos paros, los dos no programados:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Paro} & \textbf{Inicio} & \textbf{Duración} & \textbf{Corrida afectada} & \textbf{Disponibilidad de la corrida} \\
+\midrule
+1 & entre 06:00 y 07:00 & 21,3 min (1.280 s) & 331 (06:00–10:09) & 91,5 \% \\
+\rowcolor{tblzebra}2 & entre 14:00 y 15:00 & \textbf{26,5 min (1.589 s)} & 332 (14:06–18:09) & \textbf{89,1 \%} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Las cifras cuadran. El paro de la tarde consumió cerca del 10,9 \% del tiempo de la corrida 332, y por eso la disponibilidad de esa corrida bajó a 89,1 \%. La corrida 333, de la noche (22:08 a 01:34), no tuvo paros y cerró con 100 \% de disponibilidad.
+
+
+
+Hay dos limitaciones en los datos. El MES registra los dos paros solo con el motivo genérico \textbf{"Unplanned"}, así que no se sabe la causa raíz (falla mecánica, falta de material, atasco, etc.). Tampoco se ve la hora exacta de inicio, solo la franja horaria. Si quieres, consulto la tabla de eventos para ver la hora exacta y si alguna celda (Empacadora 1, Empacadora 2 o Enfardadora) originó el paro.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{18,92}{1,27}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,37~s \;\textbullet\; \texttt{get\_downtime\_events} 0,45~s \;\textbullet\; \texttt{get\_oee\_history} 0,44~s}{El paro que más afectó la disponibilidad de la \textbf{Línea B de Empaque Trigo} el 17 de septiembre de 2026 fue el que \textbf{empezó a las 14:38} (hora de Colombia). Duró \textbf{26 min 29 s} (1.589 s), aproximadamente hasta las 15:05.
+
+
+
+Ese día hubo solo dos paros, los dos no programados:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Inicio} & \textbf{Duración} & \textbf{Disponibilidad perdida} \\
+\midrule
+\textbf{14:38} & \textbf{26 min 29 s} & \textbf{$\approx$ 3,8 puntos} \\
+\rowcolor{tblzebra}06:17 & 21 min 20 s & $\approx$ 3,0 puntos \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Entre los dos sumaron 47 min 49 s de paro. Eso dejó la disponibilidad del día en \textbf{93,2 \%} sobre unas 11,7 h de corridas (3 corridas), sin paros programados. El OEE del día fue 72,1 \%. Para comparar, el rendimiento fue 79,1 \%, así que ese día la línea perdió más por velocidad que por paros.
+
+
+
+El MES no registra la causa específica de ninguno de los dos paros: ambos están clasificados solo con el motivo genérico \textbf{"Unplanned"}. Si necesitan saber qué pasó a las 14:38, habría que revisarlo en la bitácora del turno o con el operador. También puedo ver si alguna celda (Empacadora 1, Empacadora 2 o Enfardadora) dejó de producir en esa ventana para identificar el equipo de origen.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{19,73}{1,34}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,53~s \;\textbullet\; \texttt{get\_downtime\_events} 0,40~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s}{El paro que más afectó la disponibilidad fue el que \textbf{empezó a las 14:38 y duró 26 min 29 s} (1.589 s). Le quitó unos \textbf{3,8 puntos} a la disponibilidad del día.
+
+
+
+La Línea B de Empaque Trigo tuvo dos paros ese día, y los dos fueron no programados:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Inicio} & \textbf{Duración} & \textbf{Impacto en disponibilidad} \\
+\midrule
+14:38 & 26 min 29 s & $\approx$ 3,8 pts \\
+\rowcolor{tblzebra}06:17 & 21 min 20 s & $\approx$ 3,0 pts \\
+\textbf{Total} & \textbf{47 min 49 s} & \textbf{$\approx$ 6,8 pts} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+La disponibilidad del día quedó en \textbf{93,2 \%}. Hubo 3 corridas con 42.008 s de tiempo total y no hubo paros programados, así que todo lo que se perdió de disponibilidad viene de estos dos eventos. El OEE del día fue 72,1 \%. El rendimiento (79,1 \%) le pesó más que la disponibilidad.
+
+
+
+Los dos paros están registrados solo con el motivo genérico "Unplanned". El MES no dice la causa específica, por ejemplo una falla mecánica, falta de material o un atasco. Para saber qué pasó habría que revisar la bitácora de turno o preguntarle al operador. ¿Quieres que revise si alguna celda (Empacadora 1, 2 o Enfardadora) dejó de producir en esas ventanas para identificar dónde se originó el paro?}
+
+\fichapregunta{15}{Sin datos}{¿Cuál fue el OEE de la Línea A de Empaque Maíz el 10 de septiembre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 10 de septiembre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{23,66}{2,68}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,27~s \;\textbullet\; \texttt{get\_oee\_history} 0,29~s \;\textbullet\; \texttt{get\_count\_history} 1,41~s \;\textbullet\; \texttt{get\_downtime\_events} 0,43~s \;\textbullet\; \texttt{get\_oee\_history} 0,25~s}{No hay un OEE para ese día: el MES no tiene ningún registro de la Línea A de Empaque Maíz el 10 de septiembre de 2026. Revisé el OEE, los conteos de producción y los paros de ese día, y todas las consultas volvieron vacías. Tampoco hay corridas entre el 8 y el 12 de septiembre, así que no se trata de una corrida que empezó la víspera y siguió durante el 10.
+
+
+
+Entre el 1 de agosto y hoy, el primer dato de esa línea es del \textbf{15 de septiembre}. Eso sugiere que la línea no produjo esos días o que el historial empieza ahí. El 15 de septiembre el OEE fue \textbf{86,2 \%}:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{Valor} \\
+\midrule
+Disponibilidad & 98,5 \% \\
+\rowcolor{tblzebra}Rendimiento & 89,3 \% \\
+Calidad & 98,1 \% \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Ese día hubo 3 corridas, con 16.730 unidades procesadas, de las cuales 16.407 fueron buenas.
+
+
+
+Si no buscaba la Línea A o Empaque Maíz, puedo consultar la Línea B o Empaque Trigo. También puedo mostrarle los días con datos, del 15 al 23 de septiembre.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{15,91}{1,14}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,31~s \;\textbullet\; \texttt{get\_oee\_history} 0,43~s \;\textbullet\; \texttt{get\_oee\_history} 0,38~s}{No hay un OEE para la Línea A de Empaque Maíz el 10 de septiembre de 2026: el MES no tiene ninguna corrida registrada ese día. Revisé también toda esa semana (7 al 13 de septiembre) y tampoco hay datos.
+
+
+
+Busqué desde junio hasta hoy, y el primer registro de esta línea es del \textbf{15 de septiembre de 2026}. Lo más probable es que el histórico arranque en esa fecha, o que la línea no estuviera produciendo antes. En los días con datos, el OEE diario estuvo entre 74 \% y 86 \%:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Fecha} & \textbf{Disponibilidad} & \textbf{Rendimiento} & \textbf{Calidad} & \textbf{\textbf{OEE}} \\
+\midrule
+15-sep & 98,5 \% & 89,3 \% & 98,1 \% & \textbf{86,2 \%} \\
+\rowcolor{tblzebra}16-sep & 95,2 \% & 90,2 \% & 98,2 \% & \textbf{84,3 \%} \\
+17-sep & 97,3 \% & 83,6 \% & 97,9 \% & \textbf{79,6 \%} \\
+\rowcolor{tblzebra}18-sep & 100 \% & 80,5 \% & 98,3 \% & \textbf{79,1 \%} \\
+19-sep & 93,6 \% & 81,4 \% & 97,4 \% & \textbf{74,2 \%} \\
+\rowcolor{tblzebra}20-sep & 91,9 \% & 84,4 \% & 97,5 \% & \textbf{75,7 \%} \\
+21-sep & 92,8 \% & 87,7 \% & 98,4 \% & \textbf{80,1 \%} \\
+\rowcolor{tblzebra}23-sep & 93,9 \% & 89,4 \% & 96,4 \% & \textbf{80,9 \%} (solo \textasciitilde{}6 min de corrida, 28 unidades) \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Si la fecha que te interesa es otra, o se trata de otra línea o área, dime y lo consulto.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{35,24}{1,06}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,41~s \;\textbullet\; \texttt{get\_oee\_history} 0,25~s \;\textbullet\; \texttt{get\_oee\_history} 0,38~s}{No hay OEE registrado para la Línea A de Empaque Maíz el 10 de septiembre de 2026: el MES no tiene corridas ese día, ni en toda esa semana (7 al 13 de septiembre).
+
+
+
+Revisé desde el 1 de agosto hasta hoy, y el primer registro de esta línea es del 15 de septiembre. Antes de esa fecha no hay datos. Puede ser que la línea no estuviera produciendo o que el historial del MES empiece ahí.
+
+
+
+Si te sirve como referencia, estos son los días más cercanos con datos:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Fecha} & \textbf{OEE} & \textbf{Disponibilidad} & \textbf{Rendimiento} & \textbf{Calidad} \\
+\midrule
+15 sep & 86,2 \% & 98,5 \% & 89,3 \% & 98,1 \% \\
+\rowcolor{tblzebra}16 sep & 84,3 \% & 95,2 \% & 90,2 \% & 98,2 \% \\
+17 sep & 79,6 \% & 97,3 \% & 83,6 \% & 97,9 \% \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+¿Quieres que revise si la Línea B o Empaque Trigo tienen datos del 10 de septiembre, o que busque órdenes de producción de esa fecha?}
+
+\fichapregunta{16}{Sin datos}{¿Cuántas unidades produjo la Línea B de Empaque Maíz el 25 de septiembre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea B de Empaque Maíz, 25 de septiembre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{26,43}{6,29}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 2,16~s \;\textbullet\; \texttt{get\_oee\_history} 0,92~s \;\textbullet\; \texttt{get\_production\_orders} 0,50~s \;\textbullet\; \texttt{get\_count\_history} 1,22~s \;\textbullet\; \texttt{get\_count\_history} 1,45~s}{No hay producción registrada para la Línea B de Empaque Maíz el 25 de septiembre de 2026. El historial de conteos, el de OEE y las órdenes de producción salen vacíos ese día. No aparece ninguna corrida ni ninguna orden programada entre el 24 y el 26.
+
+
+
+Esto no significa necesariamente que la línea haya estado parada. El último dato que tiene el historial para esa línea es del 22 de septiembre, con 2.529 unidades en solo 3 muestras, así que fue un día parcial. Desde el 23 de septiembre hasta hoy (9 de noviembre) no hay ningún registro. Los días anteriores sí producía con normalidad, entre unas 14.500 y 20.000 unidades por día. Por eso es probable que el problema esté en el registro de datos, por ejemplo que se haya cortado la historización o la integración con el MES, y no en que la línea haya producido cero.
+
+
+
+¿Quieres que revise los paros (downtime) alrededor del 22 de septiembre o el estado actual de la línea en el UNS para confirmar si está corriendo?}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{15,4}{2,8}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,87~s \;\textbullet\; \texttt{get\_oee\_history} 0,43~s \;\textbullet\; \texttt{get\_production\_orders} 0,48~s}{Según el MES, \textbf{la Línea B de Empaque Maíz no registró producción el 25 de septiembre de 2026}: el historial de conteos y el de OEE no tienen ninguna corrida para ese día.
+
+
+
+En las órdenes de producción de la línea, la última que aparece en ese periodo es la \textbf{WO82}. Fue de Maíz Libra (24 bolsas por fardo), produjo 4.425 unidades y terminó el 22 de septiembre a las 02:09. Entre ese momento y el 30 de septiembre no hay más órdenes programadas ni ejecutadas.
+
+
+
+Es probable que la línea estuviera parada o sin programación esos días. ¿Quieres que revise los paros de la línea en ese rango para confirmar el motivo?}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{18,22}{2,96}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,93~s \;\textbullet\; \texttt{get\_oee\_history} 0,34~s \;\textbullet\; \texttt{get\_production\_orders} 0,36~s \;\textbullet\; \texttt{get\_oee\_history} 0,30~s}{No hay producción registrada para la Línea B de Empaque Maíz el 25 de septiembre de 2026. El historial del MES no muestra conteos, corridas ni órdenes de producción para ese día. También revisé del 24 al 26 de septiembre y no aparece ninguna orden.
+
+
+
+Al ampliar la consulta a septiembre y octubre, los únicos días con datos para esta línea van del \textbf{15 al 21 de septiembre}, con 3 corridas diarias y entre unas 16.400 y 20.000 unidades por día. Después del 21 no hay registros. Puede ser que la línea no operara esos días, o que falte información en el historial (por ejemplo, por un problema en la captura o sincronización).
+
+
+
+Si quieres, puedo revisar la Línea A ese mismo día para ver si hubo producción en el área, o darte el detalle de algún día entre el 15 y el 21 de septiembre.}
+
+\fichapregunta{17}{Sin datos}{¿Cuántos paros tuvo la Línea B de Empaque Trigo en octubre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, octubre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{10,87}{0,78}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,35~s \;\textbullet\; \texttt{get\_production\_orders} 0,42~s}{El historial del MES no registra \textbf{ningún paro} para la Línea B de Empaque Trigo entre el 1 y el 31 de octubre de 2026 (hora de Colombia): los 31 días salen vacíos.
+
+
+
+Ese cero hay que tomarlo con cautela. En el mismo periodo tampoco aparece \textbf{ninguna orden de producción} para esa línea. Por eso es más probable que la línea no haya operado en octubre, o que no haya datos históricos cargados para esas fechas, que que haya trabajado todo el mes sin detenerse.
+
+
+
+Puedo revisar septiembre o noviembre para ver si la línea sí tiene registros en otros meses, o hacer la misma consulta para la Línea A y comparar.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{15,64}{1,46}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,52~s \;\textbullet\; \texttt{get\_oee\_history} 0,48~s \;\textbullet\; \texttt{get\_downtime\_events} 0,44~s}{En octubre de 2026 el MES no registra \textbf{ningún paro} para la Línea B de Empaque Trigo. Pero ese cero no significa que la línea trabajó sin paros: en octubre tampoco hay ninguna corrida de producción registrada. Lo más probable es que la línea no operó ese mes o que no se capturaron datos.
+
+
+
+Busqué entre el 1 de septiembre y hoy (9 de noviembre), y los únicos registros de esta línea son del \textbf{15 al 22 de septiembre}. En esa semana hubo \textbf{19 paros}: 14 no programados y 5 de mantenimiento preventivo. Desde el 23 de septiembre no aparece ningún paro.
+
+
+
+Si la línea sí estuvo produciendo en octubre, vale la pena revisar la captura de datos del MES para esa línea.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{16,29}{1,11}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,37~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s \;\textbullet\; \texttt{get\_downtime\_events} 0,33~s}{Según el MES, \textbf{no hay ningún paro registrado} para la Línea B de Empaque Trigo en octubre de 2026 (del 1 al 31, hora de Colombia).
+
+
+
+Pero ese cero no significa necesariamente que la línea trabajó sin paros. Para ese mes tampoco hay ninguna corrida de producción registrada (el OEE de octubre también sale vacío), así que lo más probable es que la línea no operara o que no haya datos de ese periodo en el historial.
+
+
+
+Revisé todo 2026 hasta hoy. Los únicos datos de esta línea son del \textbf{15 al 22 de septiembre de 2026}. En esa semana hubo \textbf{19 paros} en total: 14 no programados (Unplanned) y 5 de mantenimiento preventivo. Sumaron unos 286 minutos (aprox. 4,8 horas).
+
+
+
+Si esperabas datos de octubre, conviene confirmar con el equipo de planta o de sistemas si la línea estuvo detenida o si hubo una falla en la captura de datos. ¿Quieres que te dé el detalle de la semana de septiembre o que revise la Línea A en octubre para comparar?}
+
+\fichapregunta{18}{Tiempo real}{¿Cuál es el estado actual de la Línea A de Empaque Maíz?}{D1.3}{\texttt{uns-mcp}}{La Línea A de Empaque Maíz está en marcha (\texttt{State} = 2) y sus tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) están en \texttt{Running}. Ejecuta la orden WO92, producto 100200 (Maíz, Libra). Según la hora de cada ejecución, la corrida lleva entre 144 y 190 unidades (143 a 188 buenas y 1 a 2 de desperdicio) y su OEE está entre 59,3 \% y 62,5 \%.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{23,17}{0,77}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,46~s}{{\footnotesize\textbf{Lectura de referencia (12:34:50 y 12:35:29).} línea en marcha, orden WO92, producto 100200; total 144$\to$147, buenas 143$\to$146, desperdicio 1.}\par\smallskip \textbf{La Línea A de Empaque Maíz (Barranquilla) está en marcha, sin paradas, pero produce a un ritmo de 59\% del estándar.} Datos UNS a las 12:35 COT.
+
+
+
+\textbf{Orden en curso}
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Campo} & \textbf{Valor} \\
+\midrule
+Orden & WO92 (Run 355), \textit{In Progress} \\
+\rowcolor{tblzebra}Producto & 100200 – Maíz Libra, 24 bolsas por fardo \\
+Avance & 143 buenas de 2.000 (7,2\%). Faltan 1.857. \\
+\rowcolor{tblzebra}Inicio & 11:46 \\
+Fin programado & 18:26 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{Indicadores de la corrida (\textasciitilde{}49 min)}
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{KPI} & \textbf{Valor} \\
+\midrule
+\textbf{OEE} & \textbf{59,0\%} \\
+\rowcolor{tblzebra}Disponibilidad & 100\% (0 s de parada planeada y no planeada) \\
+Rendimiento & 59,4\% \\
+\rowcolor{tblzebra}Calidad & 99,3\% (144 totales, 1 mala) \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{Equipos:} la Empacadora 1, la Empacadora 2 y la Enfardadora están en estado \textit{Running} (código 2). Todos los tags tienen calidad \textit{Good}.
+
+
+
+\textbf{El rendimiento es el problema.} La línea produce a 176 unidades/h. El estándar es 5 unidades/min, es decir 300 unidades/h. El ciclo actual es de 36 s, cuando el estándar sería de 12 s. A esta hora la meta era de unas 243 unidades y van 143, unas 100 de atraso.
+
+
+
+\textbf{Riesgo de fecha:}
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Al ritmo actual:} las 1.857 unidades restantes tomarían unas 10,5 h. La orden terminaría hacia las 23:00, unas 4,5 h después de lo programado.
+\item \textbf{A velocidad estándar:} se terminaría hacia las 18:45. Incluso así, la orden ya va algo justa respecto a las 18:26.
+\end{itemize}
+
+
+
+Como no hay paradas registradas, la pérdida viene de que la línea marcha lenta, no de que se detenga. Conviene revisar qué celda está limitando el ritmo: puede que una empacadora esté más lenta o que la enfardadora esté esperando bolsas.
+
+
+
+¿Quieres que consulte el historial del MES para ver si este bajo rendimiento es habitual en esta línea o si empezó hoy?}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{18,72}{0,05}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,04~s}{{\footnotesize\textbf{Lectura de referencia (12:40:50 y 12:41:22).} línea en marcha, orden WO92, producto 100200; total 169$\to$171, buenas 168$\to$170, desperdicio 1.}\par\smallskip \textbf{La Línea A de Empaque Maíz está en marcha}, sin paros. Las tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) reportan estado \textit{Running}. Lectura de las 12:41 hora de Colombia.
+
+
+
+\textbf{Orden activa:} WO92, producto 100200 (Maíz – Libra – 24 bolsas por fardo). Empezó a las 11:46 y lleva unos 55 minutos corriendo. Hay 168 unidades buenas de 2.000, un 8,4 \% de avance, y faltan 1.832.
+
+
+
+\textbf{OEE de la corrida: 61,6 \%}
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Disponibilidad:} 100 \%. No hay paradas, ni programadas ni no programadas.
+\item \textbf{Calidad:} 99,4 \%. Hay 1 unidad defectuosa de 169.
+\item \textbf{Rendimiento:} 61,9 \%. Este es el problema. La línea va a 184 unidades/h y el estándar es de 5/min, es decir, 300 unidades/h.
+\end{itemize}
+
+
+
+\textbf{Riesgo de cumplimiento:} a esta hora la meta acumulada era de unas 273 unidades, y se llevan 169. La línea va con un atraso de más de 100 unidades. El fin programado es a las 18:26:
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Al ritmo actual:} las 1.832 unidades restantes tomarían casi 10 horas, así que la orden terminaría cerca de las 22:40, unas 4 horas tarde.
+\item \textbf{A velocidad estándar:} tampoco alcanza. Para llegar a las 18:26 haría falta sostener unas 5,3 unidades/min, por encima del estándar.
+\end{itemize}
+
+
+
+Como la línea no se ha detenido, la pérdida es de velocidad y no de paros. Valdría la pena revisar qué está frenando el ritmo: microparadas que no se registran, alimentación de material o ajuste de velocidad en alguna empacadora.
+
+
+
+¿Quieres que revise el histórico de OEE de los últimos turnos para ver si este bajo rendimiento es algo puntual de esta corrida o una tendencia?}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{20,18}{0,04}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,03~s}{{\footnotesize\textbf{Lectura de referencia (12:46:04 y 12:46:37).} línea en marcha, orden WO92, producto 100200; total 188$\to$190, buenas 187$\to$188, desperdicio 1$\to$2.}\par\smallskip La \textbf{Línea A de Empaque Maíz (Barranquilla) está en marcha y sin paradas}, pero va \textbf{por debajo de la velocidad estándar}. Datos del UNS a las 12:46 COT.
+
+
+
+\textbf{Equipos:} la línea y sus tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) están en estado \textit{Running}. Ese estado no ha cambiado desde ayer, y en la corrida actual no hay tiempo de parada, ni planeada ni no planeada.
+
+
+
+\textbf{Orden en curso:} es la WO92 (corrida 355), producto 100200 "Maíz – Libra – 24 bolsas por fardo". Arrancó a las 11:46 y lleva unas 188 unidades producidas de 2.000 pedidas: 187 buenas y 1 mala. Faltan 1.814.
+
+
+
+\textbf{OEE de la corrida: 62,6 \%}
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Factor} & \textbf{Valor} & \textbf{Lectura} \\
+\midrule
+Disponibilidad & 100 \% & Sin paradas \\
+\rowcolor{tblzebra}Rendimiento & 62,9 \% & Aquí está la pérdida \\
+Calidad & 99,5 \% & Solo 1 unidad mala \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{El punto a vigilar es la velocidad.} La línea produce 187 unidades/h y el estándar es 300 unidades/h (5/min). A esta hora debería llevar unas 299 unidades, así que va unas 112 por detrás.
+
+
+
+\textbf{Fin estimado:} el fin programado es a las 18:26. Al ritmo actual, las 1.814 unidades restantes tomarían unas 9,7 horas, con lo que la orden terminaría cerca de las 22:30, unas 4 horas tarde. Incluso si la línea subiera ya al estándar, terminaría hacia las 18:50.
+
+
+
+\textbf{Desperdicio:} la Empacadora 2 tiene un desperdicio acumulado cercano al 2,7 \% de lo que entra, frente a un 2,0 \% en la Empacadora 1. Ojo: son contadores históricos, no solo de esta corrida.
+
+
+
+Como no hay paradas registradas, la pérdida viene de que la línea corre más lenta de lo esperado: microparadas no registradas, velocidad de máquina ajustada abajo o falta de alimentación de producto. Si quieres, consulto el histórico de conteo por celda para ver cuál equipo está limitando el ritmo.}
+
+\fichapregunta{19}{Tiempo real}{¿Cuántas unidades lleva la Empacadora 1 de la Línea B de Empaque Trigo en la corrida actual?}{D1.3}{\texttt{uns-mcp}}{La Empacadora 1 de la Línea B de Empaque Trigo está en la corrida de la orden WO95 (producto 100203, Trigo, Kilo). Su conteo en la corrida actual fue de 540 a 552 unidades en la ejecución 1, de 609 a 618 en la 2 y de 672 a 681 en la 3.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{18,56}{1,71}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_equipment\_status} 0,11~s \;\textbullet\; \texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 1,55~s}{{\footnotesize\textbf{Lectura de referencia (12:38:04 y 12:38:44).} Empacadora 1, orden WO95: 540$\to$552 unidades en la corrida.}\par\smallskip \textbf{La Empacadora 1 lleva 546 unidades en la corrida actual.} De esas, 543 son buenas y 3 son desperdicio. El dato llega hasta las 12:38 de hoy.
+
+
+
+La corrida actual es la RunID 358, de la orden WO95. Empezó hoy a las 11:46 y tiene una meta de 2.000 unidades. La empacadora está en marcha desde las 11:51. Entre las 11:46 y las 11:52 no registró producción, lo que coincide con los cerca de 5,6 minutos de parada no planeada de la línea.
+
+
+
+\textbf{Por qué no cuadra con el contador de la línea:} el MES de la Línea B muestra 131 unidades (127 buenas y 4 malas). Ese conteo es el de la Enfardadora, es decir, fardos y no bolsas. Por eso no se compara directamente con las 546 bolsas de la Empacadora 1.
+
+
+
+\textbf{Por qué no uso el contador del equipo:} el valor del Edge (8.655.876 bolsas de salida) es un acumulado histórico y no se reinicia con cada corrida. Por eso calculé el dato sumando la producción por minuto desde el inicio de la corrida en el histórico del MES.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{23,02}{1,35}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_equipment\_status} 0,03~s \;\textbullet\; \texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 1,27~s}{{\footnotesize\textbf{Lectura de referencia (12:42:49 y 12:43:25).} Empacadora 1, orden WO95: 609$\to$618 unidades en la corrida.}\par\smallskip En la corrida actual (RunID 358, orden \textbf{WO95}, iniciada hoy a las 11:46 a. m.), la \textbf{Empacadora 1 de la Línea B – Empaque Trigo} lleva \textbf{615 unidades} procesadas hasta las 12:43 p. m., de las cuales \textbf{611 son buenas} y \textbf{4 son desperdicio} (99,3 \% de calidad en esa celda).
+
+
+
+Algunos detalles:
+
+
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Estado actual:} en marcha (Running) desde las 11:51 a. m. Los primeros minutos de la corrida no registraron producción, lo que coincide con los \textasciitilde{}5,6 min de parada no planeada que reporta la línea.
+\item \textbf{Ritmo reciente:} ha subido en el último tramo, de unas 9–12 unidades/min al inicio a 15–18 unidades/min desde las 12:35.
+\item \textbf{No confundir con el conteo de la línea:} el MES muestra 149 unidades de \textit{TotalCount} para la Línea B, pero ese dato corresponde a la Enfardadora (fardos), no a las bolsas de la Empacadora 1.
+\item \textbf{Contadores del PLC:} los valores en vivo de Infeed/Outfeed (\textasciitilde{}8,8 millones) son acumulados históricos del equipo, no de la corrida. Por eso el dato por corrida sale del histórico MES filtrado desde el inicio de la WO95.
+\end{itemize}}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{23,8}{1,3}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_equipment\_status} 0,02~s \;\textbullet\; \texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 1,25~s}{{\footnotesize\textbf{Lectura de referencia (12:48:01 y 12:48:39).} Empacadora 1, orden WO95: 672$\to$681 unidades en la corrida.}\par\smallskip La \textbf{Empacadora 1 de la Línea B (Empaque Trigo)} lleva \textbf{678 unidades} en la corrida actual, con corte a las 12:48 p. m.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Concepto} & \textbf{Unidades} \\
+\midrule
+Total producido (Infeed) & 678 \\
+\rowcolor{tblzebra}Buenas (Outfeed) & 672 \\
+Desperdicio (Waste) & 6 ($\approx$0,9 \%) \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{Datos de la corrida}
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Corrida:} RunID 358, orden \textbf{WO95}. Empezó a las 11:46 a. m.
+\item \textbf{Arranque:} la empacadora empezó a producir hacia las 11:52. Antes tuvo unos 5–6 minutos de parada no planeada.
+\item \textbf{Estado actual:} está en marcha (Status = 2).
+\item \textbf{Ritmo:} en la última media hora ha subido a unas 12–18 unidades por minuto. Antes iba a 9–12 por minuto.
+\end{itemize}
+
+
+
+\textbf{Sobre las fuentes de los datos}
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item No usé los contadores Edge de la empacadora (Infeed $\approx$ 8,83 millones) porque suman todo lo producido desde siempre, no solo esta corrida. Por eso la cifra viene del histórico MES de la celda, tomado desde el inicio de la corrida.
+\item El TotalCount de la línea en el MES (164 de una meta de 2.000) es otra cosa: corresponde al conteo de la Enfardadora (fardos), no a lo que empaca la Empacadora 1.
+\end{itemize}}
+
+\fichapregunta{20}{Tiempo real}{¿Qué producto se empaca ahora en la Línea A de Empaque Trigo y cuál es su OEE actual?}{D1.1}{\texttt{uns-mcp}}{La Línea A de Empaque Trigo empaca el producto 100202 (Trigo, Libra), orden WO94. Su OEE actual estuvo entre 63,3 \% y 66,8 \% según la hora de cada ejecución.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{11,61}{0,07}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_context} 0,02~s}{{\footnotesize\textbf{Lectura de referencia (12:36:19 y 12:36:45).} orden WO94, producto 100202, OEE 63,3$\to$63,6 \%.}\par\smallskip En la \textbf{Línea A de Empaque Trigo} se está empacando \textbf{Trigo – Libra – 24 bolsas por paca} (código 100202), bajo la orden \textbf{WO94}, que está en ejecución desde las 11:46 de hoy.
+
+
+
+El \textbf{OEE actual es 63,9 \%} (lectura de las 12:36). La pérdida viene toda del rendimiento. La disponibilidad está en 100 \%, sin paros programados ni no programados. La calidad también está en 100 \%: 160 pacas buenas y 0 defectuosas. El rendimiento, en cambio, está en 63,9 \%, porque la línea va a 192 pacas/h y el estándar es 5 pacas/min (300/h).
+
+
+
+En cuanto al avance de la orden, se llevan 160 de 2.000 pacas y faltan 1.840. El fin está programado para las 18:26. Al ritmo actual de 192/h, terminar las pacas restantes tomaría unas 9,6 horas más, así que la orden no alcanzaría a cerrar a tiempo si no se recupera velocidad. Si quieres, reviso el estado de cada celda (Empacadora 1, Empacadora 2, Enfardadora) para ver dónde está el cuello de botella.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{12,01}{0,05}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,04~s}{{\footnotesize\textbf{Lectura de referencia (12:44:17 y 12:44:41).} orden WO94, producto 100202, OEE 66,8$\to$66,7 \%.}\par\smallskip En la \textbf{Línea A de Empaque Trigo} (Barranquilla) se está empacando el producto \textbf{100202 – Trigo, presentación Libra, 24 bolsas por fardo}, bajo la orden \textbf{WO94} (corrida 357). La orden arrancó hoy a las 11:46 y está en curso.
+
+
+
+El \textbf{OEE actual es 66,9 \%} (lectura de las 12:44). La pérdida viene toda del rendimiento:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{Valor} \\
+\midrule
+Disponibilidad & 100 \% (sin paros planeados ni no planeados) \\
+\rowcolor{tblzebra}Rendimiento & 66,9 \% \\
+Calidad & 100 \% (0 unidades malas) \\
+\rowcolor{tblzebra}\textbf{OEE} & \textbf{66,9 \%} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+La línea produce a \textbf{201 fardos/h}, frente a un estándar de 5 fardos/min (300/h). Lleva \textbf{194 fardos buenos} de 2.000 pedidos. A esta hora la meta era 290, así que va unos 96 fardos por debajo.
+
+
+
+Hay que tener en cuenta el plazo. Faltan 1.806 fardos. Al ritmo actual, eso tomaría unas 9 horas. El fin programado es a las 18:26, unas 5,7 horas desde la lectura. Si no se recupera velocidad, la orden no terminará a tiempo. Las tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) reportan estado "en marcha". Por eso parece una marcha lenta y no un paro.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{13,56}{0,07}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,06~s}{{\footnotesize\textbf{Lectura de referencia (12:46:46 y 12:47:12).} orden WO94, producto 100202, OEE 66,5 \%.}\par\smallskip En la \textbf{Línea A de Empaque Trigo} se está empacando \textbf{Trigo – Libra – 24 bolsas por fardo} (código \textbf{100202}), bajo la orden \textbf{WO94}, que arrancó hoy a las 11:46 y está en curso.
+
+
+
+\textbf{El OEE actual es 66,5 \%.} Lo que lo baja es el rendimiento:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{Valor} \\
+\midrule
+Disponibilidad & 100 \% (sin paradas planeadas ni no planeadas) \\
+\rowcolor{tblzebra}Rendimiento & 66,5 \% \\
+Calidad & 100 \% (0 fardos malos) \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+La línea va a \textbf{199 fardos/h} frente a un estándar de \textbf{300 fardos/h} (5/min). En la primera hora produjo \textbf{201 fardos}, cuando la meta a esta altura era unos \textbf{303}. Las tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) aparecen en estado \textit{Running}, así que no es una parada, sino que la línea va lenta.
+
+
+
+Esto afecta el cierre de la orden. Faltan \textbf{1.799 de 2.000 fardos}. Al ritmo actual terminaría hacia las \textbf{21:50}, más de 3 horas después del fin programado (18:26). Incluso a velocidad estándar desde ahora ya no alcanzaría la hora programada.
+
+
+
+Lecturas tomadas del UNS a las 12:46 (hora Colombia). ¿Quieres que revise el histórico de conteos por intervalo para ver si la lentitud es constante o viene de algún tramo puntual?}
+
+\fichapregunta{21}{Tiempo real}{¿En qué unidad se mide el conteo de la Enfardadora?}{D1.1}{\texttt{uns-mcp}}{El conteo de la Enfardadora se mide en unidades (metadato del tag de conteo).}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{8,62}{0,03}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s}{En el UNS, los contadores de la Enfardadora tienen como unidad de ingeniería (\textbf{EngUnit}) simplemente \textbf{"unidades"}, pero cada contador cuenta algo distinto según su documentación:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Tag} & \textbf{Qué cuenta} & \textbf{Valor actual} \\
+\midrule
+\textbf{Infeed} & Bolsas que entran a la Enfardadora & 767.627 \\
+\rowcolor{tblzebra}\textbf{Outfeed} & Fardos formados que salen & 759.850 \\
+\textbf{Waste} & Material desperdiciado (acumulado) & 7.777 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+Por tanto, el \textbf{Infeed} está en bolsas y el \textbf{Outfeed} en fardos, aunque los dos figuren como "unidades". Hay que tenerlo en cuenta al comparar entrada y salida: un fardo agrupa varias bolsas, así que la diferencia entre los dos contadores no corresponde directamente a pérdidas.
+
+
+
+Este dato lo tomé de \textbf{Empaque Maiz / Linea A} (Barranquilla). Las demás líneas probablemente siguen el mismo esquema, pero si quieres puedo confirmarlo en otra línea específica.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{8,92}{0,02}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_equipment\_status} 0,02~s}{Los contadores de la Enfardadora se miden en \textbf{unidades} (consulté la de Empaque Maíz, Línea A). Lo que cambia es qué representa cada unidad según el contador. El \textbf{Infeed} cuenta bolsas que entran al equipo (767.648 acumuladas), el \textbf{Outfeed} cuenta fardos formados que salen (759.871 acumulados) y el \textbf{Waste} cuenta material desperdiciado (7.777).
+
+
+
+El campo EngUnit dice solo "unidades" para los tres contadores, pero la documentación de los tags aclara que en la entrada son bolsas y en la salida son fardos. Por eso no conviene restar Infeed menos Outfeed directamente sin considerar cuántas bolsas lleva cada fardo.
+
+
+
+Si te interesa otra área o línea (por ejemplo Empaque Trigo o Línea B), la consulto para confirmar que use la misma unidad.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{11,48}{0,03}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_equipment\_status} 0,02~s}{Los contadores de la \textbf{Enfardadora} se miden en \textbf{unidades} (EngUnit = \texttt{unidades}). Esto es lo que leí en Empaque Maíz / Línea A:
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Tag} & \textbf{Qué cuenta (según la documentación)} & \textbf{Unidad} & \textbf{Valor actual} \\
+\midrule
+\textbf{Infeed} & Bolsas que entran a la Enfardadora & unidades & 767.674 \\
+\rowcolor{tblzebra}\textbf{Outfeed} & Fardos formados que salen & unidades & 759.896 \\
+\textbf{Waste} & Material desperdiciado & unidades & 7.778 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+El \textbf{Status} no tiene unidad. Es un código: 0 = Other, 1 = Unplanned, 2 = Running. Ahora mismo está en 2 (en marcha).
+
+
+
+Hay una inconsistencia que vale la pena revisar. La documentación dice que Outfeed cuenta \textit{fardos}, pero los números cuadran exactamente como bolsas: 767.674 $-$ 759.896 = 7.778, que es justo el valor de Waste. Si Outfeed contara fardos, el valor sería mucho menor que el de Infeed (por ejemplo, unas 30 veces menor si cada fardo lleva 30 bolsas). Probablemente el contador de salida está en bolsas equivalentes, o la documentación del tag está desactualizada.
+
+
+
+Consulté la Línea A de Maíz. Si te interesa otra área o línea, la reviso.}
+
+\fichapregunta{22}{Combinada}{¿Cómo está el OEE actual de la Línea A de Empaque Maíz frente a su OEE del 15 al 21 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{uns-mcp y mes-history-mcp}}{El OEE actual de la Línea A de Empaque Maíz (orden WO92) estuvo entre 60,8 \% y 62,2 \% según la hora de cada ejecución. Del 15 al 21 de septiembre de 2026 su OEE fue 80,0 \% (disponibilidad 95,4 \%, rendimiento 85,5 \%, calidad 97,9 \%).}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{22,16}{0,64}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_oee\_history} 0,61~s}{{\footnotesize\textbf{Lectura de referencia (12:39:31 y 12:40:06).} OEE 60,8$\to$61,5 \% (disponibilidad 100,0 \%, rendimiento 61,2$\to$61,8 \%, calidad 99,4 \%).}\par\smallskip \textbf{La Línea A de Empaque Maíz está hoy en un OEE de 61,0 \%, unos 19 puntos por debajo del 80,0 \% que tuvo del 15 al 21 de septiembre.} La caída se explica casi por completo por el rendimiento.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Indicador} & \textbf{Ahora (corrida 355, WO92)} & \textbf{15–21 sep 2026} & \textbf{Diferencia} \\
+\midrule
+\textbf{OEE} & \textbf{61,0 \%} & \textbf{80,0 \%} & \textbf{$-$19,0 pts} \\
+\rowcolor{tblzebra}Disponibilidad & 100,0 \% & 95,4 \% & +4,6 pts \\
+Rendimiento & 61,3 \% & 85,5 \% & $-$24,2 pts \\
+\rowcolor{tblzebra}Calidad & 99,4 \% & 97,9 \% & +1,5 pts \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{El problema es la velocidad.} La línea está produciendo a unas 182 unidades/h, frente a un estándar de 5 unidades/min (300/h). La disponibilidad y la calidad están incluso mejor que en la semana de referencia: no hay paros registrados en la corrida actual y solo hay 1 unidad defectuosa de 163.
+
+
+
+\textbf{Cómo leer la comparación:}
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{El dato actual es de una sola corrida corta.} Empezó hoy a las 11:46 y lleva unos 53 minutos, así que puede cambiar bastante a medida que avance. Va en 162 unidades buenas, frente a una meta de 2.000 para la orden.
+\item \textbf{El dato de septiembre agrupa 21 corridas.} Lo recalculé a partir de los tiempos y conteos sumados, sin promediar porcentajes. En esa semana se produjeron 131.184 unidades (128.486 buenas) y hubo unas 3,1 h de paros no programados.
+\item \textbf{Septiembre fue de más a menos.} Empezó en 86 \% el día 15 y bajó hasta 74 \% el día 19, con un repunte al 80 \% el día 21.
+\end{itemize}
+
+
+
+Si quieres, reviso la producción por empacadora en la corrida actual para ver si alguna de las dos está frenando la línea.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{23,77}{0,58}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,01~s \;\textbullet\; \texttt{get\_oee\_history} 0,55~s}{{\footnotesize\textbf{Lectura de referencia (12:41:31 y 12:42:08).} OEE 61,7$\to$61,8 \% (disponibilidad 100,0 \%, rendimiento 62,1$\to$62,5 \%, calidad 99,4 \%).}\par\smallskip El OEE actual de la Línea A de Empaque Maíz es \textbf{61,8 \%}, unos \textbf{18 puntos por debajo} del 80,0 \% que tuvo la semana del 15 al 21 de septiembre. La caída viene casi entera del rendimiento.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{Actual (corrida 355, WO92)} & \textbf{15–21 sep 2026} & \textbf{Diferencia} \\
+\midrule
+Disponibilidad & 100,0 \% & 95,4 \% & +4,6 pp \\
+\rowcolor{tblzebra}Rendimiento & 62,2 \% & 85,5 \% & $-$23,3 pp \\
+Calidad & 99,4 \% & 97,9 \% & +1,5 pp \\
+\rowcolor{tblzebra}\textbf{OEE} & \textbf{61,8 \%} & \textbf{80,0 \%} & \textbf{$-$18,2 pp} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{Ahora:} la línea va a 185 unidades/h y el estándar es 5 unidades/min (300/h). Por eso el rendimiento queda en 62 \%. En disponibilidad y calidad la corrida actual está mejor que en septiembre: no lleva paros y tiene 1 unidad mala de 172.
+
+
+
+\textbf{En septiembre:} los días variaron entre 74,2 \% (19 sep) y 86,2 \% (15 sep). Esa semana hubo unos 11.250 s (\textasciitilde{}3,1 h) de paros no programados, concentrados del 19 al 21. Se procesaron 131.184 unidades, de las cuales 128.486 fueron buenas.
+
+
+
+Hay que tener en cuenta dos cosas al comparar. La corrida actual empezó a las 11:46 y lleva menos de una hora con 172 unidades, mientras que la referencia son 21 corridas de una semana completa. El dato actual puede moverse bastante todavía. Además, los tags de disponibilidad y paros tienen marca de tiempo de ayer (9 nov). Puede que solo se actualicen cuando hay un evento, pero conviene confirmar que se están refrescando.
+
+
+
+Para entender por qué la máquina va lenta, puedo revisar el estado de cada celda (Empacadora 1, Empacadora 2, Enfardadora) y ver cuál está frenando la línea.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{27,46}{0,7}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,01~s \;\textbullet\; \texttt{get\_oee\_history} 0,67~s}{{\footnotesize\textbf{Lectura de referencia (12:48:48 y 12:49:28).} OEE 62,2 \% (disponibilidad 100,0 \%, rendimiento 62,8 \%, calidad 99,0 \%).}\par\smallskip El OEE actual de la Línea A está en \textbf{62,0\%}, unos \textbf{18 puntos por debajo} del \textbf{80,0\%} que tuvo en la semana del 15 al 21 de septiembre. La caída viene casi por completo del rendimiento (velocidad).
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{Actual (corrida 355)} & \textbf{15–21 sep 2026} & \textbf{Diferencia} \\
+\midrule
+Disponibilidad & 100,0\% & 95,4\% & +4,6 pts \\
+\rowcolor{tblzebra}Rendimiento & 62,7\% & 85,5\% & $-$22,8 pts \\
+Calidad & 99,0\% & 97,9\% & +1,1 pts \\
+\rowcolor{tblzebra}\textbf{OEE} & \textbf{62,0\%} & \textbf{80,0\%} & \textbf{$-$18,0 pts} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{Situación actual} (lectura del UNS a las 12:48 de hoy): la corrida 355 (orden WO92) arrancó a las 11:46 y lleva unos 63 minutos en marcha sin paros. Ha producido 196 unidades (194 buenas y 2 de desperdicio), pero la meta a velocidad estándar para ese tiempo era 313. La línea va a unas 186 unidades/h, cuando el estándar es de 5 unidades/min, es decir, 300 unidades/h. No está perdiendo tiempo ni calidad. Está corriendo lenta.
+
+
+
+\textbf{Semana del 15 al 21 de septiembre:} hubo 21 corridas con 131.184 unidades en total, de las cuales 128.486 fueron buenas. Para el OEE semanal sumé los tiempos y los conteos de toda la semana y recalculé cada componente, sin promediar los porcentajes diarios. El OEE diario varió entre 74,2\% (19 sep) y 86,2\% (15 sep). El rendimiento diario nunca bajó de 80,5\%. Esa semana hubo unos 188 minutos de paro no programado, sobre todo del 19 al 21.
+
+
+
+Hay dos cosas a tener en cuenta para la comparación:
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item \textbf{Muestras de distinto tamaño.} El dato actual es una sola corrida de una hora y todavía abierta, mientras que el de septiembre es una semana completa. Un arranque lento o un ajuste al inicio de la orden pesa mucho en una hora.
+\item \textbf{Velocidad estándar.} Usé el estándar actual de 5 unidades/min. Si en septiembre se empacaron otros productos con otro estándar, la comparación del rendimiento no es del todo directa.
+\end{itemize}
+
+
+
+Si quieres, reviso las órdenes y los paros de esa semana, o comparo la velocidad actual de cada empacadora para ver dónde está el cuello de botella.}
+
+\fichapregunta{23}{Combinada}{¿Cuántas unidades lleva la Línea A de Empaque Maíz en la corrida actual y cuántas produjo en total el 18 de septiembre de 2026?}{D2.2}{\texttt{uns-mcp y mes-history-mcp}}{La corrida actual de la Línea A de Empaque Maíz (orden WO92) llevaba entre 160 y 187 unidades según la hora de cada ejecución. El 18 de septiembre de 2026 la línea produjo 12.578 unidades (12.340 buenas y 238 de desperdicio) por conteo de día calendario; por las corridas iniciadas ese día, 11.796.}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{13,75}{2,32}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 2,28~s}{{\footnotesize\textbf{Lectura de referencia (12:38:53 y 12:39:22).} corrida actual de la línea (orden WO92): 160$\to$162 unidades (buenas 159$\to$161, desperdicio 1).}\par\smallskip \textbf{Corrida actual (Run 355, orden WO92):} la Línea A de Empaque Maíz lleva \textbf{160 unidades} producidas en total, de las cuales 159 son buenas y 1 es defectuosa. La corrida arrancó hoy a las 11:46 a. m., así que lleva unos 53 minutos, y la meta de la orden es de 2.000 unidades. (Lectura de las 12:39 p. m.)
+
+
+
+\textbf{18 de septiembre de 2026:} la línea produjo \textbf{12.578 unidades} en total ese día, de las cuales 12.340 fueron buenas y 238 fueron desperdicio, alrededor del 1,9 \%.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{11,79}{2,56}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,01~s \;\textbullet\; \texttt{get\_count\_history} 2,54~s}{{\footnotesize\textbf{Lectura de referencia (12:40:16 y 12:40:41).} corrida actual de la línea (orden WO92): 167 unidades (buenas 166, desperdicio 1).}\par\smallskip \textbf{Corrida actual (RunID 355, orden WO92)}
+
+La Línea A de Empaque Maíz lleva \textbf{167 unidades} en total: 166 buenas y 1 defectuosa. La corrida arrancó hoy a las 11:46 a. m. y la lectura es de las 12:40 p. m. La meta de la orden es 2.000 unidades, así que va alrededor del 8 \%.
+
+
+
+\textbf{18 de septiembre de 2026 (día completo)}
+
+Produjo \textbf{12.578 unidades en total}: 12.340 buenas y 238 de desperdicio (cerca del 1,9 \%). El dato incluye solo la producción que pertenece a corridas y viene de 11 muestras del día.}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{13,32}{2,46}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,03~s \;\textbullet\; \texttt{get\_count\_history} 2,41~s}{{\footnotesize\textbf{Lectura de referencia (12:45:29 y 12:45:55).} corrida actual de la línea (orden WO92): 186$\to$187 unidades (buenas 185$\to$186, desperdicio 1).}\par\smallskip Ahora consulto el histórico del 18 de septiembre.
+
+
+
+\textbf{Corrida actual (RunID 355, orden WO92):} la Línea A de Empaque Maíz lleva \textbf{186 unidades} en total, de las cuales 185 son buenas y 1 es defectuosa. La corrida arrancó hoy a las 11:46 a. m. (hora de Colombia), produce "Maíz - Libra - 24 Bags per Baler" y la orden pide 2.000 unidades. La lectura es de las 12:45 p. m. y la línea sigue en marcha.
+
+
+
+El ERP muestra 184 unidades producidas (ProducedQty). Esa cifra va un poco rezagada frente al conteo del MES.
+
+
+
+\textbf{18 de septiembre de 2026 (día completo, hora de Colombia):} la línea produjo \textbf{12.578 unidades} en total. De esas, 12.340 fueron buenas y 238 fueron desperdicio (aprox. 1,9 \%). Solo se cuenta la producción asociada a corridas.}
+
+\fichapregunta{24}{Combinada}{¿Cuál es el OEE actual de la Línea B de Empaque Trigo y cómo se compara con el del 18 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{uns-mcp y mes-history-mcp}}{El OEE actual de la Línea B de Empaque Trigo (orden WO95) estuvo entre 59,0 \% y 65,3 \% según la hora de cada ejecución. El 18 de septiembre de 2026 su OEE fue 81,5 \% (disponibilidad 95,0 \%, rendimiento 87,5 \%, calidad 98,0 \%).}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{17,14}{0,83}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_oee\_history} 0,59~s}{{\footnotesize\textbf{Lectura de referencia (12:35:39 y 12:36:10).} OEE 59,0$\to$59,9 \% (disponibilidad 88,5 \%, rendimiento 69,0$\to$69,9 \%, calidad 96,7 \%).}\par\smallskip El OEE actual de la Línea B de Empaque Trigo es \textbf{58,8 \%}, unos \textbf{22,7 puntos por debajo} del 81,5 \% que tuvo el 18 de septiembre de 2026.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Componente} & \textbf{Ahora (corrida 358)} & \textbf{18 sep 2026 (día completo)} & \textbf{Diferencia} \\
+\midrule
+Disponibilidad & 88,5 \% & 95,0 \% & $-$6,5 pts \\
+\rowcolor{tblzebra}Rendimiento & 69,3 \% & 87,5 \% & $-$18,2 pts \\
+Calidad & 95,9 \% & 98,0 \% & $-$2,1 pts \\
+\rowcolor{tblzebra}\textbf{OEE} & \textbf{58,8 \%} & \textbf{81,5 \%} & \textbf{$-$22,7 pts} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{El rendimiento explica la mayor parte de la caída.} La línea va a unas 141 unidades/h, cuando el estándar es de 4 unidades/min (240/h). En 41 minutos de marcha ha producido 121 unidades, frente a unas 175 esperadas. La disponibilidad también bajó: lleva 339 s (unos 5,6 min) de paro no programado en menos de una hora de corrida. El 18 de septiembre ese paro fue de 1.876 s (unos 31 min) en más de 10 horas. La calidad está algo peor, con 4 malas de 121 (3,3 \% de desperdicio) frente al 2,0 \% de aquel día.
+
+
+
+\textbf{Tenga en cuenta la diferencia de periodos al comparar.} El valor actual corresponde a la corrida 358 (orden WO95, meta de 2.000 unidades), que arrancó hoy a las 11:46 y llevaba unos 49 minutos a la hora de la lectura (12:35). El del 18 de septiembre agrega 3 corridas completas, con unas 10,5 horas y 19.671 unidades. Una corrida que recién empieza suele tener un rendimiento más bajo mientras se estabiliza, y con conteos tan pequeños cada paro pesa mucho. Aun así, la brecha de rendimiento es grande y vale la pena revisarla.
+
+
+
+Si quiere, puedo consultar los motivos de los paros de hoy o el estado de las Empacadoras 1 y 2 para identificar dónde se está perdiendo velocidad.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{21,68}{1,16}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,03~s \;\textbullet\; \texttt{get\_oee\_history} 0,48~s \;\textbullet\; \texttt{get\_oee\_history} 0,63~s}{{\footnotesize\textbf{Lectura de referencia (12:43:33 y 12:44:08).} OEE 63,9$\to$64,1 \% (disponibilidad 90,1 \%, rendimiento 72,9$\to$73,0 \%, calidad 97,3 \%).}\par\smallskip \textbf{El OEE actual de la Línea B de Empaque Trigo es 64,2 \%, unos 17 puntos por debajo del 81,5 \% del 18 de septiembre.} La causa principal es el rendimiento (velocidad).
+
+
+
+El dato actual es parcial. Corresponde a la corrida en curso (Run 358, orden WO95), que arrancó hoy a las 11:46 y llevaba unos 57 minutos en la lectura de las 12:43. El del 18 de septiembre es el consolidado de tres corridas completas, recalculado a partir de sus tiempos y conteos.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Indicador} & \textbf{Hoy (corrida 358, en curso)} & \textbf{18 sep 2026 (día completo)} & \textbf{Diferencia} \\
+\midrule
+Disponibilidad & 90,1 \% & 95,0 \% & $-$4,9 pp \\
+\rowcolor{tblzebra}Rendimiento & 73,1 \% & 87,5 \% & $-$14,4 pp \\
+Calidad & 97,4 \% & 98,0 \% & $-$0,7 pp \\
+\rowcolor{tblzebra}\textbf{OEE} & \textbf{64,2 \%} & \textbf{81,5 \%} & \textbf{$-$17,3 pp} \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{Rendimiento.} La línea ha producido 151 unidades en unos 52 minutos de marcha. Eso es cerca de 2,9 unidades/min frente al estándar de 4 unidades/min, cuando la meta a esta altura era unas 207 unidades. El 18 de septiembre la línea corrió mucho más cerca del estándar.
+
+
+
+\textbf{Disponibilidad.} Lleva 339 s (unos 5,6 min) de paro no programado en menos de una hora de corrida. Es una proporción alta, aunque sobre una base de tiempo muy corta.
+
+
+
+\textbf{Calidad.} Está prácticamente igual: 4 unidades defectuosas de 151.
+
+
+
+El 18 de septiembre no fue parejo. La corrida de la mañana (06:09–10:12) tuvo un OEE de 67,0 \%, muy parecido al de hoy, y las dos siguientes subieron a 86,8 \% y 90,3 \%. Así que el arranque actual se parece más a esa mañana floja que al promedio del día. Como la corrida lleva menos de una hora, el OEE todavía puede moverse bastante.
+
+
+
+¿Quieres que revise los paros de hoy por motivo o compare las Empacadoras 1 y 2 para ver dónde se está perdiendo velocidad?}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{16,25}{1,33}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_oee\_history} 1,29~s}{{\footnotesize\textbf{Lectura de referencia (12:49:37 y 12:50:06).} OEE 65,0$\to$65,3 \% (disponibilidad 91,0 \%, rendimiento 73,2$\to$73,4 \%, calidad 97,6 \%).}\par\smallskip El \textbf{OEE actual de la Línea B de Empaque Trigo es 64,9 \%}, unos \textbf{16,6 puntos por debajo} del 81,5 \% que tuvo el 18 de septiembre de 2026. La mayor parte de la diferencia viene del rendimiento.
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Indicador} & \textbf{Actual (10 nov, 12:49)} & \textbf{18 sep 2026 (día completo)} & \textbf{Diferencia} \\
+\midrule
+\textbf{OEE} & \textbf{64,9 \%} & \textbf{81,5 \%} & \textbf{$-$16,6 pts} \\
+\rowcolor{tblzebra}Disponibilidad & 91,1 \% & 95,0 \% & $-$3,9 pts \\
+Rendimiento & 73,0 \% & 87,5 \% & $-$14,5 pts \\
+\rowcolor{tblzebra}Calidad & 97,6 \% & 98,0 \% & $-$0,4 pts \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+\textbf{Rendimiento.} La línea produce a 155 unidades/h, frente a un estándar de 4 unidades/min (240/h). Va a cerca del 65 \% de la velocidad nominal mientras está en marcha. El 18 de septiembre estuvo mucho más cerca del estándar.
+
+
+
+\textbf{Disponibilidad.} En la corrida actual lleva 339 s (unos 5,7 min) de paro no programado en algo más de una hora. Eso es proporcionalmente más que los 1.876 s acumulados en todo el 18 de septiembre, que tuvo cerca de 10,5 h de operación.
+
+
+
+\textbf{Calidad.} Es prácticamente igual. Hay 4 unidades defectuosas de 168 ahora, frente a 389 de 19.671 ese día.
+
+
+
+Hay un detalle a tener en cuenta en la comparación. El valor actual corresponde a una sola corrida en curso: la Run 358 (WO95, meta de 2.000 unidades), que empezó a las 11:46 y lleva unos 63 minutos, con 168 unidades producidas. El dato del 18 de septiembre agrega tres corridas completas. En una corrida tan corta, cualquier arranque lento o micro-paro pesa mucho en el OEE, así que el número todavía puede cambiar bastante a medida que avance la orden.
+
+
+
+Si quieres, puedo revisar los paros de hoy o la producción por empacadora para ver dónde se está perdiendo la velocidad.}
+
+\fichapregunta{25}{Combinada}{¿Qué orden corre ahora en la Línea B de Empaque Maíz y cuántas órdenes tuvo esa línea del 15 al 21 de septiembre de 2026?}{D2.2}{\texttt{uns-mcp y mes-history-mcp}}{En la Línea B de Empaque Maíz corre la orden WO93 (producto 100201, Maíz, Kilo). Del 15 al 21 de septiembre de 2026 esa línea tuvo 21 órdenes (3 de ellas iniciadas el 21).}
+
+\ejecucion{1}{\textcolor{blue}{[pendiente]}}{17,38}{1,55}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,03~s \;\textbullet\; \texttt{get\_production\_orders} 0,90~s \;\textbullet\; \texttt{get\_production\_orders} 0,60~s}{{\footnotesize\textbf{Lectura de referencia (12:37:25 y 12:37:55).} orden WO93, producto 100201.}\par\smallskip \textbf{Orden actual:} la Línea B de Empaque Maíz está corriendo la \textbf{WO93} (corrida 356), que arrancó hoy a las 11:46. La meta es de 2.000 unidades y a las 12:37 llevaba 115 producidas (111 buenas, 4 defectuosas), con un OEE de 54,2 \%. Lo que más lo baja es el rendimiento: 62,8 \%, a 130 u/h contra un estándar de 4 u/min (240 u/h).
+
+
+
+\textbf{Del 15 al 21 de septiembre de 2026:} la línea tuvo \textbf{21 órdenes}, tres por día, una por turno (mañana, tarde y noche).
+
+
+
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}ll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Órdenes} \\
+\midrule
+15 sep & WO01, WO05, WO09 \\
+\rowcolor{tblzebra}16 sep & WO13, WO17, WO23 \\
+17 sep & WO28, WO32, WO34 \\
+\rowcolor{tblzebra}18 sep & WO40, WO42, WO45 \\
+19 sep & WO50, WO54, WO57 \\
+\rowcolor{tblzebra}20 sep & WO62, WO65, WO71 \\
+21 sep & WO76, WO80, WO82 \\
+\bottomrule
+\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+
+
+
+De esas 21 órdenes, 14 fueron de Maíz Libra (100200) y 7 de Maíz Kilo (100201), que siempre se programó en el turno de la tarde.
+
+
+
+Para traer las órdenes del 21 tuve que hacer una segunda consulta hasta las 23:59 de ese día. La primera, con fecha final "2026-09-21", solo devolvió 18 órdenes porque el sistema toma esa fecha como la medianoche del 21. Conviene tenerlo en cuenta si se hacen consultas por rango directamente en el MES.}
+
+\ejecucion{2}{\textcolor{blue}{[pendiente]}}{16,46}{0,57}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_production\_orders} 0,54~s}{{\footnotesize\textbf{Lectura de referencia (12:44:50 y 12:45:19).} orden WO93, producto 100201.}\par\smallskip \textbf{Orden actual:} la Línea B de Empaque Maíz está corriendo la \textbf{WO93} (corrida 356). Arrancó hoy a las 11:46 a. m. con una meta de 2.000 unidades. A las 12:45 p. m. llevaba 138 unidades: 133 buenas y 5 defectuosas.
+
+
+
+El OEE de la corrida va en \textbf{56,8 \%}. Lo que más lo baja es el rendimiento, que está en 64,9 \%: la línea produce a 136 u/h y el estándar es 4 u/min, o sea 240 u/h. La disponibilidad está en 90,8 \% (hubo unos 5 minutos de paro no programado) y la calidad en 96,4 \%.
+
+
+
+\textbf{Del 15 al 21 de septiembre de 2026:} la línea tuvo \textbf{18 órdenes}, desde la WO01 hasta la WO71. Hubo una por turno durante seis días seguidos:
+
+
+
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=2pt]
+\item 12 fueron de Maíz Libra (código 100200) y 6 de Maíz Kilo (código 100201). El Kilo siempre corrió en el turno de la tarde.
+\item Se planearon 113.659 unidades y se produjeron 109.137, un \textbf{96,0 \%} de cumplimiento.
+\item La última orden fue la WO71. Empezó la noche del 20 y terminó el 21 a las 00:57. El historial no muestra órdenes que hayan iniciado durante el día 21.
+\end{itemize}}
+
+\ejecucion{3}{\textcolor{blue}{[pendiente]}}{17,57}{1,07}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_production\_orders} 0,60~s \;\textbullet\; \texttt{get\_production\_orders} 0,43~s}{{\footnotesize\textbf{Lectura de referencia (12:47:21 y 12:47:52).} orden WO93, producto 100201.}\par\smallskip \textbf{Orden actual en la Línea B:} se está corriendo la \textbf{WO93} (corrida \#356), que arrancó hoy a las 11:46 a. m. En la última lectura (12:47 p. m.) llevaba 145 unidades: 138 buenas y 7 defectuosas, de una cantidad de 2.000. Va algo por debajo de lo esperado, porque a esa hora la meta acumulada era de 223 unidades. El OEE está en 56,4 \%, y el rendimiento (65 \%) es lo que más lo baja.
+
+
+
+\textbf{Órdenes del 15 al 21 de septiembre de 2026:} la línea tuvo \textbf{21 órdenes}. Fueron tres por día, una por turno (mañana, tarde y noche). De ellas, 14 eran de \textit{Maíz Libra (24 bolsas por fardo)} y 7 de \textit{Maíz Kilo (20 bolsas por fardo)}. Van de la WO01 a la WO82.
+
+
+
+Una advertencia: si se consulta el histórico con la fecha final "2026-09-21" sin hora, el sistema solo devuelve 18 órdenes. Corta a la medianoche y deja por fuera las tres del día 21 (WO76, WO80 y WO82). Para incluir el día completo hay que poner la hora final 23:59:59.
+
+
+
+¿Quieres que te arme la tabla de esas 21 órdenes con las cantidades planeadas frente a las reales?}
+\end{singlespace}

@@ -1,4 +1,5 @@
 % Preámbulo
+\PassOptionsToPackage{table}{xcolor}
 \documentclass[stu, 12pt, letterpaper, donotrepeattitle, floatsintext]{apa7}
 \setcounter{secnumdepth}{5}
 \usepackage{fancyvrb}
@@ -34,23 +35,26 @@
     \hline
   \end{tabular}\par\bigskip
 }
-\newcommand{\fichapregunta}[7]{%
-  \par\medskip\noindent
-  \begin{tabular}{@{}p{3.2cm}p{10.6cm}@{}}
-    \hline
-    \textbf{Pregunta~#1} & #3 \\
-    \textbf{Categoría} & #2 \\
-    \textbf{Desafío} & #4 \\
-    \textbf{Tool~esperada} & #5 \\
-    \textbf{Referencia} & #6 \\
-    \textbf{Cálculo} & #7 \\
-    \hline
-  \end{tabular}\par\smallskip
-}
-\newcommand{\ejecucion}[5]{%
-  \noindent\textbf{Ejecución #1.} #2\par
-  \noindent\small Veredicto: #3. Latencia: #4~s. Calidad (coherencia/pertinencia/suficiencia): #5.\normalsize\par\smallskip
-}
+\usepackage{booktabs,enumitem,needspace,array,setspace,colortbl}
+\usepackage[most]{tcolorbox}
+\definecolor{azulanexo}{HTML}{1F3A5F}\definecolor{tblhead}{HTML}{DCE5F0}\definecolor{tblzebra}{HTML}{F4F7FB}
+\newtcolorbox{fichap}[3]{enhanced,breakable,colback=azulanexo!5,colframe=azulanexo,colbacktitle=azulanexo,coltitle=white,boxrule=0.6pt,arc=2pt,
+  left=5pt,right=5pt,top=3pt,bottom=3pt,fonttitle=\bfseries\small,
+  title={Pregunta #1\hfill{\normalfont #2 \;\textbullet\; #3}},before skip=10pt,after skip=3pt}
+\newtcolorbox{ejecbox}[5]{enhanced,breakable,colback=white,colframe=black!25,boxrule=0.3pt,arc=0pt,
+  borderline west={2.2pt}{0pt}{azulanexo!70},left=6pt,right=5pt,top=2pt,bottom=3pt,
+  colbacktitle=azulanexo!12,coltitle=black,fonttitle=\small,
+  title={\textbf{Ejecución #1}\hfill Veredicto: #2 \;\textbullet\; Total: #3~s \;\textbullet\; Tools: #4~s \;\textbullet\; Calidad: #5},before skip=2pt,after skip=4pt}
+\newcommand{\fichapregunta}[6]{\Needspace*{8\baselineskip}%
+ \begin{fichap}{#1}{#2}{#4}
+ \textbf{Pregunta.} #3\par\smallskip
+ \textbf{Servidor MCP.} #5\par\smallskip
+ \textbf{Referencia.} #6
+ \end{fichap}}
+\newcommand{\ejecucion}[7]{\begin{ejecbox}{#1}{#2}{#3}{#4}{#5}
+ {\footnotesize\textbf{Tools usadas.} #6}\par\smallskip
+ {\small #7}
+ \end{ejecbox}}
 \usepackage[normalem]{ulem}
 \usepackage[spanish]{babel}
 \addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
