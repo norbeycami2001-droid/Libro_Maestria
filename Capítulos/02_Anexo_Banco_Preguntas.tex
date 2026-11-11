@@ -1062,7 +1062,7 @@ Si te refieres a una sola de las líneas, o quieres verlo desglosado por turno o
 
 \fichapregunta{12}{Causal}{¿Por qué bajó el OEE de la Línea A de Empaque Maíz el 17 de septiembre de 2026 frente al 16?}{D1.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz. 16 de septiembre: OEE 84,3 \% (disponibilidad 95,2 \%, rendimiento 90,2 \%, calidad 98,2 \%); 3 corridas, 23.420 total, 22.989 buenas, 431 desperdicio. 17 de septiembre: OEE 79,6 \% (disponibilidad 97,3 \%, rendimiento 83,6 \%, calidad 97,9 \%); 3 corridas, 18.792 total, 18.395 buenas, 397 desperdicio. El componente que cae es el rendimiento (90,2 \% a 83,6 \%); la disponibilidad sube (95,2 \% a 97,3 \%) y la calidad casi no cambia (98,2 \% a 97,9 \%). Paros no programados: 16-sep 1 (26 min 27 s), 17-sep 1 (14 min 12 s).}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{43,11}{3,05}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,32~s \;\textbullet\; \texttt{get\_oee\_history} 0,45~s \;\textbullet\; \texttt{get\_production\_orders} 0,38~s \;\textbullet\; \texttt{get\_standard\_rate} 0,42~s \;\textbullet\; \texttt{get\_downtime\_events} 0,36~s \;\textbullet\; \texttt{get\_count\_history} 1,08~s}{El OEE de la Línea A bajó de \textbf{84,3 \% el 16 a 79,6 \% el 17} ($-$4,7 puntos), y la causa es \textbf{el rendimiento (velocidad)}, no los paros ni la calidad.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{43,11}{3,05}{5/5/5}{\texttt{get\_oee\_history} 0,32~s \;\textbullet\; \texttt{get\_oee\_history} 0,45~s \;\textbullet\; \texttt{get\_production\_orders} 0,38~s \;\textbullet\; \texttt{get\_standard\_rate} 0,42~s \;\textbullet\; \texttt{get\_downtime\_events} 0,36~s \;\textbullet\; \texttt{get\_count\_history} 1,08~s}{El OEE de la Línea A bajó de \textbf{84,3 \% el 16 a 79,6 \% el 17} ($-$4,7 puntos), y la causa es \textbf{el rendimiento (velocidad)}, no los paros ni la calidad.
 
 
 
@@ -1112,7 +1112,7 @@ Hay dos cosas que conviene revisar antes de sacar conclusiones finas:
 
 ¿Quiere que profundice en la corrida 270, por ejemplo con los conteos de la Enfardadora minuto a minuto, para ver si la caída fue pareja o concentrada en un tramo?}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{67,84}{6,07}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,45~s \;\textbullet\; \texttt{get\_oee\_history} 0,47~s \;\textbullet\; \texttt{get\_production\_orders} 0,39~s \;\textbullet\; \texttt{get\_standard\_rate} 0,45~s \;\textbullet\; \texttt{get\_downtime\_events} 0,40~s \;\textbullet\; \texttt{get\_count\_history} 1,55~s \;\textbullet\; \texttt{get\_count\_history} 1,58~s \;\textbullet\; \texttt{query\_table} 0,73~s}{\textbf{El OEE bajó de 84,3 \% a 79,6 \% ($-$4,7 puntos), y la causa es el rendimiento.} La disponibilidad y la calidad no explican la caída.
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{67,84}{6,07}{5/4/5}{\texttt{get\_oee\_history} 0,45~s \;\textbullet\; \texttt{get\_oee\_history} 0,47~s \;\textbullet\; \texttt{get\_production\_orders} 0,39~s \;\textbullet\; \texttt{get\_standard\_rate} 0,45~s \;\textbullet\; \texttt{get\_downtime\_events} 0,40~s \;\textbullet\; \texttt{get\_count\_history} 1,55~s \;\textbullet\; \texttt{get\_count\_history} 1,58~s \;\textbullet\; \texttt{query\_table} 0,73~s}{\textbf{El OEE bajó de 84,3 \% a 79,6 \% ($-$4,7 puntos), y la causa es el rendimiento.} La disponibilidad y la calidad no explican la caída.
 
 
 
@@ -1170,7 +1170,7 @@ Si se despeja la velocidad de referencia que implica cada corrida, el MES usó p
 
 Como siguiente paso, recomiendo revisar qué velocidad estándar tenía cargada cada orden (WO27, WO29 y WO33) en el momento de la corrida, y si alguien la cambió entre el 16 y el 17. Si quieres, puedo comparar estas corridas con las de otras fechas para ver cuál es el rendimiento normal del turno de la noche.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{48,36}{3,97}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,45~s \;\textbullet\; \texttt{get\_oee\_history} 0,36~s \;\textbullet\; \texttt{get\_production\_orders} 0,28~s \;\textbullet\; \texttt{get\_production\_orders} 0,30~s \;\textbullet\; \texttt{get\_standard\_rate} 0,46~s \;\textbullet\; \texttt{get\_downtime\_events} 0,39~s \;\textbullet\; \texttt{get\_count\_history} 1,69~s}{El OEE bajó de 84,3 \% a 79,6 \%, y la caída viene del rendimiento (90,2 \% $\rightarrow$ 83,6 \%), no de paros. Reviso corridas, productos y celdas para ver por qué.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{48,36}{3,97}{4/5/5}{\texttt{get\_oee\_history} 0,45~s \;\textbullet\; \texttt{get\_oee\_history} 0,36~s \;\textbullet\; \texttt{get\_production\_orders} 0,28~s \;\textbullet\; \texttt{get\_production\_orders} 0,30~s \;\textbullet\; \texttt{get\_standard\_rate} 0,46~s \;\textbullet\; \texttt{get\_downtime\_events} 0,39~s \;\textbullet\; \texttt{get\_count\_history} 1,69~s}{El OEE bajó de 84,3 \% a 79,6 \%, y la caída viene del rendimiento (90,2 \% $\rightarrow$ 83,6 \%), no de paros. Reviso corridas, productos y celdas para ver por qué.
 
 
 
@@ -1217,6 +1217,8 @@ No hay historial de conteo por celda (Empacadora 1, Empacadora 2, Enfardadora) p
 
 
 Como siguiente paso, revisaría con el turno C del 17 si hubo microparos no registrados, ajustes de velocidad o problemas de material en la WO33. ¿Quieres que mire la producción hora a hora de esa corrida para ver si la velocidad baja de forma continua o en tramos puntuales?}
+
+\notaeval{En E2 la pertinencia es 4: agrega datos adicionales (volumen producido, tamaño de las órdenes, causas de los paros) que no explican la baja del OEE. En E3 la coherencia es 4: abre con una frase intermedia que repite lo que dice a continuación.}
 
 \fichapregunta{13}{Causal}{¿Qué día entre el 15 y el 21 de septiembre de 2026 tuvo más desperdicio la Línea A de Empaque Maíz y por qué?}{D1.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 15 al 21 de septiembre de 2026. Por día calendario: más desperdicio el 2026-09-20 con 562 unidades sobre 21.299 producidas (2,64 \%). Es el día con la tasa de desperdicio más alta de la semana (rango 1,71 \% a 2,64 \%); el mayor volumen fue el 2026-09-16 (22.693). Por inicio de corrida: el 2026-09-19 con 518 (2,64 \%).}
 
