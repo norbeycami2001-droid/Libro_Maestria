@@ -1222,7 +1222,7 @@ Como siguiente paso, revisaría con el turno C del 17 si hubo microparos no regi
 
 \fichapregunta{13}{Causal}{¿Qué día entre el 15 y el 21 de septiembre de 2026 tuvo más desperdicio la Línea A de Empaque Maíz y por qué?}{D1.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 15 al 21 de septiembre de 2026. Por día calendario: más desperdicio el 2026-09-20 con 562 unidades sobre 21.299 producidas (2,64 \%). Es el día con la tasa de desperdicio más alta de la semana (rango 1,71 \% a 2,64 \%); el mayor volumen fue el 2026-09-16 (22.693). Por inicio de corrida: el 2026-09-19 con 518 (2,64 \%).}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{56,77}{6,15}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,26~s \;\textbullet\; \texttt{get\_count\_history} 1,10~s \;\textbullet\; \texttt{get\_count\_history} 0,98~s \;\textbullet\; \texttt{get\_count\_history} 1,73~s \;\textbullet\; \texttt{get\_count\_history} 0,93~s \;\textbullet\; \texttt{get\_downtime\_events} 0,41~s \;\textbullet\; \texttt{get\_production\_orders} 0,39~s \;\textbullet\; \texttt{get\_downtime\_events} 0,30~s}{Septiembre 19 sale arriba (518 unidades, 2,64 \%). Reviso qué pasó ese día.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{56,77}{6,15}{3/5/5}{\texttt{get\_oee\_history} 0,26~s \;\textbullet\; \texttt{get\_count\_history} 1,10~s \;\textbullet\; \texttt{get\_count\_history} 0,98~s \;\textbullet\; \texttt{get\_count\_history} 1,73~s \;\textbullet\; \texttt{get\_count\_history} 0,93~s \;\textbullet\; \texttt{get\_downtime\_events} 0,41~s \;\textbullet\; \texttt{get\_production\_orders} 0,39~s \;\textbullet\; \texttt{get\_downtime\_events} 0,30~s}{Septiembre 19 sale arriba (518 unidades, 2,64 \%). Reviso qué pasó ese día.
 
 
 
@@ -1286,7 +1286,7 @@ Todo apunta a una condición que duró unas 24 horas y afectó a toda la línea:
 
 Intenté separar el desperdicio por Empacadora, pero el historial no tiene conteos a nivel de celda en ese rango. Solo existe el conteo total de la línea, medido en la Enfardadora.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{69,17}{8,16}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_oee\_history} 0,43~s \;\textbullet\; \texttt{get\_downtime\_events} 0,35~s \;\textbullet\; \texttt{get\_count\_history} 1,53~s \;\textbullet\; \texttt{get\_oee\_history} 0,32~s \;\textbullet\; \texttt{get\_count\_history} 1,14~s \;\textbullet\; \texttt{get\_downtime\_events} 0,31~s \;\textbullet\; \texttt{get\_count\_history} 1,74~s \;\textbullet\; \texttt{get\_count\_history} 0,89~s \;\textbullet\; \texttt{get\_production\_orders} 0,25~s \;\textbullet\; \texttt{get\_count\_history} 1,13~s}{El 19 de septiembre fue el día con más desperdicio (518 unidades, 2,64 \%). Reviso qué pasó ese día.
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{69,17}{8,16}{3/5/5}{\texttt{get\_oee\_history} 0,43~s \;\textbullet\; \texttt{get\_downtime\_events} 0,35~s \;\textbullet\; \texttt{get\_count\_history} 1,53~s \;\textbullet\; \texttt{get\_oee\_history} 0,32~s \;\textbullet\; \texttt{get\_count\_history} 1,14~s \;\textbullet\; \texttt{get\_downtime\_events} 0,31~s \;\textbullet\; \texttt{get\_count\_history} 1,74~s \;\textbullet\; \texttt{get\_count\_history} 0,89~s \;\textbullet\; \texttt{get\_production\_orders} 0,25~s \;\textbullet\; \texttt{get\_count\_history} 1,13~s}{El 19 de septiembre fue el día con más desperdicio (518 unidades, 2,64 \%). Reviso qué pasó ese día.
 
 
 
@@ -1334,7 +1334,7 @@ Una aclaración sobre el método: el resumen de OEE por día asigna cada corrida
 
 En resumen, el 20 combinó una calidad degradada durante unas 36 horas (del 19 por la mañana al 20 por la tarde) con un día de mucho volumen. La causa de fondo de esa degradación no aparece en el MES por tres razones: los paros solo tienen el motivo genérico "Unplanned", no hay desperdicio por máquina (Empacadoras 1 y 2) en el histórico, y no hay motivos de rechazo. Para encontrarla conviene revisar las bitácoras de turno y de mantenimiento del 19 y el 20, en especial lo que cambió alrededor de las 22:00 del 20, cuando la tasa se normalizó.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{48,29}{5,13}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,24~s \;\textbullet\; \texttt{get\_count\_history} 1,64~s \;\textbullet\; \texttt{get\_production\_orders} 0,32~s \;\textbullet\; \texttt{get\_count\_history} 1,24~s \;\textbullet\; \texttt{get\_oee\_history} 0,37~s \;\textbullet\; \texttt{get\_downtime\_events} 0,27~s}{\textbf{El domingo 20 de septiembre} fue el día con más desperdicio en la Línea A de Empaque Maíz: \textbf{562 unidades}, el 2,64 \% de lo producido. Es el máximo de la semana tanto en unidades como en porcentaje, así que no se explica solo por haber producido más.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{48,29}{5,13}{5/5/5}{\texttt{get\_count\_history} 1,24~s \;\textbullet\; \texttt{get\_count\_history} 1,64~s \;\textbullet\; \texttt{get\_production\_orders} 0,32~s \;\textbullet\; \texttt{get\_count\_history} 1,24~s \;\textbullet\; \texttt{get\_oee\_history} 0,37~s \;\textbullet\; \texttt{get\_downtime\_events} 0,27~s}{\textbf{El domingo 20 de septiembre} fue el día con más desperdicio en la Línea A de Empaque Maíz: \textbf{562 unidades}, el 2,64 \% de lo producido. Es el máximo de la semana tanto en unidades como en porcentaje, así que no se explica solo por haber producido más.
 
 
 
@@ -1390,6 +1390,8 @@ Los paros no explican el desperdicio:
 
 
 Para cerrar el análisis valdría la pena revisar las bitácoras de turno o de mantenimiento del 19 y el 20, y ver si hubo cambios de bobina o de material de empaque, ajustes de máquina o algo similar.}
+
+\notaeval{En E1 y E2 la coherencia es 3: conservan frases intermedias del modelo que primero afirman que el día con más desperdicio fue el 19 y luego lo corrigen al 20 con el criterio de día calendario. E3 generaliza que el resto de la semana tuvo calidad de 98 \% o más, pero otras corridas (como la 270, con 97,3 \%) quedaron por debajo; es una generalización imprecisa y no un dato inventado.}
 
 \fichapregunta{14}{Causal}{¿Qué paro afectó más la disponibilidad de la Línea B de Empaque Trigo el 17 de septiembre de 2026?}{D1.2}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, 17 de septiembre de 2026: 2 paros no programados; el que más afectó la disponibilidad fue el de las 14:38 (26 min 29 s). Otros: 06:17 (21 min 20 s). Paros programados (no afectan la disponibilidad): ninguno.}
 
