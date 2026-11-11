@@ -1395,7 +1395,7 @@ Para cerrar el análisis valdría la pena revisar las bitácoras de turno o de m
 
 \fichapregunta{14}{Causal}{¿Qué paro afectó más la disponibilidad de la Línea B de Empaque Trigo el 17 de septiembre de 2026?}{D1.2}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, 17 de septiembre de 2026: 2 paros no programados; el que más afectó la disponibilidad fue el de las 14:38 (26 min 29 s). Otros: 06:17 (21 min 20 s). Paros programados (no afectan la disponibilidad): ninguno.}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{15,03}{0,84}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,44~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s}{El paro que más afectó la disponibilidad fue \textbf{el no programado del turno de la tarde}, que empezó entre las 14:00 y las 15:00 y duró \textbf{26,5 minutos} (1.589 s). Fue el paro más largo del día.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{15,03}{0,84}{5/5/4}{\texttt{get\_downtime\_events} 0,44~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s}{El paro que más afectó la disponibilidad fue \textbf{el no programado del turno de la tarde}, que empezó entre las 14:00 y las 15:00 y duró \textbf{26,5 minutos} (1.589 s). Fue el paro más largo del día.
 
 
 
@@ -1421,7 +1421,7 @@ Las cifras cuadran. El paro de la tarde consumió cerca del 10,9 \% del tiempo d
 
 Hay dos limitaciones en los datos. El MES registra los dos paros solo con el motivo genérico \textbf{"Unplanned"}, así que no se sabe la causa raíz (falla mecánica, falta de material, atasco, etc.). Tampoco se ve la hora exacta de inicio, solo la franja horaria. Si quieres, consulto la tabla de eventos para ver la hora exacta y si alguna celda (Empacadora 1, Empacadora 2 o Enfardadora) originó el paro.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{18,92}{1,27}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,37~s \;\textbullet\; \texttt{get\_downtime\_events} 0,45~s \;\textbullet\; \texttt{get\_oee\_history} 0,44~s}{El paro que más afectó la disponibilidad de la \textbf{Línea B de Empaque Trigo} el 17 de septiembre de 2026 fue el que \textbf{empezó a las 14:38} (hora de Colombia). Duró \textbf{26 min 29 s} (1.589 s), aproximadamente hasta las 15:05.
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{18,92}{1,27}{5/4/5}{\texttt{get\_downtime\_events} 0,37~s \;\textbullet\; \texttt{get\_downtime\_events} 0,45~s \;\textbullet\; \texttt{get\_oee\_history} 0,44~s}{El paro que más afectó la disponibilidad de la \textbf{Línea B de Empaque Trigo} el 17 de septiembre de 2026 fue el que \textbf{empezó a las 14:38} (hora de Colombia). Duró \textbf{26 min 29 s} (1.589 s), aproximadamente hasta las 15:05.
 
 
 
@@ -1447,7 +1447,7 @@ Entre los dos sumaron 47 min 49 s de paro. Eso dejó la disponibilidad del día 
 
 El MES no registra la causa específica de ninguno de los dos paros: ambos están clasificados solo con el motivo genérico \textbf{"Unplanned"}. Si necesitan saber qué pasó a las 14:38, habría que revisarlo en la bitácora del turno o con el operador. También puedo ver si alguna celda (Empacadora 1, Empacadora 2 o Enfardadora) dejó de producir en esa ventana para identificar el equipo de origen.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{19,73}{1,34}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_downtime\_events} 0,53~s \;\textbullet\; \texttt{get\_downtime\_events} 0,40~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s}{El paro que más afectó la disponibilidad fue el que \textbf{empezó a las 14:38 y duró 26 min 29 s} (1.589 s). Le quitó unos \textbf{3,8 puntos} a la disponibilidad del día.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{19,73}{1,34}{5/4/5}{\texttt{get\_downtime\_events} 0,53~s \;\textbullet\; \texttt{get\_downtime\_events} 0,40~s \;\textbullet\; \texttt{get\_oee\_history} 0,39~s}{El paro que más afectó la disponibilidad fue el que \textbf{empezó a las 14:38 y duró 26 min 29 s} (1.589 s). Le quitó unos \textbf{3,8 puntos} a la disponibilidad del día.
 
 
 
@@ -1473,6 +1473,8 @@ La disponibilidad del día quedó en \textbf{93,2 \%}. Hubo 3 corridas con 42.00
 
 
 Los dos paros están registrados solo con el motivo genérico "Unplanned". El MES no dice la causa específica, por ejemplo una falla mecánica, falta de material o un atasco. Para saber qué pasó habría que revisar la bitácora de turno o preguntarle al operador. ¿Quieres que revise si alguna celda (Empacadora 1, 2 o Enfardadora) dejó de producir en esas ventanas para identificar dónde se originó el paro?}
+
+\notaeval{En E1 la suficiencia es 4: da la franja horaria del paro (14:00 a 15:00) y no la hora exacta (14:38), porque la consulta devolvió solo la franja. En E2 y E3 la pertinencia es 4: agregan el OEE y el rendimiento del día, que no se pedían.}
 
 \fichapregunta{15}{Sin datos}{¿Cuál fue el OEE de la Línea A de Empaque Maíz el 10 de septiembre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 10 de septiembre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
 
