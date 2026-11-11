@@ -1921,7 +1921,7 @@ Lecturas tomadas del UNS a las 12:46 (hora Colombia). ¿Quieres que revise el hi
 
 \fichapregunta{21}{Tiempo real}{¿En qué unidad se mide el conteo de la Enfardadora?}{D1.1}{\texttt{uns-mcp}}{El conteo de la Enfardadora se mide en unidades (metadato del tag de conteo).}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{8,62}{0,03}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s}{En el UNS, los contadores de la Enfardadora tienen como unidad de ingeniería (\textbf{EngUnit}) simplemente \textbf{"unidades"}, pero cada contador cuenta algo distinto según su documentación:
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{8,62}{0,03}{4/4/5}{\texttt{get\_context} 0,02~s}{En el UNS, los contadores de la Enfardadora tienen como unidad de ingeniería (\textbf{EngUnit}) simplemente \textbf{"unidades"}, pero cada contador cuenta algo distinto según su documentación:
 
 
 
@@ -1944,7 +1944,7 @@ Por tanto, el \textbf{Infeed} está en bolsas y el \textbf{Outfeed} en fardos, a
 
 Este dato lo tomé de \textbf{Empaque Maiz / Linea A} (Barranquilla). Las demás líneas probablemente siguen el mismo esquema, pero si quieres puedo confirmarlo en otra línea específica.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{8,92}{0,02}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_equipment\_status} 0,02~s}{Los contadores de la Enfardadora se miden en \textbf{unidades} (consulté la de Empaque Maíz, Línea A). Lo que cambia es qué representa cada unidad según el contador. El \textbf{Infeed} cuenta bolsas que entran al equipo (767.648 acumuladas), el \textbf{Outfeed} cuenta fardos formados que salen (759.871 acumulados) y el \textbf{Waste} cuenta material desperdiciado (7.777).
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{8,92}{0,02}{4/4/5}{\texttt{get\_equipment\_status} 0,02~s}{Los contadores de la Enfardadora se miden en \textbf{unidades} (consulté la de Empaque Maíz, Línea A). Lo que cambia es qué representa cada unidad según el contador. El \textbf{Infeed} cuenta bolsas que entran al equipo (767.648 acumuladas), el \textbf{Outfeed} cuenta fardos formados que salen (759.871 acumulados) y el \textbf{Waste} cuenta material desperdiciado (7.777).
 
 
 
@@ -1954,7 +1954,7 @@ El campo EngUnit dice solo "unidades" para los tres contadores, pero la document
 
 Si te interesa otra área o línea (por ejemplo Empaque Trigo o Línea B), la consulto para confirmar que use la misma unidad.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{11,48}{0,03}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_equipment\_status} 0,02~s}{Los contadores de la \textbf{Enfardadora} se miden en \textbf{unidades} (EngUnit = \texttt{unidades}). Esto es lo que leí en Empaque Maíz / Línea A:
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{11,48}{0,03}{5/3/5}{\texttt{get\_equipment\_status} 0,02~s}{Los contadores de la \textbf{Enfardadora} se miden en \textbf{unidades} (EngUnit = \texttt{unidades}). Esto es lo que leí en Empaque Maíz / Línea A:
 
 
 
@@ -1980,6 +1980,8 @@ Hay una inconsistencia que vale la pena revisar. La documentación dice que Outf
 
 
 Consulté la Línea A de Maíz. Si te interesa otra área o línea, la reviso.}
+
+\notaeval{Las tres responden «unidades», que es el metadato del tag. E1 y E2 repiten la documentación del UNS (Infeed en bolsas, Outfeed en fardos) y advierten que no conviene restar ambos contadores, pero las cifras que ellas mismas muestran cumplen Infeed $-$ Outfeed = Waste, por lo que la advertencia no se sostiene con los datos (coherencia 4). E3 detecta esa diferencia entre la documentación del tag y los valores, y la plantea como hipótesis (pertinencia 3 por el espacio que le dedica). La inconsistencia está en la documentación de los tags del UNS y queda como corrección pendiente.}
 
 \fichapregunta{22}{Combinada}{¿Cómo está el OEE actual de la Línea A de Empaque Maíz frente a su OEE del 15 al 21 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{uns-mcp y mes-history-mcp}}{El OEE actual de la Línea A de Empaque Maíz (orden WO92) estuvo entre 60,8 \% y 62,2 \% según la hora de cada ejecución. Del 15 al 21 de septiembre de 2026 su OEE fue 80,0 \% (disponibilidad 95,4 \%, rendimiento 85,5 \%, calidad 97,9 \%).}
 
