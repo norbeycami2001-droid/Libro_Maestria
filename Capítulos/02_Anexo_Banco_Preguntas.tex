@@ -1985,7 +1985,7 @@ Consulté la Línea A de Maíz. Si te interesa otra área o línea, la reviso.}
 
 \fichapregunta{22}{Combinada}{¿Cómo está el OEE actual de la Línea A de Empaque Maíz frente a su OEE del 15 al 21 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{uns-mcp y mes-history-mcp}}{El OEE actual de la Línea A de Empaque Maíz (orden WO92) estuvo entre 60,8 \% y 62,2 \% según la hora de cada ejecución. Del 15 al 21 de septiembre de 2026 su OEE fue 80,0 \% (disponibilidad 95,4 \%, rendimiento 85,5 \%, calidad 97,9 \%).}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{22,16}{0,64}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_oee\_history} 0,61~s}{{\footnotesize\textbf{Lectura de referencia (12:39:31 y 12:40:06).} OEE 60,8$\to$61,5 \% (disponibilidad 100,0 \%, rendimiento 61,2$\to$61,8 \%, calidad 99,4 \%).}\par\smallskip \textbf{La Línea A de Empaque Maíz está hoy en un OEE de 61,0 \%, unos 19 puntos por debajo del 80,0 \% que tuvo del 15 al 21 de septiembre.} La caída se explica casi por completo por el rendimiento.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{22,16}{0,64}{5/4/5}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_oee\_history} 0,61~s}{{\footnotesize\textbf{Lectura de referencia (12:39:31 y 12:40:06).} OEE 60,8$\to$61,5 \% (disponibilidad 100,0 \%, rendimiento 61,2$\to$61,8 \%, calidad 99,4 \%).}\par\smallskip \textbf{La Línea A de Empaque Maíz está hoy en un OEE de 61,0 \%, unos 19 puntos por debajo del 80,0 \% que tuvo del 15 al 21 de septiembre.} La caída se explica casi por completo por el rendimiento.
 
 
 
@@ -2019,7 +2019,7 @@ Rendimiento & 61,3 \% & 85,5 \% & $-$24,2 pts \\
 
 Si quieres, reviso la producción por empacadora en la corrida actual para ver si alguna de las dos está frenando la línea.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{23,77}{0,58}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,01~s \;\textbullet\; \texttt{get\_oee\_history} 0,55~s}{{\footnotesize\textbf{Lectura de referencia (12:41:31 y 12:42:08).} OEE 61,7$\to$61,8 \% (disponibilidad 100,0 \%, rendimiento 62,1$\to$62,5 \%, calidad 99,4 \%).}\par\smallskip El OEE actual de la Línea A de Empaque Maíz es \textbf{61,8 \%}, unos \textbf{18 puntos por debajo} del 80,0 \% que tuvo la semana del 15 al 21 de septiembre. La caída viene casi entera del rendimiento.
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{23,77}{0,58}{5/4/5}{\texttt{get\_context} 0,01~s \;\textbullet\; \texttt{get\_oee\_history} 0,55~s}{{\footnotesize\textbf{Lectura de referencia (12:41:31 y 12:42:08).} OEE 61,7$\to$61,8 \% (disponibilidad 100,0 \%, rendimiento 62,1$\to$62,5 \%, calidad 99,4 \%).}\par\smallskip El OEE actual de la Línea A de Empaque Maíz es \textbf{61,8 \%}, unos \textbf{18 puntos por debajo} del 80,0 \% que tuvo la semana del 15 al 21 de septiembre. La caída viene casi entera del rendimiento.
 
 
 
@@ -2051,7 +2051,7 @@ Hay que tener en cuenta dos cosas al comparar. La corrida actual empezó a las 1
 
 Para entender por qué la máquina va lenta, puedo revisar el estado de cada celda (Empacadora 1, Empacadora 2, Enfardadora) y ver cuál está frenando la línea.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{27,46}{0,7}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,01~s \;\textbullet\; \texttt{get\_oee\_history} 0,67~s}{{\footnotesize\textbf{Lectura de referencia (12:48:48 y 12:49:28).} OEE 62,2 \% (disponibilidad 100,0 \%, rendimiento 62,8 \%, calidad 99,0 \%).}\par\smallskip El OEE actual de la Línea A está en \textbf{62,0\%}, unos \textbf{18 puntos por debajo} del \textbf{80,0\%} que tuvo en la semana del 15 al 21 de septiembre. La caída viene casi por completo del rendimiento (velocidad).
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{27,46}{0,7}{5/4/5}{\texttt{get\_context} 0,01~s \;\textbullet\; \texttt{get\_oee\_history} 0,67~s}{{\footnotesize\textbf{Lectura de referencia (12:48:48 y 12:49:28).} OEE 62,2 \% (disponibilidad 100,0 \%, rendimiento 62,8 \%, calidad 99,0 \%).}\par\smallskip El OEE actual de la Línea A está en \textbf{62,0\%}, unos \textbf{18 puntos por debajo} del \textbf{80,0\%} que tuvo en la semana del 15 al 21 de septiembre. La caída viene casi por completo del rendimiento (velocidad).
 
 
 
@@ -2087,6 +2087,8 @@ Hay dos cosas a tener en cuenta para la comparación:
 
 
 Si quieres, reviso las órdenes y los paros de esa semana, o comparo la velocidad actual de cada empacadora para ver dónde está el cuello de botella.}
+
+\notaeval{Las tres combinan correctamente la lectura en vivo (uns-mcp) con el histórico semanal (mes-history-mcp): el OEE actual cae dentro de la lectura de referencia de su hora y el del 15 al 21 de septiembre es 80,0 \%. Las cifras adicionales (21 corridas, 131.184 unidades, unos 188 minutos de paro no programado, OEE diario entre 74,2 \% y 86,2 \%) coinciden con el historial. Las tres recalculan la semana desde los componentes sumados y advierten que comparan una corrida corta con una semana completa. La pertinencia es 4 porque agregan detalle diario y de paros que no se pedía.}
 
 \fichapregunta{23}{Combinada}{¿Cuántas unidades lleva la Línea A de Empaque Maíz en la corrida actual y cuántas produjo en total el 18 de septiembre de 2026?}{D2.2}{\texttt{uns-mcp y mes-history-mcp}}{La corrida actual de la Línea A de Empaque Maíz (orden WO92) llevaba entre 160 y 187 unidades según la hora de cada ejecución. El 18 de septiembre de 2026 la línea produjo 12.578 unidades (12.340 buenas y 238 de desperdicio) por conteo de día calendario; por las corridas iniciadas ese día, 11.796.}
 
