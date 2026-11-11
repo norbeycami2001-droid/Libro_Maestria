@@ -1780,7 +1780,7 @@ Como no hay paradas registradas, la pérdida viene de que la línea corre más l
 
 \fichapregunta{19}{Tiempo real}{¿Cuántas unidades lleva la Empacadora 1 de la Línea B de Empaque Trigo en la corrida actual?}{D1.3}{\texttt{uns-mcp}}{La Empacadora 1 de la Línea B de Empaque Trigo está en la corrida de la orden WO95 (producto 100203, Trigo, Kilo). Su conteo en la corrida actual fue de 540 a 552 unidades en la ejecución 1, de 609 a 618 en la 2 y de 672 a 681 en la 3.}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{18,56}{1,71}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_equipment\_status} 0,11~s \;\textbullet\; \texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 1,55~s}{{\footnotesize\textbf{Lectura de referencia (12:38:04 y 12:38:44).} Empacadora 1, orden WO95: 540$\to$552 unidades en la corrida.}\par\smallskip \textbf{La Empacadora 1 lleva 546 unidades en la corrida actual.} De esas, 543 son buenas y 3 son desperdicio. El dato llega hasta las 12:38 de hoy.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{18,56}{1,71}{5/4/5}{\texttt{get\_equipment\_status} 0,11~s \;\textbullet\; \texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 1,55~s}{{\footnotesize\textbf{Lectura de referencia (12:38:04 y 12:38:44).} Empacadora 1, orden WO95: 540$\to$552 unidades en la corrida.}\par\smallskip \textbf{La Empacadora 1 lleva 546 unidades en la corrida actual.} De esas, 543 son buenas y 3 son desperdicio. El dato llega hasta las 12:38 de hoy.
 
 
 
@@ -1794,7 +1794,7 @@ La corrida actual es la RunID 358, de la orden WO95. Empezó hoy a las 11:46 y t
 
 \textbf{Por qué no uso el contador del equipo:} el valor del Edge (8.655.876 bolsas de salida) es un acumulado histórico y no se reinicia con cada corrida. Por eso calculé el dato sumando la producción por minuto desde el inicio de la corrida en el histórico del MES.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{23,02}{1,35}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_equipment\_status} 0,03~s \;\textbullet\; \texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 1,27~s}{{\footnotesize\textbf{Lectura de referencia (12:42:49 y 12:43:25).} Empacadora 1, orden WO95: 609$\to$618 unidades en la corrida.}\par\smallskip En la corrida actual (RunID 358, orden \textbf{WO95}, iniciada hoy a las 11:46 a. m.), la \textbf{Empacadora 1 de la Línea B – Empaque Trigo} lleva \textbf{615 unidades} procesadas hasta las 12:43 p. m., de las cuales \textbf{611 son buenas} y \textbf{4 son desperdicio} (99,3 \% de calidad en esa celda).
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{23,02}{1,35}{5/4/5}{\texttt{get\_equipment\_status} 0,03~s \;\textbullet\; \texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 1,27~s}{{\footnotesize\textbf{Lectura de referencia (12:42:49 y 12:43:25).} Empacadora 1, orden WO95: 609$\to$618 unidades en la corrida.}\par\smallskip En la corrida actual (RunID 358, orden \textbf{WO95}, iniciada hoy a las 11:46 a. m.), la \textbf{Empacadora 1 de la Línea B – Empaque Trigo} lleva \textbf{615 unidades} procesadas hasta las 12:43 p. m., de las cuales \textbf{611 son buenas} y \textbf{4 son desperdicio} (99,3 \% de calidad en esa celda).
 
 
 
@@ -1809,7 +1809,7 @@ Algunos detalles:
 \item \textbf{Contadores del PLC:} los valores en vivo de Infeed/Outfeed (\textasciitilde{}8,8 millones) son acumulados históricos del equipo, no de la corrida. Por eso el dato por corrida sale del histórico MES filtrado desde el inicio de la WO95.
 \end{itemize}}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{23,8}{1,3}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_equipment\_status} 0,02~s \;\textbullet\; \texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 1,25~s}{{\footnotesize\textbf{Lectura de referencia (12:48:01 y 12:48:39).} Empacadora 1, orden WO95: 672$\to$681 unidades en la corrida.}\par\smallskip La \textbf{Empacadora 1 de la Línea B (Empaque Trigo)} lleva \textbf{678 unidades} en la corrida actual, con corte a las 12:48 p. m.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{23,8}{1,3}{5/4/5}{\texttt{get\_equipment\_status} 0,02~s \;\textbullet\; \texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 1,25~s}{{\footnotesize\textbf{Lectura de referencia (12:48:01 y 12:48:39).} Empacadora 1, orden WO95: 672$\to$681 unidades en la corrida.}\par\smallskip La \textbf{Empacadora 1 de la Línea B (Empaque Trigo)} lleva \textbf{678 unidades} en la corrida actual, con corte a las 12:48 p. m.
 
 
 
@@ -1843,6 +1843,8 @@ Desperdicio (Waste) & 6 ($\approx$0,9 \%) \\
 \item No usé los contadores Edge de la empacadora (Infeed $\approx$ 8,83 millones) porque suman todo lo producido desde siempre, no solo esta corrida. Por eso la cifra viene del histórico MES de la celda, tomado desde el inicio de la corrida.
 \item El TotalCount de la línea en el MES (164 de una meta de 2.000) es otra cosa: corresponde al conteo de la Enfardadora (fardos), no a lo que empaca la Empacadora 1.
 \end{itemize}}
+
+\notaeval{Las tres cifras de conteo caen dentro del rango de referencia de su hora. La pertinencia es 4 porque agregan información que no se pedía (ritmo por minuto, estado de la celda, fuentes de los datos). El conteo de la celda se obtiene del histórico por minuto del MES, no del UNS en vivo (acumulado del Edge) ni del conteo de la línea (que es el de la Enfardadora, en fardos). La separación entre buenas y desperdicio proviene de ese histórico y no se contrastó con los contadores en vivo de la celda; la pregunta solo pedía el conteo.}
 
 \fichapregunta{20}{Tiempo real}{¿Qué producto se empaca ahora en la Línea A de Empaque Trigo y cuál es su OEE actual?}{D1.1}{\texttt{uns-mcp}}{La Línea A de Empaque Trigo empaca el producto 100202 (Trigo, Libra), orden WO94. Su OEE actual estuvo entre 63,3 \% y 66,8 \% según la hora de cada ejecución.}
 
