@@ -786,7 +786,7 @@ Por días, la Línea A fue más irregular. Su mejor día fue el 15 de septiembre
 
 \fichapregunta{9}{Ambigua}{¿Cuánto produjo la Línea A el 18 de septiembre de 2026?}{D1.3}{\texttt{mes-history-mcp}}{Pregunta ambigua: hay dos Líneas A. 18 de septiembre de 2026 (total/buenas/desperdicio): Empaque Maíz 12.578/12.340/238; Empaque Trigo 19.898/19.454/444.}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{17,5}{3,53}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,94~s \;\textbullet\; \texttt{get\_count\_history} 1,57~s}{Hay una Línea A en cada área de empaque, así que te dejo las dos para el 18 de septiembre de 2026 (día calendario, 00:00 a 24:00 hora de Colombia):
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{17,5}{3,53}{5/4/5}{\texttt{get\_count\_history} 1,94~s \;\textbullet\; \texttt{get\_count\_history} 1,57~s}{Hay una Línea A en cada área de empaque, así que te dejo las dos para el 18 de septiembre de 2026 (día calendario, 00:00 a 24:00 hora de Colombia):
 
 
 
@@ -826,7 +826,7 @@ El conteo es el de la Enfardadora y solo incluye producción asociada a una corr
 
 ¿Cuál de las dos líneas te interesa? Así puedo darte el detalle por turno o por empacadora.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{13,58}{3,79}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,76~s \;\textbullet\; \texttt{get\_count\_history} 2,02~s}{Hay dos "Línea A" en el sistema, una en cada área de empaque, así que te dejo ambas. Estos son los datos del 18 de septiembre de 2026, de 00:00 a 24:00 en hora de Colombia:
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{13,58}{3,79}{5/5/5}{\texttt{get\_count\_history} 1,76~s \;\textbullet\; \texttt{get\_count\_history} 2,02~s}{Hay dos "Línea A" en el sistema, una en cada área de empaque, así que te dejo ambas. Estos son los datos del 18 de septiembre de 2026, de 00:00 a 24:00 en hora de Colombia:
 
 
 
@@ -848,7 +848,7 @@ Las cifras corresponden al conteo de la línea, que es el de la Enfardadora, y s
 
 ¿Quieres que lo desglose por hora o turno, o por cada Empacadora?}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{13,17}{3,16}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,58~s \;\textbullet\; \texttt{get\_count\_history} 1,57~s}{Hay una Línea A en dos áreas (Empaque Maíz y Empaque Trigo), así que consulto ambas.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{13,17}{3,16}{4/5/5}{\texttt{get\_count\_history} 1,58~s \;\textbullet\; \texttt{get\_count\_history} 1,57~s}{Hay una Línea A en dos áreas (Empaque Maíz y Empaque Trigo), así que consulto ambas.
 
 
 
@@ -873,6 +873,8 @@ Estas cifras son el conteo de la línea (el mismo de la Enfardadora) y solo incl
 
 
 ¿Quieres el detalle por turno u hora, o el desglose por empacadora?}
+
+\notaeval{En E1 la pertinencia es 4: agrega un desglose por turno solo para Empaque Maíz, que no se pedía. En E3 la coherencia es 4: abre con una frase intermedia que repite lo que dice a continuación.}
 
 \fichapregunta{10}{Ambigua}{¿Cuántas unidades produjo la empacadora el 18 de septiembre de 2026?}{D1.3}{\texttt{mes-history-mcp}}{Pregunta ambigua: hay ocho empacadoras (Empacadora 1 y 2 en cada una de las cuatro líneas). Las celdas de empacadora no tienen conteos el 18 de septiembre de 2026 (0 filas en counthistory). Total por línea ese día: Línea A de Empaque Maíz 12.578; Línea B de Empaque Maíz 19.956; Línea A de Empaque Trigo 19.898; Línea B de Empaque Trigo 20.633.}
 
