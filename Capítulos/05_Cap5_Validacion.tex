@@ -1,14 +1,14 @@
 \section{Capítulo 5: Validación del sistema integrado}
 \label{validacionsistema}
 
-Este capítulo responde al quinto objetivo específico, que busca validar el funcionamiento del sistema integrado mediante métricas de desempeño. El Capítulo~\ref{implementacionintegracion} mostró que cada pieza funciona por separado y que el flujo de consulta integrado produce una respuesta. Falta saber qué tan bien responde el sistema de forma sostenida y si cumple lo que exigió el caso de estudio. Por eso se hacen dos validaciones. La primera mide el desempeño con las cuatro métricas definidas en la propuesta. La segunda verifica el cumplimiento de los requerimientos de la Sección~\ref{requerimientosdesafios}. El capítulo presenta el diseño de la evaluación y sus resultados agregados. Las preguntas, las respuestas de referencia y las respuestas del sistema se reproducen completas en el Anexo~\ref{anexo:banco_preguntas}.
+Este capítulo responde al quinto objetivo específico, que busca validar el funcionamiento del sistema integrado mediante métricas de desempeño. El Capítulo~\ref{implementacionintegracion} mostró que cada pieza funciona por separado y que el flujo de consulta integrado produce una respuesta. Falta saber qué tan bien responde el sistema de forma sostenida y si cumple lo que exigió el caso de estudio. Por eso se hacen dos validaciones. La primera mide el desempeño con las cuatro métricas definidas en la propuesta. La segunda verifica el cumplimiento de los desafíos de la Sección~\ref{requerimientosdesafios}. El capítulo presenta el diseño de la evaluación y sus resultados agregados. Las preguntas, las respuestas de referencia y las respuestas del sistema se reproducen completas en el Anexo~\ref{anexo:banco_preguntas}.
 
 \subsection{Alcance y criterios de validación}
 \label{alcancevalidacion}
 
 La validación de desempeño mide el comportamiento del sistema sobre un conjunto de preguntas de referencia. Cada métrica cubre un aspecto distinto. La precisión y la tasa de alucinaciones indican si la respuesta es correcta y está respaldada por los datos del UNS, la latencia indica cuánto espera el usuario, y la calidad semántica indica si la respuesta es coherente y suficiente para el contexto industrial.
 
-La validación de cumplimiento verifica si el sistema satisface los tres requerimientos y los desafíos identificados en la Sección~\ref{requerimientosdesafios}. Las métricas no reemplazan esa verificación, sino que la alimentan. Cada pregunta del conjunto se asocia al desafío que pone a prueba, y el veredicto sobre el desafío se apoya en los resultados de esas preguntas. El desafío de eficiencia de las consultas (D3.1) se verifica por el diseño de las Tools y no por una medición, como se explica en la Sección~\ref{cumplimientorequerimientos}. La adaptación del reporte al perfil del usuario (D2.3) no se implementó, por lo que queda fuera de la validación y se traslada al trabajo futuro.
+La validación de cumplimiento verifica si el sistema resuelve los desafíos asociados a los tres requerimientos de la Sección~\ref{requerimientosdesafios}. Las métricas no reemplazan esa verificación, sino que la alimentan. Cada pregunta del conjunto se asocia al desafío que pone a prueba, y el veredicto sobre el desafío se apoya en los resultados de esas preguntas. El desafío de eficiencia de las consultas (D3.1) se verifica por el diseño de las Tools y no por una medición, como se explica en la Sección~\ref{cumplimientorequerimientos}. La adaptación del reporte al perfil del usuario (D2.3) no se implementó, por lo que queda fuera de la validación y se traslada al trabajo futuro.
 
 \subsection{Diseño de la evaluación}
 \label{disenoevaluacion}
@@ -201,40 +201,38 @@ La pregunta 6 pedía las órdenes de trabajo de la Línea B de Empaque Trigo ent
 
 Las dos respuestas incorrectas coinciden con lo que la Tool devolvió, por lo que no se calificaron como alucinación. Una de ellas llegó a sospechar que la consulta se detenía a las 00:00 del 21, pero no tenía forma de comprobarlo. La tercera ejecución obtuvo las 21 órdenes con dos consultas a la Tool. El defecto no se corrigió durante la evaluación, para no alterar las ejecuciones ya medidas, y queda registrado como una corrección pendiente de la Tool. Es un resultado útil de la validación: el banco de preguntas, con referencias calculadas fuera de los servidores evaluados, permitió detectar un error que el uso informal del sistema no habría mostrado.
 
-\subsection{Cumplimiento de los requerimientos}
+\subsection{Cumplimiento de los desafíos}
 \label{cumplimientorequerimientos}
 
-La Tabla~\ref{tab:cumplimiento} contrasta cada desafío de la Sección~\ref{requerimientosdesafios} con los resultados de las preguntas que lo ponen a prueba.
+La Tabla~\ref{tab:cumplimiento} contrasta cada desafío de la Sección~\ref{requerimientosdesafios} con los resultados de las preguntas que lo ponen a prueba. La columna de resultado cuenta las ejecuciones correctas sobre el total de las que lo evalúan, y la última resume lo que se observó en ellas.
 
 \begin{table}[H]
 \centering
-\caption{Cumplimiento de los requerimientos y desafíos del caso de estudio. Elaboración propia.}
+\caption{Cumplimiento de los desafíos del caso de estudio. Elaboración propia.}
 \label{tab:cumplimiento}
 \small
 \renewcommand{\arraystretch}{1.3}
-\begin{tabular}{p{1.1cm}p{5.2cm}p{2.3cm}p{3cm}p{2cm}}
+\begin{tabular}{p{1.0cm}p{3.1cm}p{2.1cm}p{1.9cm}p{5.2cm}}
 \hline
-\textbf{Desafío} & \textbf{Descripción} & \textbf{Preguntas} & \textbf{Evidencia} & \textbf{Veredicto} \\
+\textbf{Desafío} & \textbf{Qué exige} & \textbf{Preguntas} & \textbf{Resultado} & \textbf{Lo observado} \\
 \hline
-D1.1 & Ambigüedad en términos técnicos & P3, P20 y P21 & 9 de 9 correctas & Cumplido \\
-D1.2 & Relaciones entre variables & P12 a P14 & 9 de 9 correctas & Cumplido \\
-D1.3 & Mapeo al namespace & P6, P9 a P11, P18 y P19 & 15 de 18 correctas & Con salvedad \\
-D2.1 & Comparaciones relevantes & P8, P22 y P24 & 9 de 9 correctas & Cumplido \\
-D2.2 & Combinar varias fuentes & P22 a P25 & 11 de 12 correctas & Con salvedad \\
-D2.3 & Reporte según el perfil del usuario & No aplica & No implementado & No cumplido \\
-D3.1 & Consultas eficientes & No aplica & Diseño de las Tools & Cumplido \\
-D3.2 & Granularidad según el rango & P1, P2, P4, P5 y P7 & 15 de 15 correctas & Cumplido \\
+D1.1 & Interpretar términos técnicos ambiguos & P3, P20 y P21 & 9 de 9 & Asoció términos como paro no programado, OEE o unidad de conteo con la variable correcta. \\
+D1.2 & Relacionar variables para explicar un cambio & P12 a P14 & 9 de 9 & Relacionó paros, rendimiento y calidad, con más llamadas a las Tools y la menor coherencia (4,44). \\
+D1.3 & Resolver referencias incompletas a línea, celda o área & P6, P9 a P11, P18 y P19 & 15 de 18 & Las referencias se resolvieron bien. Los tres fallos vienen del filtro de fecha de la Tool de órdenes (P6) y del criterio de conteo del día (P10). \\
+D2.1 & Elegir comparaciones relevantes & P8, P22 y P24 & 9 de 9 & Comparó entre líneas y contra el histórico, y advirtió que una corrida corta no es comparable con una semana completa. \\
+D2.2 & Combinar el UNS y el histórico & P22 a P25 & 11 de 12 & Cruzó las dos fuentes sin errores propios. El fallo (P25) viene del filtro de fecha de la Tool de órdenes. \\
+D2.3 & Adaptar el reporte al perfil del usuario & No aplica & No cumplido & No se implementó y se traslada al trabajo futuro. \\
+D3.1 & Consultas eficientes & No aplica & Cumplido por diseño & Consultas parametrizadas, agregación en SQL y límite de 1000 filas. \\
+D3.2 & Elegir la granularidad según el rango & P1, P2, P4, P5 y P7 & 15 de 15 & Usó la agregación por hora, turno o día que correspondía a cada rango pedido. \\
 \hline
 \end{tabular}
 \end{table}
 
+De los ocho desafíos, cuatro se cumplieron sin ningún fallo (D1.1, D1.2, D2.1 y D3.2), dos se cumplieron con una salvedad (D1.3 y D2.2), uno se cumple por diseño (D3.1) y uno no se implementó (D2.3). Las dos salvedades tienen causas concretas y ajenas a la capacidad del modelo para entender la consulta: un defecto de la Tool de órdenes, que afecta a D1.3 en la pregunta~6 y a D2.2 en la pregunta~25, y el criterio con que se cuenta la producción de un día, que afecta a D1.3 en la pregunta~10.
+
 El desafío D3.1 pide consultas eficientes a la base de datos. El sistema lo resuelve por diseño y no con SQL generado por el modelo. Las Tools ejecutan consultas parametrizadas sobre una lista cerrada de tablas, agregan en SQL, limitan cada respuesta a 1000 filas y trabajan con un usuario de solo lectura, como se describió en las Secciones~\ref{alcanceseguridadhistorico} y~\ref{granularidadconsulta}. Por eso su verificación se apoya en esa descripción y en los tiempos de la Tabla~\ref{tab:res_latencia}, y no en una pregunta específica.
 
-El requerimiento R1, la interpretación de consultas con conocimiento técnico del dominio, se cumple: 33 de las 36 ejecuciones que ponen a prueba D1.1, D1.2 y D1.3 fueron correctas, el modelo resolvió términos como «OEE», «paro no programado» o «turno» a las variables y Tools correctas, y las tres respuestas incorrectas no son de interpretación. Dos se deben al filtro de fecha de la Tool de órdenes y una al criterio de conteo. De ahí la salvedad en D1.3. El desafío D1.2, que pide relacionar variables para explicar un cambio, se cumplió en las nueve ejecuciones, aunque con menor coherencia que el resto (promedio de 4,44 en las causales) y con más llamadas a las Tools.
-
-El requerimiento R2, los reportes con análisis comparativos, se cumple en parte. Las comparaciones entre periodos y entre líneas (D2.1) fueron correctas en las nueve ejecuciones, y la combinación de fuentes (D2.2) en 11 de 12, con la salvedad del defecto ya descrito. La adaptación del reporte al perfil del usuario (D2.3) no se implementó, por lo que R2 no se cumple de forma completa.
-
-El requerimiento R3, el acceso eficiente a datos históricos y en tiempo real, se cumple. Las preguntas que ponen a prueba la granularidad (D3.2) fueron correctas en las 15 ejecuciones, las de tiempo real y las combinadas cruzaron el UNS con el histórico sin errores atribuibles al sistema de acceso, y los servidores MCP ocuparon en promedio 2,2~s de los 21,5~s de cada respuesta.
+El desafío D2.3 no se cumple porque la adaptación del reporte según el perfil del usuario no se implementó. Con esto, los requerimientos R1 y R3 quedan satisfechos y R2 se satisface en parte, por la ausencia de D2.3.
 
 \subsection{Discusión y limitaciones}
 \label{discusionvalidacion}
