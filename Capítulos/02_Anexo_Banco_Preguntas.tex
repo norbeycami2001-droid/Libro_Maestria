@@ -2126,7 +2126,7 @@ El ERP muestra 184 unidades producidas (ProducedQty). Esa cifra va un poco rezag
 
 \fichapregunta{24}{Combinada}{¿Cuál es el OEE actual de la Línea B de Empaque Trigo y cómo se compara con el del 18 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{uns-mcp y mes-history-mcp}}{El OEE actual de la Línea B de Empaque Trigo (orden WO95) estuvo entre 59,0 \% y 65,3 \% según la hora de cada ejecución. El 18 de septiembre de 2026 su OEE fue 81,5 \% (disponibilidad 95,0 \%, rendimiento 87,5 \%, calidad 98,0 \%).}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{17,14}{0,83}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_oee\_history} 0,59~s}{{\footnotesize\textbf{Lectura de referencia (12:35:39 y 12:36:10).} OEE 59,0$\to$59,9 \% (disponibilidad 88,5 \%, rendimiento 69,0$\to$69,9 \%, calidad 96,7 \%).}\par\smallskip El OEE actual de la Línea B de Empaque Trigo es \textbf{58,8 \%}, unos \textbf{22,7 puntos por debajo} del 81,5 \% que tuvo el 18 de septiembre de 2026.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{17,14}{0,83}{4/4/5}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_oee\_history} 0,59~s}{{\footnotesize\textbf{Lectura de referencia (12:35:39 y 12:36:10).} OEE 59,0$\to$59,9 \% (disponibilidad 88,5 \%, rendimiento 69,0$\to$69,9 \%, calidad 96,7 \%).}\par\smallskip El OEE actual de la Línea B de Empaque Trigo es \textbf{58,8 \%}, unos \textbf{22,7 puntos por debajo} del 81,5 \% que tuvo el 18 de septiembre de 2026.
 
 
 
@@ -2154,7 +2154,7 @@ Calidad & 95,9 \% & 98,0 \% & $-$2,1 pts \\
 
 Si quiere, puedo consultar los motivos de los paros de hoy o el estado de las Empacadoras 1 y 2 para identificar dónde se está perdiendo velocidad.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{21,68}{1,16}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,03~s \;\textbullet\; \texttt{get\_oee\_history} 0,48~s \;\textbullet\; \texttt{get\_oee\_history} 0,63~s}{{\footnotesize\textbf{Lectura de referencia (12:43:33 y 12:44:08).} OEE 63,9$\to$64,1 \% (disponibilidad 90,1 \%, rendimiento 72,9$\to$73,0 \%, calidad 97,3 \%).}\par\smallskip \textbf{El OEE actual de la Línea B de Empaque Trigo es 64,2 \%, unos 17 puntos por debajo del 81,5 \% del 18 de septiembre.} La causa principal es el rendimiento (velocidad).
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{21,68}{1,16}{5/4/5}{\texttt{get\_context} 0,03~s \;\textbullet\; \texttt{get\_oee\_history} 0,48~s \;\textbullet\; \texttt{get\_oee\_history} 0,63~s}{{\footnotesize\textbf{Lectura de referencia (12:43:33 y 12:44:08).} OEE 63,9$\to$64,1 \% (disponibilidad 90,1 \%, rendimiento 72,9$\to$73,0 \%, calidad 97,3 \%).}\par\smallskip \textbf{El OEE actual de la Línea B de Empaque Trigo es 64,2 \%, unos 17 puntos por debajo del 81,5 \% del 18 de septiembre.} La causa principal es el rendimiento (velocidad).
 
 
 
@@ -2194,7 +2194,7 @@ El 18 de septiembre no fue parejo. La corrida de la mañana (06:09–10:12) tuvo
 
 ¿Quieres que revise los paros de hoy por motivo o compare las Empacadoras 1 y 2 para ver dónde se está perdiendo velocidad?}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{16,25}{1,33}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_oee\_history} 1,29~s}{{\footnotesize\textbf{Lectura de referencia (12:49:37 y 12:50:06).} OEE 65,0$\to$65,3 \% (disponibilidad 91,0 \%, rendimiento 73,2$\to$73,4 \%, calidad 97,6 \%).}\par\smallskip El \textbf{OEE actual de la Línea B de Empaque Trigo es 64,9 \%}, unos \textbf{16,6 puntos por debajo} del 81,5 \% que tuvo el 18 de septiembre de 2026. La mayor parte de la diferencia viene del rendimiento.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{16,25}{1,33}{5/4/5}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_oee\_history} 1,29~s}{{\footnotesize\textbf{Lectura de referencia (12:49:37 y 12:50:06).} OEE 65,0$\to$65,3 \% (disponibilidad 91,0 \%, rendimiento 73,2$\to$73,4 \%, calidad 97,6 \%).}\par\smallskip El \textbf{OEE actual de la Línea B de Empaque Trigo es 64,9 \%}, unos \textbf{16,6 puntos por debajo} del 81,5 \% que tuvo el 18 de septiembre de 2026. La mayor parte de la diferencia viene del rendimiento.
 
 
 
@@ -2229,6 +2229,8 @@ Hay un detalle a tener en cuenta en la comparación. El valor actual corresponde
 
 
 Si quieres, puedo revisar los paros de hoy o la producción por empacadora para ver dónde se está perdiendo la velocidad.}
+
+\notaeval{Las tres combinan la lectura en vivo (uns-mcp) con el histórico (mes-history-mcp): el OEE actual cae dentro de la tolerancia de la lectura de referencia de su hora y todas dan 81,5 \% para el 18 de septiembre con sus componentes correctos. La pertinencia es 4 porque agregan análisis por componente, proyecciones y detalle por corrida que no se pedía. En E1 la coherencia es 4: reporta una calidad de 95,9 \% que no cuadra con su propio conteo (4 malas de 121, es decir 96,7 \%) y un ritmo de 141 unidades/h algo inferior al que se deduce de sus cifras.}
 
 \fichapregunta{25}{Combinada}{¿Qué orden corre ahora en la Línea B de Empaque Maíz y cuántas órdenes tuvo esa línea del 15 al 21 de septiembre de 2026?}{D2.2}{\texttt{uns-mcp y mes-history-mcp}}{En la Línea B de Empaque Maíz corre la orden WO93 (producto 100201, Maíz, Kilo). Del 15 al 21 de septiembre de 2026 esa línea tuvo 21 órdenes (3 de ellas iniciadas el 21).}
 
