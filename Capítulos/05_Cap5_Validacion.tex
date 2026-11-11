@@ -17,7 +17,7 @@ La validación de cumplimiento verifica si el sistema satisface los tres requeri
 
 Las pruebas se ejecutaron en un entorno controlado que reproduce la estructura del caso de estudio. Los valores de los tags del Tag Provider y los registros de la base \texttt{mes\_core} se generaron con scripts. La jerarquía, las unidades, la nomenclatura y las reglas de negocio corresponden al caso real, y las corridas simuladas respetan las tasas estándar de producción de cada línea. Los valores, en cambio, no provienen de una planta en operación. Esto tiene una ventaja y un límite. La ventaja es que la respuesta correcta de cada pregunta se conoce con exactitud, porque se calcula directamente sobre los datos cargados. El límite es que los resultados no describen el comportamiento del sistema ante el ruido, los vacíos y las irregularidades de datos reales, que queda como trabajo futuro.
 
-El sistema evaluado está compuesto por Claude Desktop como cliente, los servidores \texttt{uns-mcp} y \texttt{mes-history-mcp}, los endpoints del Web Dev Module en Ignition y la base PostgreSQL \texttt{mes\_core}, tal como se describió en el Capítulo~\ref{implementacionintegracion}. Las preguntas históricas usan fechas fijas del periodo con registros completos, del 15 al 21 de septiembre de 2026, por lo que su respuesta de referencia no cambia. Las de tiempo real se ejecutaron el \textcolor{blue}{[fecha]}, con una corrida abierta en cada línea. \textcolor{blue}{[Completar: modelo y configuración del cliente.]}
+El sistema evaluado está compuesto por Claude Desktop como cliente, los servidores \texttt{uns-mcp} y \texttt{mes-history-mcp}, los endpoints del Web Dev Module en Ignition y la base PostgreSQL \texttt{mes\_core}, tal como se describió en el Capítulo~\ref{implementacionintegracion}. Las preguntas históricas usan fechas fijas del periodo con registros completos, del 15 al 21 de septiembre de 2026, por lo que su respuesta de referencia no cambia. Las de tiempo real se ejecutaron el 10 de noviembre de 2026, entre las 12:34 y las 12:50 (hora de Colombia), con una corrida abierta en cada línea; las demás se ejecutaron entre el 9 y el 10 de noviembre. El cliente fue Claude Desktop en su versión 4.23118.1.0, con el modelo Opus 5.5 en la configuración «Medio», y las 75 ejecuciones usaron el mismo modelo y la misma configuración.
 
 \subsubsection{Banco de preguntas}
 
@@ -61,7 +61,7 @@ La Tabla~\ref{tab:metricas_validacion} resume las cuatro métricas definidas en 
 \hline
 \textbf{Métrica} & \textbf{Tipo} & \textbf{Cálculo} \\
 \hline
-Precisión y F1 & Cuantitativa & Cada pregunta tiene una lista de datos clave. Un dato es correcto si coincide con la referencia: exacto en conteos y estados, y con tolerancia de 0,5 puntos porcentuales en razones como el OEE. La precisión es la proporción de respuestas con todos sus datos clave correctos. El F1 se calcula sobre los datos individuales, con precisión igual a datos correctos sobre datos afirmados y exhaustividad igual a datos correctos sobre datos esperados. \\
+Precisión y F1 & Cuantitativa & Cada pregunta tiene una lista de datos clave. Un dato es correcto si coincide con la referencia: exacto en conteos y estados, y con tolerancia de 0,5 puntos porcentuales en razones como el OEE. La precisión es la proporción de respuestas con todos sus datos clave correctos. El F1 se calcula sobre los datos individuales, con precisión igual a datos correctos sobre datos afirmados y exhaustividad igual a datos correctos sobre datos esperados. Se cuentan como afirmados los datos clave a los que la respuesta da un valor; las cifras adicionales que el modelo agrega se verificaron una a una contra los datos y no se consideran errores cuando son correctas. \\
 Latencia de respuesta & Cuantitativa & Tiempo desde el envío de la pregunta en Claude Desktop hasta que la respuesta está completa, en segundos. Se reporta aparte el tiempo que tardan los servidores MCP, que registran sus propios logs. Se informan promedio, mediana y percentil 95. \\
 Calidad semántica & Cualitativa & Puntuación de 1 a 5 en coherencia, pertinencia y suficiencia, según la rúbrica de la Tabla~\ref{tab:rubrica}. La puntuación de una respuesta es el promedio de los tres criterios. \\
 Tasa de alucinaciones & Cuantitativa & Proporción de respuestas con al menos una afirmación (cifra, nombre, estado o causa) que no aparece en las salidas de las Tools ni en los datos cargados. En las preguntas sin datos, dar una respuesta inventada cuenta como alucinación. \\
@@ -86,18 +86,18 @@ Suficiencia & Faltan datos esenciales. & Da los datos principales sin unidades o
 \end{tabular}
 \end{table}
 
-En las preguntas ambiguas y sin datos, pedir una aclaración o reconocer que no hay datos se califica como pertinente y suficiente.
+En las preguntas ambiguas y sin datos, pedir una aclaración, cubrir explícitamente las interpretaciones posibles o reconocer que no hay datos se califica como pertinente y suficiente. En ellas el comportamiento correcto no es entregar un dato clave, por lo que el F1 no se calcula y la precisión mide si el modelo se comportó como se esperaba.
 
 \subsubsection{Procedimiento}
 
 Cada pregunta se ejecutó tres veces, cada una en una conversación nueva, para observar la variabilidad de las respuestas del modelo. En total fueron 75 ejecuciones. Para cada una se registró la respuesta completa, la latencia y las Tools que invocó el modelo. La precisión y las alucinaciones se determinaron comparando la respuesta con la referencia, y la calidad semántica se puntuó con la rúbrica.
 
-La rúbrica la aplicó el tutor técnico, que es también el autor de este trabajo y trabaja en DAUTOM, la empresa del caso de estudio, por lo que conoce el proceso evaluado. Esa coincidencia limita la evaluación cualitativa y se discute en la Sección~\ref{discusionvalidacion}. Las otras tres métricas no dependen del juicio del evaluador, porque se calculan contra los datos o se miden con instrumentación. \textcolor{blue}{[Opcional: indicar la muestra puntuada por un segundo evaluador, si se hace.]}
+La rúbrica la aplicó el tutor técnico, que es también el autor de este trabajo y trabaja en DAUTOM, la empresa del caso de estudio, por lo que conoce el proceso evaluado. Esa coincidencia limita la evaluación cualitativa y se discute en la Sección~\ref{discusionvalidacion}. Las otras tres métricas no dependen del juicio del evaluador, porque se calculan contra los datos o se miden con instrumentación.
 
 \subsection{Resultados de desempeño}
 \label{resultadosvalidacion}
 
-\textcolor{blue}{[Completar con los datos de las 75 ejecuciones. Las tablas siguen el formato de abajo y el detalle por pregunta va en el Anexo~\ref{anexo:banco_preguntas}.]}
+Esta sección presenta los resultados agregados de las 75 ejecuciones. El detalle por pregunta, con la respuesta de referencia, las tres respuestas del sistema y la nota de cada evaluación, está en el Anexo~\ref{anexo:banco_preguntas}.
 
 \subsubsection{Precisión y tasa de alucinaciones}
 
@@ -113,17 +113,19 @@ La Tabla~\ref{tab:res_precision} muestra la precisión, el F1 y la tasa de aluci
 \hline
 \textbf{Categoría} & \textbf{Ejecuciones} & \textbf{Precisión} & \textbf{F1} & \textbf{Alucinaciones} \\
 \hline
-Tiempo real & 12 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Histórica & 24 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Combinada & 12 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Ambigua & 9 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Causal & 9 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Sin datos & 9 & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
+Tiempo real & 12 & 100,0 \% & 1,000 & 0 (0,0 \%) \\
+Histórica & 24 & 91,7 \% & 0,922 & 0 (0,0 \%) \\
+Combinada & 12 & 91,7 \% & 0,958 & 0 (0,0 \%) \\
+Ambigua & 9 & 88,9 \% & --- & 0 (0,0 \%) \\
+Causal & 9 & 100,0 \% & 0,988 & 0 (0,0 \%) \\
+Sin datos & 9 & 100,0 \% & --- & 0 (0,0 \%) \\
 \hline
-\textbf{Total} & \textbf{75} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
+\textbf{Total} & \textbf{75} & \textbf{94,7 \%} & \textbf{0,958} & \textbf{0 (0,0 \%)} \\
 \hline
 \end{tabular}
 \end{table}
+
+El sistema respondió correctamente 71 de las 75 ejecuciones (94,7~\%) y no produjo ninguna alucinación: ninguna respuesta afirmó una cifra, un nombre, un estado o una causa que no apareciera en las salidas de las Tools o en los datos cargados. Las cifras que el modelo agregó sin que se pidieran, como totales diarios, duraciones de paros o proyecciones de cierre de una orden, se verificaron contra el historial y contra la lectura de referencia, y coinciden. Las hipótesis sobre posibles causas se presentaron como tales y no se contaron como alucinación. Las tres preguntas sin datos se respondieron correctamente en las nueve ejecuciones: el modelo reconoció que no había registros y no inventó cifras. El F1 no se calcula en las categorías ambigua y sin datos, porque en ellas lo esperado es aclarar o reconocer la falta de datos, y en las demás se calcula sobre los datos clave de cada pregunta.
 
 \subsubsection{Latencia}
 
@@ -139,17 +141,19 @@ La Tabla~\ref{tab:res_latencia} muestra la latencia de extremo a extremo por cat
 \hline
 \textbf{Categoría} & \textbf{Promedio} & \textbf{Mediana} & \textbf{P95} & \textbf{Tiempo en servidores} \\
 \hline
-Tiempo real & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Histórica & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Combinada & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Ambigua & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Causal & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Sin datos & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
+Tiempo real & 16,1 & 16,1 & 23,5 & 0,5 \\
+Histórica & 16,0 & 13,4 & 30,1 & 1,1 \\
+Combinada & 18,2 & 17,3 & 25,4 & 1,3 \\
+Ambigua & 28,1 & 17,5 & 58,6 & 6,5 \\
+Causal & 43,0 & 48,3 & 68,6 & 4,0 \\
+Sin datos & 19,7 & 16,3 & 31,7 & 2,3 \\
 \hline
-\textbf{Total} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
+\textbf{Total} & \textbf{21,5} & \textbf{17,1} & \textbf{50,9} & \textbf{2,2} \\
 \hline
 \end{tabular}
 \end{table}
+
+La latencia promedio fue de 21,5~s, con una mediana de 17,1~s y un percentil 95 de 50,9~s. Las preguntas de tiempo real, históricas y combinadas se resolvieron en promedio entre 16 y 18~s, y los servidores MCP ocuparon una fracción pequeña de ese tiempo: 2,2~s en promedio sobre el total, mientras el resto lo consumió el modelo al razonar, llamar a las Tools y redactar. Las categorías más lentas fueron la causal (43,0~s) y la ambigua (28,1~s), porque el modelo hizo más llamadas a las Tools: 5,9 y 4,3 por ejecución, frente a 1,3 en las históricas y 1,6 en las de tiempo real. La respuesta más lenta (70~s) fue de una pregunta ambigua en la que el modelo consultó las ocho empacadoras posibles. Ninguna respuesta tardó menos de 8~s.
 
 \subsubsection{Calidad semántica}
 
@@ -165,17 +169,30 @@ La Tabla~\ref{tab:res_calidad} presenta las puntuaciones promedio de la rúbrica
 \hline
 \textbf{Categoría} & \textbf{Coherencia} & \textbf{Pertinencia} & \textbf{Suficiencia} & \textbf{Promedio} \\
 \hline
-Tiempo real & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Histórica & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Combinada & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Ambigua & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Causal & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-Sin datos & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
+Tiempo real & 4,83 & 3,92 & 5,00 & 4,58 \\
+Histórica & 4,96 & 4,33 & 5,00 & 4,76 \\
+Combinada & 4,83 & 4,17 & 5,00 & 4,67 \\
+Ambigua & 4,67 & 4,67 & 4,78 & 4,70 \\
+Causal & 4,44 & 4,67 & 4,89 & 4,67 \\
+Sin datos & 5,00 & 4,00 & 5,00 & 4,67 \\
 \hline
-\textbf{Total} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
+\textbf{Total} & \textbf{4,83} & \textbf{4,28} & \textbf{4,96} & \textbf{4,69} \\
 \hline
 \end{tabular}
 \end{table}
+
+La puntuación promedio fue de 4,83 en coherencia, 4,28 en pertinencia y 4,96 en suficiencia, con 4,69 como promedio de los tres criterios. La pertinencia es el criterio más bajo en todas las categorías, con 3,92 en tiempo real. En 50 de las 75 respuestas la pertinencia fue 4 porque el modelo agregó análisis que no se pedía, como el desglose diario, la proyección del cierre de una orden o hipótesis sobre una causa. Es un rasgo del modelo más que un defecto de las Tools: tiende a ofrecer contexto adicional aunque la pregunta sea puntual. La coherencia bajó a 4 o a 3 en 11 respuestas, por frases intermedias del modelo que se contradicen con su conclusión (pregunta~13), por alternativas que quedan a medias (pregunta~5) o por cifras que no cuadran entre sí (preguntas~21 y~24). La suficiencia fue 5 en 72 de las 75 respuestas.
+
+\subsubsection{Lectura de los resultados}
+\label{lecturaresultados}
+
+Las categorías de tiempo real, causal y sin datos tuvieron el 100~\% de respuestas correctas. Las históricas y las combinadas llegaron al 91,7~\% (22 de 24 y 11 de 12) y las ambiguas al 88,9~\% (8 de 9). Las cuatro respuestas incorrectas son la primera y la segunda ejecución de la pregunta~6, la segunda de la pregunta~25 y la primera de la pregunta~10. Ninguna se debió a una cifra inventada.
+
+Tres de las cuatro tienen la misma causa: el defecto de la Tool \texttt{get\_production\_orders}, que deja fuera las órdenes que empiezan el último día del rango y que se describe en la sección siguiente. Aparece en la pregunta~6, que pedía las órdenes de una semana, y en la pregunta~25, que las combinaba con el estado actual de la línea. En la pregunta~25, las otras dos ejecuciones obtuvieron las 21 órdenes con una segunda consulta que extendía la fecha hasta el final del día.
+
+La cuarta, la primera ejecución de la pregunta~10, muestra otro tipo de diferencia. Para la Línea A de Empaque Maíz del 18 de septiembre respondió 11.796 unidades, la producción de las corridas iniciadas ese día, mientras que la referencia es 12.578, el conteo del día calendario. Ambas cifras proceden de Tools válidas: la de OEE agrupa por el inicio de la corrida y la de conteos agrupa por día calendario, y las descripciones de cada una lo dicen. La diferencia no es un error del modelo ni de una Tool, sino que «producción del día» admite dos definiciones. El banco fijó la de día calendario, que es la que usaron las demás respuestas, pero la pregunta pone en evidencia que el sistema debería explicitar cuál usa cuando el usuario no lo indica.
+
+La variabilidad entre ejecuciones fue baja. En 22 de las 25 preguntas las tres ejecuciones tuvieron el mismo veredicto, y las tres que difirieron (6, 10 y 25) se explican por la Tool de órdenes y por el criterio de conteo, no por un comportamiento aleatorio del modelo. En las preguntas ambiguas~9 y~11, el modelo reconoció que «la Línea A» y «la línea de maíz» admiten más de una interpretación y, en lugar de detenerse a preguntar, respondió para todas ellas y cerró ofreciendo precisar. La referencia aceptó esa conducta, porque no elige una interpretación en silencio.
 
 \subsubsection{Caso de la pregunta 6: filtro de fecha en la Tool de órdenes}
 \label{casop6}
@@ -183,8 +200,6 @@ Sin datos & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]
 La pregunta 6 pedía las órdenes de trabajo de la Línea B de Empaque Trigo entre el 15 y el 21 de septiembre de 2026. La referencia, calculada con SQL directo, son 21 órdenes, tres de ellas iniciadas el 21. En dos de las tres ejecuciones el sistema respondió 18 órdenes y en la tercera respondió las 21 (Anexo~\ref{anexo:banco_preguntas}). La causa no fue una interpretación errónea del modelo, sino un defecto de la Tool \texttt{get\_production\_orders}: su descripción declara que la fecha final del rango es inclusiva, pero la consulta compara el inicio programado de cada orden con esa fecha, y cuando se entrega sin hora se evalúa como las 00:00 del día indicado. Las órdenes que empiezan durante ese último día quedan fuera del resultado. Las otras Tools de consulta histórica del mismo servidor sí extienden la fecha final hasta el cierre del día, por lo que el comportamiento de la Tool de órdenes no era uniforme con el resto.
 
 Las dos respuestas incorrectas coinciden con lo que la Tool devolvió, por lo que no se calificaron como alucinación. Una de ellas llegó a sospechar que la consulta se detenía a las 00:00 del 21, pero no tenía forma de comprobarlo. La tercera ejecución obtuvo las 21 órdenes con dos consultas a la Tool. El defecto no se corrigió durante la evaluación, para no alterar las ejecuciones ya medidas, y queda registrado como una corrección pendiente de la Tool. Es un resultado útil de la validación: el banco de preguntas, con referencias calculadas fuera de los servidores evaluados, permitió detectar un error que el uso informal del sistema no habría mostrado.
-
-\textcolor{blue}{[Completar: lectura de los resultados, categorías con mejor y peor desempeño, y casos de error relevantes con su causa.]}
 
 \subsection{Cumplimiento de los requerimientos}
 \label{cumplimientorequerimientos}
@@ -201,25 +216,37 @@ La Tabla~\ref{tab:cumplimiento} contrasta cada desafío de la Sección~\ref{requ
 \hline
 \textbf{Desafío} & \textbf{Descripción} & \textbf{Preguntas} & \textbf{Evidencia} & \textbf{Veredicto} \\
 \hline
-D1.1 & Ambigüedad en términos técnicos & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-D1.2 & Relaciones entre variables & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-D1.3 & Mapeo al namespace & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-D2.1 & Comparaciones relevantes & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
-D2.2 & Combinar varias fuentes & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
+D1.1 & Ambigüedad en términos técnicos & P3, P20 y P21 & 9 de 9 correctas & Cumplido \\
+D1.2 & Relaciones entre variables & P12 a P14 & 9 de 9 correctas & Cumplido \\
+D1.3 & Mapeo al namespace & P6, P9 a P11, P18 y P19 & 15 de 18 correctas & Con salvedad \\
+D2.1 & Comparaciones relevantes & P8, P22 y P24 & 9 de 9 correctas & Cumplido \\
+D2.2 & Combinar varias fuentes & P22 a P25 & 11 de 12 correctas & Con salvedad \\
 D2.3 & Reporte según el perfil del usuario & No aplica & No implementado & No cumplido \\
-D3.1 & Consultas eficientes & No aplica & Diseño de las Tools & \textcolor{blue}{[ ]} \\
-D3.2 & Granularidad según el rango & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} \\
+D3.1 & Consultas eficientes & No aplica & Diseño de las Tools & Cumplido \\
+D3.2 & Granularidad según el rango & P1, P2, P4, P5 y P7 & 15 de 15 correctas & Cumplido \\
 \hline
 \end{tabular}
 \end{table}
 
 El desafío D3.1 pide consultas eficientes a la base de datos. El sistema lo resuelve por diseño y no con SQL generado por el modelo. Las Tools ejecutan consultas parametrizadas sobre una lista cerrada de tablas, agregan en SQL, limitan cada respuesta a 1000 filas y trabajan con un usuario de solo lectura, como se describió en las Secciones~\ref{alcanceseguridadhistorico} y~\ref{granularidadconsulta}. Por eso su verificación se apoya en esa descripción y en los tiempos de la Tabla~\ref{tab:res_latencia}, y no en una pregunta específica.
 
-\textcolor{blue}{[Completar: síntesis del cumplimiento de R1, R2 y R3 a partir de la tabla.]}
+El requerimiento R1, la interpretación de consultas con conocimiento técnico del dominio, se cumple: 33 de las 36 ejecuciones que ponen a prueba D1.1, D1.2 y D1.3 fueron correctas, el modelo resolvió términos como «OEE», «paro no programado» o «turno» a las variables y Tools correctas, y las tres respuestas incorrectas no son de interpretación. Dos se deben al filtro de fecha de la Tool de órdenes y una al criterio de conteo. De ahí la salvedad en D1.3. El desafío D1.2, que pide relacionar variables para explicar un cambio, se cumplió en las nueve ejecuciones, aunque con menor coherencia que el resto (promedio de 4,44 en las causales) y con más llamadas a las Tools.
+
+El requerimiento R2, los reportes con análisis comparativos, se cumple en parte. Las comparaciones entre periodos y entre líneas (D2.1) fueron correctas en las nueve ejecuciones, y la combinación de fuentes (D2.2) en 11 de 12, con la salvedad del defecto ya descrito. La adaptación del reporte al perfil del usuario (D2.3) no se implementó, por lo que R2 no se cumple de forma completa.
+
+El requerimiento R3, el acceso eficiente a datos históricos y en tiempo real, se cumple. Las preguntas que ponen a prueba la granularidad (D3.2) fueron correctas en las 15 ejecuciones, las de tiempo real y las combinadas cruzaron el UNS con el histórico sin errores atribuibles al sistema de acceso, y los servidores MCP ocuparon en promedio 2,2~s de los 21,5~s de cada respuesta.
 
 \subsection{Discusión y limitaciones}
 \label{discusionvalidacion}
 
 El caso de la pregunta~6 permite una conclusión sobre el diseño del sistema. Una Tool del servidor de histórico es una función corta, con una consulta SQL parametrizada y una descripción en lenguaje natural; la de órdenes de producción ocupa menos de cuarenta líneas, consulta incluida. Corregir un defecto como el anterior, o cubrir una pregunta nueva que ninguna Tool atiende, no exige cambiar la arquitectura ni el modelo: basta ajustar o agregar una Tool. El costo de ampliar la capacidad del sistema es por tanto bajo, y se puede crear tantas Tools como el dominio requiera. La contrapartida es que cada Tool nueva debe verificarse con preguntas y con referencias independientes, como se hizo en este banco, porque un error en ella llega al usuario como una respuesta de apariencia segura.
 
-\textcolor{blue}{[Completar tras los resultados. Puntos que se deben tratar: lo que los resultados dicen sobre el uso de un LLM con acceso a un UNS y a un histórico; la limitación de que los datos son generados con scripts y no reflejan el ruido de una planta real; el tamaño del banco (25 preguntas y 75 ejecuciones) y la variabilidad del modelo entre ejecuciones; y que la calidad semántica la puntuó el propio autor, que conoce el proceso evaluado.]}
+Los resultados indican que un LLM con acceso a un UNS y a un histórico puede responder con exactitud preguntas operativas de tiempo real, históricas y combinadas, siempre que las Tools entreguen datos con significado explícito. En este banco no hubo una sola cifra inventada, y los errores que aparecieron provinieron de una Tool o de una definición, no del modelo. Esto desplaza el riesgo principal: el modelo confía en lo que devuelve la Tool y lo presenta con seguridad, de modo que un defecto en ella, como el del filtro de fecha, llega al usuario como una respuesta de apariencia correcta. Las ejecuciones que obtuvieron las 21 órdenes lo hicieron porque el modelo sospechó del resultado y volvió a consultar, lo que ayuda pero no sustituye la verificación de las Tools.
+
+Los resultados tienen límites que deben tenerse presentes. El primero es que los datos se generaron con scripts: las corridas históricas y los valores en vivo se generaron con scripts, y las corridas de tiempo real se abrieron para la prueba, por lo que el comportamiento ante el ruido, los vacíos y las irregularidades de una planta en operación no se evaluó. Las corridas abiertas tenían menos de una hora de marcha, de modo que los OEE en vivo son valores tempranos y cambiantes, y las respuestas de referencia se aceptaron como un rango entre dos lecturas.
+
+El segundo límite es el tamaño y la repetibilidad del banco. Son 25 preguntas y 75 ejecuciones con un único modelo y una única configuración, en dos días, y tres ejecuciones por pregunta bastan para observar la variabilidad pero no para estimar con rigor su distribución. Los porcentajes del capítulo describen este banco y no pretenden generalizarse. El banco tampoco incluye preguntas con granularidad de minuto, aunque las Tools la admiten, ni preguntas con varias líneas de conversación.
+
+El tercer límite es que la calidad semántica la puntuó el propio autor, que conoce el proceso evaluado y no tuvo un segundo evaluador. Se mitiga con referencias calculadas fuera de las Tools, con una rúbrica definida de antemano y con una nota por pregunta en el anexo que justifica cada puntuación distinta de 5, pero la coherencia, la pertinencia y la suficiencia siguen dependiendo de su juicio. Las otras tres métricas no dependen de él.
+
+También quedaron hallazgos sobre los propios datos y metadatos, que son un resultado útil de la validación y quedan como correcciones pendientes. La tasa estándar de producción registrada en \texttt{standardrate} no es coherente con la producción de las corridas simuladas, y el modelo lo advirtió en las tres ejecuciones de la pregunta~12, por lo que cualquier análisis de rendimiento que use esa tasa directamente se debe leer con reserva. Además, la documentación de los tags del UNS describe el Infeed como bolsas y el Outfeed como fardos, pero los valores cumplen Infeed igual a Outfeed más Waste, como mostró la pregunta~21. Por último, la medición de la latencia se hizo sobre la interfaz de Claude Desktop y depende del cliente y de la red del equipo de pruebas.
