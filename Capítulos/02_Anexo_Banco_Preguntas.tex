@@ -440,7 +440,7 @@ Cada turno se cuenta completo, aunque el C termine el 21 de septiembre. Si se to
 
 \fichapregunta{6}{Histórica}{¿Qué órdenes de trabajo se ejecutaron en la Línea B de Empaque Trigo entre el 15 y el 21 de septiembre de 2026?}{D1.3}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, corridas iniciadas del 15 al 21 de septiembre de 2026: 21 órdenes (WO02, WO06, WO10, WO15, WO20, WO21, WO25, WO31, WO36, WO39, WO43, WO47, WO52, WO56, WO59, WO63, WO66, WO72, WO75, WO79, WO84). Iniciadas el 21: WO75, WO79, WO84. Terminan después del 21: WO84.}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{27,87}{0,4}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_production\_orders} 0,39~s}{Entre el 15 y el 21 de septiembre de 2026 se ejecutaron \textbf{18 órdenes de trabajo} en la Línea B de Empaque Trigo: tres por día (una por turno) del 15 al 20 de septiembre. El día 21 solo aparece el cierre de la WO72, que empezó la noche anterior; no hay órdenes que comiencen ese día.
+\ejecucion{1}{Incorrecta\normalfont{} \;\textbar\; Alucinación: No}{27,87}{0,4}{5/4/5}{\texttt{get\_production\_orders} 0,39~s}{Entre el 15 y el 21 de septiembre de 2026 se ejecutaron \textbf{18 órdenes de trabajo} en la Línea B de Empaque Trigo: tres por día (una por turno) del 15 al 20 de septiembre. El día 21 solo aparece el cierre de la WO72, que empezó la noche anterior; no hay órdenes que comiencen ese día.
 
 
 
@@ -490,7 +490,7 @@ Los productos son 100202 (Trigo – Libra – 24 Bags per Baler) y 100203 (Trigo
 
 Ninguna orden alcanzó la cantidad planeada. Sin embargo, todas terminaron entre 3 y 4 horas después de empezar, aunque cada una tenía programada una ventana de 8 horas. Esto podría deberse a cómo se registra el cierre en el MES o a paros al final del turno. Si quieres, reviso los paros de la línea en esas mismas fechas para ver si explican la diferencia.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{31,24}{0,38}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_production\_orders} 0,37~s}{Entre el 15 y el 21 de septiembre de 2026, la Línea B de Empaque Trigo ejecutó \textbf{18 órdenes de trabajo}, tres por día, una por turno (alrededor de las 06:00, las 14:00 y las 22:00):
+\ejecucion{2}{Incorrecta\normalfont{} \;\textbar\; Alucinación: No}{31,24}{0,38}{5/4/5}{\texttt{get\_production\_orders} 0,37~s}{Entre el 15 y el 21 de septiembre de 2026, la Línea B de Empaque Trigo ejecutó \textbf{18 órdenes de trabajo}, tres por día, una por turno (alrededor de las 06:00, las 14:00 y las 22:00):
 
 
 
@@ -547,7 +547,7 @@ Libra corresponde a "Trigo - Libra - 24 Bags per Baler" y Kilo a "Trigo - Kilo -
 
 ¿Quieres que revise los paros u el OEE de la línea en esa semana para explicar las diferencias entre lo planeado y lo real?}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{30,46}{0,87}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_production\_orders} 0,39~s \;\textbullet\; \texttt{get\_production\_orders} 0,47~s}{En la \textbf{Línea B de Empaque Trigo} se ejecutaron \textbf{21 órdenes de trabajo} entre el 15 y el 21 de septiembre de 2026, con tres turnos diarios y alternancia entre las dos presentaciones de producto.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{30,46}{0,87}{5/4/5}{\texttt{get\_production\_orders} 0,39~s \;\textbullet\; \texttt{get\_production\_orders} 0,47~s}{En la \textbf{Línea B de Empaque Trigo} se ejecutaron \textbf{21 órdenes de trabajo} entre el 15 y el 21 de septiembre de 2026, con tres turnos diarios y alternancia entre las dos presentaciones de producto.
 
 
 
@@ -591,6 +591,8 @@ Hay dos detalles que conviene tener en cuenta. Todas las órdenes terminaron ent
 
 
 Si quieres, puedo revisar los paros de esa semana para ver qué explica el faltante en WO31 y WO59.}
+
+\notaeval{E1 y E2 responden 18 órdenes y omiten WO75, WO79 y WO84, que empezaron el 21 de septiembre. La causa es un defecto de la herramienta get\_production\_orders: cuando se le pide un rango hasta el 21, toma esa fecha como las 00:00 y deja fuera lo que empezó durante ese día. E3 obtiene las 21 órdenes con dos consultas a la herramienta. No se marca alucinación: lo que E1 y E2 afirman coincide con lo que devolvió la herramienta.}
 
 \fichapregunta{7}{Histórica}{¿Cuánto produjo cada día la Línea A de Empaque Maíz del 15 al 21 de septiembre de 2026?}{D3.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, total por día del 15 al 21 de septiembre de 2026: 15 15.584; 16 22.693; 17 18.814; 18 12.578; 19 16.317; 20 21.299; 21 20.288; suma 127.573 total (124.914 buenas, 2.659 desperdicio).}
 
