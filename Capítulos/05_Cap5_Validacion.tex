@@ -177,6 +177,13 @@ Sin datos & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]} & \textcolor{blue}{[ ]
 \end{tabular}
 \end{table}
 
+\subsubsection{Caso de la pregunta 6: filtro de fecha en la Tool de órdenes}
+\label{casop6}
+
+La pregunta 6 pedía las órdenes de trabajo de la Línea B de Empaque Trigo entre el 15 y el 21 de septiembre de 2026. La referencia, calculada con SQL directo, son 21 órdenes, tres de ellas iniciadas el 21. En dos de las tres ejecuciones el sistema respondió 18 órdenes y en la tercera respondió las 21 (Anexo~\ref{anexo:banco_preguntas}). La causa no fue una interpretación errónea del modelo, sino un defecto de la Tool \texttt{get\_production\_orders}: su descripción declara que la fecha final del rango es inclusiva, pero la consulta compara el inicio programado de cada orden con esa fecha, y cuando se entrega sin hora se evalúa como las 00:00 del día indicado. Las órdenes que empiezan durante ese último día quedan fuera del resultado. Las otras Tools de consulta histórica del mismo servidor sí extienden la fecha final hasta el cierre del día, por lo que el comportamiento de la Tool de órdenes no era uniforme con el resto.
+
+Las dos respuestas incorrectas coinciden con lo que la Tool devolvió, por lo que no se calificaron como alucinación. Una de ellas llegó a sospechar que la consulta se detenía a las 00:00 del 21, pero no tenía forma de comprobarlo. La tercera ejecución obtuvo las 21 órdenes con dos consultas a la Tool. El defecto no se corrigió durante la evaluación, para no alterar las ejecuciones ya medidas, y queda registrado como una corrección pendiente de la Tool. Es un resultado útil de la validación: el banco de preguntas, con referencias calculadas fuera de los servidores evaluados, permitió detectar un error que el uso informal del sistema no habría mostrado.
+
 \textcolor{blue}{[Completar: lectura de los resultados, categorías con mejor y peor desempeño, y casos de error relevantes con su causa.]}
 
 \subsection{Cumplimiento de los requerimientos}
@@ -212,5 +219,7 @@ El desafío D3.1 pide consultas eficientes a la base de datos. El sistema lo res
 
 \subsection{Discusión y limitaciones}
 \label{discusionvalidacion}
+
+El caso de la pregunta~6 permite una conclusión sobre el diseño del sistema. Una Tool del servidor de histórico es una función corta, con una consulta SQL parametrizada y una descripción en lenguaje natural; la de órdenes de producción ocupa menos de cuarenta líneas, consulta incluida. Corregir un defecto como el anterior, o cubrir una pregunta nueva que ninguna Tool atiende, no exige cambiar la arquitectura ni el modelo: basta ajustar o agregar una Tool. El costo de ampliar la capacidad del sistema es por tanto bajo, y se puede crear tantas Tools como el dominio requiera. La contrapartida es que cada Tool nueva debe verificarse con preguntas y con referencias independientes, como se hizo en este banco, porque un error en ella llega al usuario como una respuesta de apariencia segura.
 
 \textcolor{blue}{[Completar tras los resultados. Puntos que se deben tratar: lo que los resultados dicen sobre el uso de un LLM con acceso a un UNS y a un histórico; la limitación de que los datos son generados con scripts y no reflejan el ruido de una planta real; el tamaño del banco (25 preguntas y 75 ejecuciones) y la variabilidad del modelo entre ejecuciones; y que la calidad semántica la puntuó el propio autor, que conoce el proceso evaluado.]}
