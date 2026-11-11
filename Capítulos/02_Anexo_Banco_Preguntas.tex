@@ -2092,13 +2092,13 @@ Si quieres, reviso las órdenes y los paros de esa semana, o comparo la velocida
 
 \fichapregunta{23}{Combinada}{¿Cuántas unidades lleva la Línea A de Empaque Maíz en la corrida actual y cuántas produjo en total el 18 de septiembre de 2026?}{D2.2}{\texttt{uns-mcp y mes-history-mcp}}{La corrida actual de la Línea A de Empaque Maíz (orden WO92) llevaba entre 160 y 187 unidades según la hora de cada ejecución. El 18 de septiembre de 2026 la línea produjo 12.578 unidades (12.340 buenas y 238 de desperdicio) por conteo de día calendario; por las corridas iniciadas ese día, 11.796.}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{13,75}{2,32}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 2,28~s}{{\footnotesize\textbf{Lectura de referencia (12:38:53 y 12:39:22).} corrida actual de la línea (orden WO92): 160$\to$162 unidades (buenas 159$\to$161, desperdicio 1).}\par\smallskip \textbf{Corrida actual (Run 355, orden WO92):} la Línea A de Empaque Maíz lleva \textbf{160 unidades} producidas en total, de las cuales 159 son buenas y 1 es defectuosa. La corrida arrancó hoy a las 11:46 a. m., así que lleva unos 53 minutos, y la meta de la orden es de 2.000 unidades. (Lectura de las 12:39 p. m.)
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{13,75}{2,32}{5/5/5}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_count\_history} 2,28~s}{{\footnotesize\textbf{Lectura de referencia (12:38:53 y 12:39:22).} corrida actual de la línea (orden WO92): 160$\to$162 unidades (buenas 159$\to$161, desperdicio 1).}\par\smallskip \textbf{Corrida actual (Run 355, orden WO92):} la Línea A de Empaque Maíz lleva \textbf{160 unidades} producidas en total, de las cuales 159 son buenas y 1 es defectuosa. La corrida arrancó hoy a las 11:46 a. m., así que lleva unos 53 minutos, y la meta de la orden es de 2.000 unidades. (Lectura de las 12:39 p. m.)
 
 
 
 \textbf{18 de septiembre de 2026:} la línea produjo \textbf{12.578 unidades} en total ese día, de las cuales 12.340 fueron buenas y 238 fueron desperdicio, alrededor del 1,9 \%.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{11,79}{2,56}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,01~s \;\textbullet\; \texttt{get\_count\_history} 2,54~s}{{\footnotesize\textbf{Lectura de referencia (12:40:16 y 12:40:41).} corrida actual de la línea (orden WO92): 167 unidades (buenas 166, desperdicio 1).}\par\smallskip \textbf{Corrida actual (RunID 355, orden WO92)}
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{11,79}{2,56}{5/5/5}{\texttt{get\_context} 0,01~s \;\textbullet\; \texttt{get\_count\_history} 2,54~s}{{\footnotesize\textbf{Lectura de referencia (12:40:16 y 12:40:41).} corrida actual de la línea (orden WO92): 167 unidades (buenas 166, desperdicio 1).}\par\smallskip \textbf{Corrida actual (RunID 355, orden WO92)}
 
 La Línea A de Empaque Maíz lleva \textbf{167 unidades} en total: 166 buenas y 1 defectuosa. La corrida arrancó hoy a las 11:46 a. m. y la lectura es de las 12:40 p. m. La meta de la orden es 2.000 unidades, así que va alrededor del 8 \%.
 
@@ -2108,7 +2108,7 @@ La Línea A de Empaque Maíz lleva \textbf{167 unidades} en total: 166 buenas y 
 
 Produjo \textbf{12.578 unidades en total}: 12.340 buenas y 238 de desperdicio (cerca del 1,9 \%). El dato incluye solo la producción que pertenece a corridas y viene de 11 muestras del día.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{13,32}{2,46}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,03~s \;\textbullet\; \texttt{get\_count\_history} 2,41~s}{{\footnotesize\textbf{Lectura de referencia (12:45:29 y 12:45:55).} corrida actual de la línea (orden WO92): 186$\to$187 unidades (buenas 185$\to$186, desperdicio 1).}\par\smallskip Ahora consulto el histórico del 18 de septiembre.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{13,32}{2,46}{4/4/5}{\texttt{get\_context} 0,03~s \;\textbullet\; \texttt{get\_count\_history} 2,41~s}{{\footnotesize\textbf{Lectura de referencia (12:45:29 y 12:45:55).} corrida actual de la línea (orden WO92): 186$\to$187 unidades (buenas 185$\to$186, desperdicio 1).}\par\smallskip Ahora consulto el histórico del 18 de septiembre.
 
 
 
@@ -2121,6 +2121,8 @@ El ERP muestra 184 unidades producidas (ProducedQty). Esa cifra va un poco rezag
 
 
 \textbf{18 de septiembre de 2026 (día completo, hora de Colombia):} la línea produjo \textbf{12.578 unidades} en total. De esas, 12.340 fueron buenas y 238 fueron desperdicio (aprox. 1,9 \%). Solo se cuenta la producción asociada a corridas.}
+
+\notaeval{Las tres combinan la lectura en vivo (uns-mcp) con el histórico (mes-history-mcp). La cifra de la corrida actual cae dentro de la lectura de referencia de su hora y las tres dan 12.578 unidades para el 18 de septiembre, por conteo de día calendario. En E3 la coherencia y la pertinencia son 4: abre con una frase intermedia del modelo («Ahora consulto el histórico…») y agrega la comparación con el ERP, que no se pedía.}
 
 \fichapregunta{24}{Combinada}{¿Cuál es el OEE actual de la Línea B de Empaque Trigo y cómo se compara con el del 18 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{uns-mcp y mes-history-mcp}}{El OEE actual de la Línea B de Empaque Trigo (orden WO95) estuvo entre 59,0 \% y 65,3 \% según la hora de cada ejecución. El 18 de septiembre de 2026 su OEE fue 81,5 \% (disponibilidad 95,0 \%, rendimiento 87,5 \%, calidad 98,0 \%).}
 
