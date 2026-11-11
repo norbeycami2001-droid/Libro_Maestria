@@ -1564,7 +1564,7 @@ Si te sirve como referencia, estos son los días más cercanos con datos:
 
 \fichapregunta{16}{Sin datos}{¿Cuántas unidades produjo la Línea B de Empaque Maíz el 25 de septiembre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea B de Empaque Maíz, 25 de septiembre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{26,43}{6,29}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 2,16~s \;\textbullet\; \texttt{get\_oee\_history} 0,92~s \;\textbullet\; \texttt{get\_production\_orders} 0,50~s \;\textbullet\; \texttt{get\_count\_history} 1,22~s \;\textbullet\; \texttt{get\_count\_history} 1,45~s}{No hay producción registrada para la Línea B de Empaque Maíz el 25 de septiembre de 2026. El historial de conteos, el de OEE y las órdenes de producción salen vacíos ese día. No aparece ninguna corrida ni ninguna orden programada entre el 24 y el 26.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{26,43}{6,29}{5/4/5}{\texttt{get\_count\_history} 2,16~s \;\textbullet\; \texttt{get\_oee\_history} 0,92~s \;\textbullet\; \texttt{get\_production\_orders} 0,50~s \;\textbullet\; \texttt{get\_count\_history} 1,22~s \;\textbullet\; \texttt{get\_count\_history} 1,45~s}{No hay producción registrada para la Línea B de Empaque Maíz el 25 de septiembre de 2026. El historial de conteos, el de OEE y las órdenes de producción salen vacíos ese día. No aparece ninguna corrida ni ninguna orden programada entre el 24 y el 26.
 
 
 
@@ -1574,7 +1574,7 @@ Esto no significa necesariamente que la línea haya estado parada. El último da
 
 ¿Quieres que revise los paros (downtime) alrededor del 22 de septiembre o el estado actual de la línea en el UNS para confirmar si está corriendo?}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{15,4}{2,8}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,87~s \;\textbullet\; \texttt{get\_oee\_history} 0,43~s \;\textbullet\; \texttt{get\_production\_orders} 0,48~s}{Según el MES, \textbf{la Línea B de Empaque Maíz no registró producción el 25 de septiembre de 2026}: el historial de conteos y el de OEE no tienen ninguna corrida para ese día.
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{15,4}{2,8}{5/4/5}{\texttt{get\_count\_history} 1,87~s \;\textbullet\; \texttt{get\_oee\_history} 0,43~s \;\textbullet\; \texttt{get\_production\_orders} 0,48~s}{Según el MES, \textbf{la Línea B de Empaque Maíz no registró producción el 25 de septiembre de 2026}: el historial de conteos y el de OEE no tienen ninguna corrida para ese día.
 
 
 
@@ -1584,7 +1584,7 @@ En las órdenes de producción de la línea, la última que aparece en ese perio
 
 Es probable que la línea estuviera parada o sin programación esos días. ¿Quieres que revise los paros de la línea en ese rango para confirmar el motivo?}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{18,22}{2,96}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,93~s \;\textbullet\; \texttt{get\_oee\_history} 0,34~s \;\textbullet\; \texttt{get\_production\_orders} 0,36~s \;\textbullet\; \texttt{get\_oee\_history} 0,30~s}{No hay producción registrada para la Línea B de Empaque Maíz el 25 de septiembre de 2026. El historial del MES no muestra conteos, corridas ni órdenes de producción para ese día. También revisé del 24 al 26 de septiembre y no aparece ninguna orden.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{18,22}{2,96}{5/4/5}{\texttt{get\_count\_history} 1,93~s \;\textbullet\; \texttt{get\_oee\_history} 0,34~s \;\textbullet\; \texttt{get\_production\_orders} 0,36~s \;\textbullet\; \texttt{get\_oee\_history} 0,30~s}{No hay producción registrada para la Línea B de Empaque Maíz el 25 de septiembre de 2026. El historial del MES no muestra conteos, corridas ni órdenes de producción para ese día. También revisé del 24 al 26 de septiembre y no aparece ninguna orden.
 
 
 
@@ -1593,6 +1593,8 @@ Al ampliar la consulta a septiembre y octubre, los únicos días con datos para 
 
 
 Si quieres, puedo revisar la Línea A ese mismo día para ver si hubo producción en el área, o darte el detalle de algún día entre el 15 y el 21 de septiembre.}
+
+\notaeval{En las tres ejecuciones la pertinencia es 4: además de decir que no hay datos agregan contexto sobre el último dato disponible o los días con registros. Las cifras de contexto coinciden con el historial. Las explicaciones sobre por qué no hay datos son hipótesis y no coinciden entre sí: E1 apunta a un fallo de registro, E2 a una línea parada o sin programación y E3 deja ambas abiertas.}
 
 \fichapregunta{17}{Sin datos}{¿Cuántos paros tuvo la Línea B de Empaque Trigo en octubre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, octubre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
 
