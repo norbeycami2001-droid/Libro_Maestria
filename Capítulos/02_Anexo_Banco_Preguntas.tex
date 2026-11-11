@@ -1636,7 +1636,7 @@ Si esperabas datos de octubre, conviene confirmar con el equipo de planta o de s
 
 \fichapregunta{18}{Tiempo real}{¿Cuál es el estado actual de la Línea A de Empaque Maíz?}{D1.3}{\texttt{uns-mcp}}{La Línea A de Empaque Maíz está en marcha (\texttt{State} = 2) y sus tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) están en \texttt{Running}. Ejecuta la orden WO92, producto 100200 (Maíz, Libra). Según la hora de cada ejecución, la corrida lleva entre 144 y 190 unidades (143 a 188 buenas y 1 a 2 de desperdicio) y su OEE está entre 59,3 \% y 62,5 \%.}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{23,17}{0,77}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,46~s}{{\footnotesize\textbf{Lectura de referencia (12:34:50 y 12:35:29).} línea en marcha, orden WO92, producto 100200; total 144$\to$147, buenas 143$\to$146, desperdicio 1.}\par\smallskip \textbf{La Línea A de Empaque Maíz (Barranquilla) está en marcha, sin paradas, pero produce a un ritmo de 59\% del estándar.} Datos UNS a las 12:35 COT.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{23,17}{0,77}{5/4/5}{\texttt{get\_context} 0,46~s}{{\footnotesize\textbf{Lectura de referencia (12:34:50 y 12:35:29).} línea en marcha, orden WO92, producto 100200; total 144$\to$147, buenas 143$\to$146, desperdicio 1.}\par\smallskip \textbf{La Línea A de Empaque Maíz (Barranquilla) está en marcha, sin paradas, pero produce a un ritmo de 59\% del estándar.} Datos UNS a las 12:35 COT.
 
 
 
@@ -1700,7 +1700,7 @@ Como no hay paradas registradas, la pérdida viene de que la línea marcha lenta
 
 ¿Quieres que consulte el historial del MES para ver si este bajo rendimiento es habitual en esta línea o si empezó hoy?}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{18,72}{0,05}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,04~s}{{\footnotesize\textbf{Lectura de referencia (12:40:50 y 12:41:22).} línea en marcha, orden WO92, producto 100200; total 169$\to$171, buenas 168$\to$170, desperdicio 1.}\par\smallskip \textbf{La Línea A de Empaque Maíz está en marcha}, sin paros. Las tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) reportan estado \textit{Running}. Lectura de las 12:41 hora de Colombia.
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{18,72}{0,05}{5/4/5}{\texttt{get\_context} 0,04~s}{{\footnotesize\textbf{Lectura de referencia (12:40:50 y 12:41:22).} línea en marcha, orden WO92, producto 100200; total 169$\to$171, buenas 168$\to$170, desperdicio 1.}\par\smallskip \textbf{La Línea A de Empaque Maíz está en marcha}, sin paros. Las tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) reportan estado \textit{Running}. Lectura de las 12:41 hora de Colombia.
 
 
 
@@ -1733,7 +1733,7 @@ Como la línea no se ha detenido, la pérdida es de velocidad y no de paros. Val
 
 ¿Quieres que revise el histórico de OEE de los últimos turnos para ver si este bajo rendimiento es algo puntual de esta corrida o una tendencia?}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{20,18}{0,04}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,03~s}{{\footnotesize\textbf{Lectura de referencia (12:46:04 y 12:46:37).} línea en marcha, orden WO92, producto 100200; total 188$\to$190, buenas 187$\to$188, desperdicio 1$\to$2.}\par\smallskip La \textbf{Línea A de Empaque Maíz (Barranquilla) está en marcha y sin paradas}, pero va \textbf{por debajo de la velocidad estándar}. Datos del UNS a las 12:46 COT.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{20,18}{0,04}{5/4/5}{\texttt{get\_context} 0,03~s}{{\footnotesize\textbf{Lectura de referencia (12:46:04 y 12:46:37).} línea en marcha, orden WO92, producto 100200; total 188$\to$190, buenas 187$\to$188, desperdicio 1$\to$2.}\par\smallskip La \textbf{Línea A de Empaque Maíz (Barranquilla) está en marcha y sin paradas}, pero va \textbf{por debajo de la velocidad estándar}. Datos del UNS a las 12:46 COT.
 
 
 
@@ -1775,6 +1775,8 @@ Calidad & 99,5 \% & Solo 1 unidad mala \\
 
 
 Como no hay paradas registradas, la pérdida viene de que la línea corre más lenta de lo esperado: microparadas no registradas, velocidad de máquina ajustada abajo o falta de alimentación de producto. Si quieres, consulto el histórico de conteo por celda para ver cuál equipo está limitando el ritmo.}
+
+\notaeval{La pertinencia es 4 en las tres ejecuciones: además del estado piden proyectar la fecha de fin de la orden (E3 agrega el desperdicio por empacadora), algo que no se solicitaba. Las cifras coinciden con la lectura de referencia de cada hora. Las tres identifican que la línea no está parada y que la pérdida es de rendimiento (alrededor de 60 \% del estándar de 5 u/min).}
 
 \fichapregunta{19}{Tiempo real}{¿Cuántas unidades lleva la Empacadora 1 de la Línea B de Empaque Trigo en la corrida actual?}{D1.3}{\texttt{uns-mcp}}{La Empacadora 1 de la Línea B de Empaque Trigo está en la corrida de la orden WO95 (producto 100203, Trigo, Kilo). Su conteo en la corrida actual fue de 540 a 552 unidades en la ejecución 1, de 609 a 618 en la 2 y de 672 a 681 en la 3.}
 
