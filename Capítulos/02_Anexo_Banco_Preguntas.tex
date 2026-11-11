@@ -275,7 +275,7 @@ Hay dos limitaciones en estos datos. Primero, ambos paros no programados están 
 
 \fichapregunta{4}{Histórica}{¿Cuánto produjo cada hora la Línea A de Empaque Maíz el 17 de septiembre de 2026 entre las 14:00 y las 18:00?}{D3.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 17 de septiembre de 2026 (total/buenas/desperdicio): 14:00 1.878/1.851/27; 15:00 2.634/2.596/38; 16:00 2.633/2.596/37; 17:00 417/411/6; suma 7.562/7.454/108.}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{12,14}{1,22}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,21~s}{Esta fue la producción de la Línea A de Empaque Maíz el 17 de septiembre de 2026, hora por hora (hora de Colombia):
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{12,14}{1,22}{5/4/5}{\texttt{get\_count\_history} 1,21~s}{Esta fue la producción de la Línea A de Empaque Maíz el 17 de septiembre de 2026, hora por hora (hora de Colombia):
 
 
 
@@ -300,7 +300,7 @@ En las cuatro horas la línea produjo 7.562 unidades. De ellas, 7.454 fueron bue
 
 Las horas de 15:00 y 16:00 tuvieron una producción estable, de unas 2.630 unidades cada una. Las horas de 14:00 y 17:00 produjeron bastante menos, sobre todo la de 17:00, con apenas 417 unidades. Como el sistema solo cuenta la producción que pertenece a una corrida, la caída podría deberse a que una corrida empezó después de las 14:00 y terminó poco después de las 17:00, o a un paro. Puedo consultar las corridas o los paros de esa tarde para confirmar la causa, si quieres.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{11,97}{0,99}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 0,99~s}{Producción por hora de la \textbf{Línea A – Empaque Maíz} el 17 de septiembre de 2026 (hora de Colombia):
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{11,97}{0,99}{5/4/5}{\texttt{get\_count\_history} 0,99~s}{Producción por hora de la \textbf{Línea A – Empaque Maíz} el 17 de septiembre de 2026 (hora de Colombia):
 
 
 
@@ -325,7 +325,7 @@ Las horas de 15:00 y 16:00 fueron estables, con unas 2.630 unidades cada una. La
 
 Si quiere, puedo revisar los paros u órdenes de producción de esa tarde para explicar la caída de las 17:00.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{12,76}{1,22}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,21~s}{La Línea A de Empaque Maíz produjo un total de \textbf{7.562 unidades} entre las 14:00 y las 18:00 del 17 de septiembre de 2026. De ellas, 7.454 fueron unidades buenas y 108 fueron desperdicio. Este es el detalle por hora, con el conteo de línea, que es el de la Enfardadora:
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{12,76}{1,22}{5/4/5}{\texttt{get\_count\_history} 1,21~s}{La Línea A de Empaque Maíz produjo un total de \textbf{7.562 unidades} entre las 14:00 y las 18:00 del 17 de septiembre de 2026. De ellas, 7.454 fueron unidades buenas y 108 fueron desperdicio. Este es el detalle por hora, con el conteo de línea, que es el de la Enfardadora:
 
 
 
@@ -349,6 +349,8 @@ Las horas de 15:00 y 16:00 marcan el ritmo pleno, con unas 2.630 unidades por ho
 
 
 ¿Quiere que revise los paros u órdenes de producción de esa tarde para confirmar qué pasó en la última hora?}
+
+\notaeval{En las tres ejecuciones la pertinencia es 4: agregan hipótesis sobre la causa de la caída de las 17:00, que no se pedía. Las hipótesis son coherentes con las corridas de ese día.}
 
 \fichapregunta{5}{Histórica}{¿Cuántas unidades buenas produjo cada turno el 20 de septiembre de 2026 en la Línea B de Empaque Maíz?}{D3.2}{\texttt{mes-history-mcp}}{Línea B de Empaque Maíz, 20 de septiembre de 2026, unidades buenas por turno: turno A 6.756; turno B 5.197; turno C 7.740.}
 
