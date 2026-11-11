@@ -1848,7 +1848,7 @@ Desperdicio (Waste) & 6 ($\approx$0,9 \%) \\
 
 \fichapregunta{20}{Tiempo real}{¿Qué producto se empaca ahora en la Línea A de Empaque Trigo y cuál es su OEE actual?}{D1.1}{\texttt{uns-mcp}}{La Línea A de Empaque Trigo empaca el producto 100202 (Trigo, Libra), orden WO94. Su OEE actual estuvo entre 63,3 \% y 66,8 \% según la hora de cada ejecución.}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{11,61}{0,07}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_context} 0,02~s}{{\footnotesize\textbf{Lectura de referencia (12:36:19 y 12:36:45).} orden WO94, producto 100202, OEE 63,3$\to$63,6 \%.}\par\smallskip En la \textbf{Línea A de Empaque Trigo} se está empacando \textbf{Trigo – Libra – 24 bolsas por paca} (código 100202), bajo la orden \textbf{WO94}, que está en ejecución desde las 11:46 de hoy.
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{11,61}{0,07}{5/4/5}{\texttt{get\_context} 0,02~s \;\textbullet\; \texttt{get\_context} 0,02~s}{{\footnotesize\textbf{Lectura de referencia (12:36:19 y 12:36:45).} orden WO94, producto 100202, OEE 63,3$\to$63,6 \%.}\par\smallskip En la \textbf{Línea A de Empaque Trigo} se está empacando \textbf{Trigo – Libra – 24 bolsas por paca} (código 100202), bajo la orden \textbf{WO94}, que está en ejecución desde las 11:46 de hoy.
 
 
 
@@ -1858,7 +1858,7 @@ El \textbf{OEE actual es 63,9 \%} (lectura de las 12:36). La pérdida viene toda
 
 En cuanto al avance de la orden, se llevan 160 de 2.000 pacas y faltan 1.840. El fin está programado para las 18:26. Al ritmo actual de 192/h, terminar las pacas restantes tomaría unas 9,6 horas más, así que la orden no alcanzaría a cerrar a tiempo si no se recupera velocidad. Si quieres, reviso el estado de cada celda (Empacadora 1, Empacadora 2, Enfardadora) para ver dónde está el cuello de botella.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{12,01}{0,05}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,04~s}{{\footnotesize\textbf{Lectura de referencia (12:44:17 y 12:44:41).} orden WO94, producto 100202, OEE 66,8$\to$66,7 \%.}\par\smallskip En la \textbf{Línea A de Empaque Trigo} (Barranquilla) se está empacando el producto \textbf{100202 – Trigo, presentación Libra, 24 bolsas por fardo}, bajo la orden \textbf{WO94} (corrida 357). La orden arrancó hoy a las 11:46 y está en curso.
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{12,01}{0,05}{5/4/5}{\texttt{get\_context} 0,04~s}{{\footnotesize\textbf{Lectura de referencia (12:44:17 y 12:44:41).} orden WO94, producto 100202, OEE 66,8$\to$66,7 \%.}\par\smallskip En la \textbf{Línea A de Empaque Trigo} (Barranquilla) se está empacando el producto \textbf{100202 – Trigo, presentación Libra, 24 bolsas por fardo}, bajo la orden \textbf{WO94} (corrida 357). La orden arrancó hoy a las 11:46 y está en curso.
 
 
 
@@ -1886,7 +1886,7 @@ La línea produce a \textbf{201 fardos/h}, frente a un estándar de 5 fardos/min
 
 Hay que tener en cuenta el plazo. Faltan 1.806 fardos. Al ritmo actual, eso tomaría unas 9 horas. El fin programado es a las 18:26, unas 5,7 horas desde la lectura. Si no se recupera velocidad, la orden no terminará a tiempo. Las tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) reportan estado "en marcha". Por eso parece una marcha lenta y no un paro.}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{13,56}{0,07}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_context} 0,06~s}{{\footnotesize\textbf{Lectura de referencia (12:46:46 y 12:47:12).} orden WO94, producto 100202, OEE 66,5 \%.}\par\smallskip En la \textbf{Línea A de Empaque Trigo} se está empacando \textbf{Trigo – Libra – 24 bolsas por fardo} (código \textbf{100202}), bajo la orden \textbf{WO94}, que arrancó hoy a las 11:46 y está en curso.
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{13,56}{0,07}{5/4/5}{\texttt{get\_context} 0,06~s}{{\footnotesize\textbf{Lectura de referencia (12:46:46 y 12:47:12).} orden WO94, producto 100202, OEE 66,5 \%.}\par\smallskip En la \textbf{Línea A de Empaque Trigo} se está empacando \textbf{Trigo – Libra – 24 bolsas por fardo} (código \textbf{100202}), bajo la orden \textbf{WO94}, que arrancó hoy a las 11:46 y está en curso.
 
 
 
@@ -1916,6 +1916,8 @@ Esto afecta el cierre de la orden. Faltan \textbf{1.799 de 2.000 fardos}. Al rit
 
 
 Lecturas tomadas del UNS a las 12:46 (hora Colombia). ¿Quieres que revise el histórico de conteos por intervalo para ver si la lentitud es constante o viene de algún tramo puntual?}
+
+\notaeval{Las tres identifican el producto 100202 (Trigo, Libra) y la orden WO94, y el OEE de cada una cae dentro de la lectura de referencia de su hora. La pertinencia es 4: además de lo pedido agregan el desglose del OEE y una proyección del cierre de la orden. E1 escribe «paca» en lugar de «fardo», que es el término de los datos; no cambia ninguna cifra.}
 
 \fichapregunta{21}{Tiempo real}{¿En qué unidad se mide el conteo de la Enfardadora?}{D1.1}{\texttt{uns-mcp}}{El conteo de la Enfardadora se mide en unidades (metadato del tag de conteo).}
 
