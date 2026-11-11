@@ -592,7 +592,7 @@ Hay dos detalles que conviene tener en cuenta. Todas las órdenes terminaron ent
 
 Si quieres, puedo revisar los paros de esa semana para ver qué explica el faltante en WO31 y WO59.}
 
-\notaeval{E1 y E2 responden 18 órdenes y omiten WO75, WO79 y WO84, que empezaron el 21 de septiembre. La causa es un defecto de la herramienta get\_production\_orders: cuando se le pide un rango hasta el 21, toma esa fecha como las 00:00 y deja fuera lo que empezó durante ese día. E3 obtiene las 21 órdenes con dos consultas a la herramienta. No se marca alucinación: lo que E1 y E2 afirman coincide con lo que devolvió la herramienta.}
+\notaeval{E1 y E2 responden 18 órdenes y omiten WO75, WO79 y WO84, iniciadas el 21 de septiembre: la herramienta get\_production\_orders toma la fecha final como las 00:00 y deja fuera ese día. E3 obtiene las 21 con dos consultas. No hay alucinación: lo que afirman coincide con lo que devolvió la herramienta.}
 
 \fichapregunta{7}{Histórica}{¿Cuánto produjo cada día la Línea A de Empaque Maíz del 15 al 21 de septiembre de 2026?}{D3.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, total por día del 15 al 21 de septiembre de 2026: 15 15.584; 16 22.693; 17 18.814; 18 12.578; 19 16.317; 20 21.299; 21 20.288; suma 127.573 total (124.914 buenas, 2.659 desperdicio).}
 
@@ -967,7 +967,7 @@ El reporte de OEE de ese día muestra una cifra un poco menor (11.796 unidades) 
 
 ¿Te refieres a una línea o empacadora específica, por ejemplo de Trigo o de la Línea B? Así te saco el dato exacto de esa.}
 
-\notaeval{E1 es incorrecta porque da 11.796 unidades para Maíz A (el valor por corridas iniciadas el 18) como si fuera el conteo del día, que es 12.578; las otras tres líneas coinciden. E1 conserva frases intermedias del modelo, por eso su coherencia es 4. E2 y E3 recomiendan aclarar la empacadora y dan solo la Línea A de Maíz.}
+\notaeval{E1 es incorrecta: da 11.796 unidades para Maíz A (valor por corridas iniciadas el 18) en vez de 12.578 por día calendario; las otras tres líneas coinciden. Su coherencia es 4 por conservar frases intermedias del modelo.}
 
 \fichapregunta{11}{Ambigua}{Dame el OEE de la línea de maíz el 18 de septiembre de 2026.}{D1.3}{\texttt{mes-history-mcp}}{Pregunta ambigua: hay dos líneas de maíz. 18 de septiembre de 2026. Línea A: OEE 79,1 \% (disponibilidad 100,0 \%, rendimiento 80,5 \%, calidad 98,3 \%); 3 corridas, 11.796 total, 11.590 buenas, 206 desperdicio. Línea B: OEE 83,3 \% (disponibilidad 98,3 \%, rendimiento 86,1 \%, calidad 98,4 \%); 3 corridas, 17.567 total, 17.290 buenas, 277 desperdicio.}
 
@@ -1218,7 +1218,7 @@ No hay historial de conteo por celda (Empacadora 1, Empacadora 2, Enfardadora) p
 
 Como siguiente paso, revisaría con el turno C del 17 si hubo microparos no registrados, ajustes de velocidad o problemas de material en la WO33. ¿Quieres que mire la producción hora a hora de esa corrida para ver si la velocidad baja de forma continua o en tramos puntuales?}
 
-\notaeval{En E2 la pertinencia es 4: agrega datos adicionales (volumen producido, tamaño de las órdenes, causas de los paros) que no explican la baja del OEE. En E3 la coherencia es 4: abre con una frase intermedia que repite lo que dice a continuación.}
+\notaeval{En E2 la pertinencia es 4: agrega datos (volumen, tamaño de las órdenes, causas de los paros) que no explican la baja del OEE. En E3 la coherencia es 4: abre con una frase intermedia que repite lo que sigue.}
 
 \fichapregunta{13}{Causal}{¿Qué día entre el 15 y el 21 de septiembre de 2026 tuvo más desperdicio la Línea A de Empaque Maíz y por qué?}{D1.2}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 15 al 21 de septiembre de 2026. Por día calendario: más desperdicio el 2026-09-20 con 562 unidades sobre 21.299 producidas (2,64 \%). Es el día con la tasa de desperdicio más alta de la semana (rango 1,71 \% a 2,64 \%); el mayor volumen fue el 2026-09-16 (22.693). Por inicio de corrida: el 2026-09-19 con 518 (2,64 \%).}
 
@@ -1391,7 +1391,7 @@ Los paros no explican el desperdicio:
 
 Para cerrar el análisis valdría la pena revisar las bitácoras de turno o de mantenimiento del 19 y el 20, y ver si hubo cambios de bobina o de material de empaque, ajustes de máquina o algo similar.}
 
-\notaeval{En E1 y E2 la coherencia es 3: conservan frases intermedias del modelo que primero afirman que el día con más desperdicio fue el 19 y luego lo corrigen al 20 con el criterio de día calendario. E3 generaliza que el resto de la semana tuvo calidad de 98 \% o más, pero otras corridas (como la 270, con 97,3 \%) quedaron por debajo; es una generalización imprecisa y no un dato inventado.}
+\notaeval{En E1 y E2 la coherencia es 3: conservan frases intermedias que primero dicen que el día con más desperdicio fue el 19 y luego lo corrigen al 20. E3 generaliza que el resto de la semana tuvo calidad de 98 \% o más, pero la corrida 270 tuvo 97,3 \%.}
 
 \fichapregunta{14}{Causal}{¿Qué paro afectó más la disponibilidad de la Línea B de Empaque Trigo el 17 de septiembre de 2026?}{D1.2}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, 17 de septiembre de 2026: 2 paros no programados; el que más afectó la disponibilidad fue el de las 14:38 (26 min 29 s). Otros: 06:17 (21 min 20 s). Paros programados (no afectan la disponibilidad): ninguno.}
 
@@ -1474,7 +1474,7 @@ La disponibilidad del día quedó en \textbf{93,2 \%}. Hubo 3 corridas con 42.00
 
 Los dos paros están registrados solo con el motivo genérico "Unplanned". El MES no dice la causa específica, por ejemplo una falla mecánica, falta de material o un atasco. Para saber qué pasó habría que revisar la bitácora de turno o preguntarle al operador. ¿Quieres que revise si alguna celda (Empacadora 1, 2 o Enfardadora) dejó de producir en esas ventanas para identificar dónde se originó el paro?}
 
-\notaeval{En E1 la suficiencia es 4: da la franja horaria del paro (14:00 a 15:00) y no la hora exacta (14:38), porque la consulta devolvió solo la franja. En E2 y E3 la pertinencia es 4: agregan el OEE y el rendimiento del día, que no se pedían.}
+\notaeval{En E1 la suficiencia es 4: da la franja del paro (14:00 a 15:00) y no la hora exacta (14:38), porque la consulta devolvió solo la franja. En E2 y E3 la pertinencia es 4: agregan el OEE y el rendimiento del día.}
 
 \fichapregunta{15}{Sin datos}{¿Cuál fue el OEE de la Línea A de Empaque Maíz el 10 de septiembre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea A de Empaque Maíz, 10 de septiembre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
 
@@ -1560,7 +1560,7 @@ Si te sirve como referencia, estos son los días más cercanos con datos:
 
 ¿Quieres que revise si la Línea B o Empaque Trigo tienen datos del 10 de septiembre, o que busque órdenes de producción de esa fecha?}
 
-\notaeval{En E2 la pertinencia es 3: junto con la respuesta de que no hay datos agrega una tabla de ocho días con OEE que no se pedía. En E1 y E3 es 4: agregan el OEE de los días más cercanos con datos.}
+\notaeval{En E2 la pertinencia es 3: junto con la respuesta de que no hay datos agrega una tabla de ocho días con OEE. En E1 y E3 es 4: agregan el OEE de los días cercanos con datos.}
 
 \fichapregunta{16}{Sin datos}{¿Cuántas unidades produjo la Línea B de Empaque Maíz el 25 de septiembre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea B de Empaque Maíz, 25 de septiembre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
 
@@ -1594,7 +1594,7 @@ Al ampliar la consulta a septiembre y octubre, los únicos días con datos para 
 
 Si quieres, puedo revisar la Línea A ese mismo día para ver si hubo producción en el área, o darte el detalle de algún día entre el 15 y el 21 de septiembre.}
 
-\notaeval{En las tres ejecuciones la pertinencia es 4: además de decir que no hay datos agregan contexto sobre el último dato disponible o los días con registros. Las cifras de contexto coinciden con el historial. Las explicaciones sobre por qué no hay datos son hipótesis y no coinciden entre sí: E1 apunta a un fallo de registro, E2 a una línea parada o sin programación y E3 deja ambas abiertas.}
+\notaeval{La pertinencia es 4 en las tres: además de decir que no hay datos agregan contexto del último dato disponible, que coincide con el historial. Sus explicaciones del porqué son hipótesis distintas (fallo de registro, línea parada, ambas).}
 
 \fichapregunta{17}{Sin datos}{¿Cuántos paros tuvo la Línea B de Empaque Trigo en octubre de 2026?}{Alucinación}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, octubre de 2026: no hay datos (run 0, counthistory 0, statehistory 0 filas para la línea y sus celdas).}
 
@@ -1632,7 +1632,7 @@ Revisé todo 2026 hasta hoy. Los únicos datos de esta línea son del \textbf{15
 
 Si esperabas datos de octubre, conviene confirmar con el equipo de planta o de sistemas si la línea estuvo detenida o si hubo una falla en la captura de datos. ¿Quieres que te dé el detalle de la semana de septiembre o que revise la Línea A en octubre para comparar?}
 
-\notaeval{En E2 y E3 la pertinencia es 4: agregan los paros de la semana del 15 al 22 de septiembre (19 paros; E3 además 286 minutos), que no se pedían. Esas cifras coinciden con el historial. Las tres presentan primero que no hay ningún paro registrado y luego aclaran que ese cero no equivale a que no hubiera paros.}
+\notaeval{En E2 y E3 la pertinencia es 4: agregan los paros de la semana del 15 al 22 de septiembre (19 paros; E3 además 286 minutos), que coinciden con el historial. Las tres aclaran que el cero no equivale a que no hubiera paros.}
 
 \fichapregunta{18}{Tiempo real}{¿Cuál es el estado actual de la Línea A de Empaque Maíz?}{D1.3}{\texttt{uns-mcp}}{La Línea A de Empaque Maíz está en marcha (\texttt{State} = 2) y sus tres celdas (Empacadora 1, Empacadora 2 y Enfardadora) están en \texttt{Running}. Ejecuta la orden WO92, producto 100200 (Maíz, Libra). Según la hora de cada ejecución, la corrida lleva entre 144 y 190 unidades (143 a 188 buenas y 1 a 2 de desperdicio) y su OEE está entre 59,3 \% y 62,5 \%.}
 
@@ -1776,7 +1776,7 @@ Calidad & 99,5 \% & Solo 1 unidad mala \\
 
 Como no hay paradas registradas, la pérdida viene de que la línea corre más lenta de lo esperado: microparadas no registradas, velocidad de máquina ajustada abajo o falta de alimentación de producto. Si quieres, consulto el histórico de conteo por celda para ver cuál equipo está limitando el ritmo.}
 
-\notaeval{La pertinencia es 4 en las tres ejecuciones: además del estado piden proyectar la fecha de fin de la orden (E3 agrega el desperdicio por empacadora), algo que no se solicitaba. Las cifras coinciden con la lectura de referencia de cada hora. Las tres identifican que la línea no está parada y que la pérdida es de rendimiento (alrededor de 60 \% del estándar de 5 u/min).}
+\notaeval{La pertinencia es 4 en las tres: además del estado proyectan la fecha de fin de la orden (E3 agrega el desperdicio por empacadora). Las cifras coinciden con la lectura de referencia de cada hora.}
 
 \fichapregunta{19}{Tiempo real}{¿Cuántas unidades lleva la Empacadora 1 de la Línea B de Empaque Trigo en la corrida actual?}{D1.3}{\texttt{uns-mcp}}{La Empacadora 1 de la Línea B de Empaque Trigo está en la corrida de la orden WO95 (producto 100203, Trigo, Kilo). Su conteo en la corrida actual fue de 540 a 552 unidades en la ejecución 1, de 609 a 618 en la 2 y de 672 a 681 en la 3.}
 
@@ -1844,7 +1844,7 @@ Desperdicio (Waste) & 6 ($\approx$0,9 \%) \\
 \item El TotalCount de la línea en el MES (164 de una meta de 2.000) es otra cosa: corresponde al conteo de la Enfardadora (fardos), no a lo que empaca la Empacadora 1.
 \end{itemize}}
 
-\notaeval{Las tres cifras de conteo caen dentro del rango de referencia de su hora. La pertinencia es 4 porque agregan información que no se pedía (ritmo por minuto, estado de la celda, fuentes de los datos). El conteo de la celda se obtiene del histórico por minuto del MES, no del UNS en vivo (acumulado del Edge) ni del conteo de la línea (que es el de la Enfardadora, en fardos). La separación entre buenas y desperdicio proviene de ese histórico y no se contrastó con los contadores en vivo de la celda; la pregunta solo pedía el conteo.}
+\notaeval{Las tres cifras caen dentro del rango de referencia. La pertinencia es 4 por información no pedida (ritmo, estado de la celda, fuentes). El conteo de la celda sale del histórico por minuto del MES, no del UNS en vivo ni del conteo de la línea (Enfardadora); la separación entre buenas y desperdicio no se contrastó con los contadores en vivo.}
 
 \fichapregunta{20}{Tiempo real}{¿Qué producto se empaca ahora en la Línea A de Empaque Trigo y cuál es su OEE actual?}{D1.1}{\texttt{uns-mcp}}{La Línea A de Empaque Trigo empaca el producto 100202 (Trigo, Libra), orden WO94. Su OEE actual estuvo entre 63,3 \% y 66,8 \% según la hora de cada ejecución.}
 
@@ -1917,7 +1917,7 @@ Esto afecta el cierre de la orden. Faltan \textbf{1.799 de 2.000 fardos}. Al rit
 
 Lecturas tomadas del UNS a las 12:46 (hora Colombia). ¿Quieres que revise el histórico de conteos por intervalo para ver si la lentitud es constante o viene de algún tramo puntual?}
 
-\notaeval{Las tres identifican el producto 100202 (Trigo, Libra) y la orden WO94, y el OEE de cada una cae dentro de la lectura de referencia de su hora. La pertinencia es 4: además de lo pedido agregan el desglose del OEE y una proyección del cierre de la orden. E1 escribe «paca» en lugar de «fardo», que es el término de los datos; no cambia ninguna cifra.}
+\notaeval{Las tres identifican el producto 100202 y la orden WO94, y el OEE cae dentro de la lectura de referencia. La pertinencia es 4: agregan el desglose del OEE y una proyección del cierre. E1 escribe «paca» en lugar de «fardo»; no cambia ninguna cifra.}
 
 \fichapregunta{21}{Tiempo real}{¿En qué unidad se mide el conteo de la Enfardadora?}{D1.1}{\texttt{uns-mcp}}{El conteo de la Enfardadora se mide en unidades (metadato del tag de conteo).}
 
@@ -1981,7 +1981,7 @@ Hay una inconsistencia que vale la pena revisar. La documentación dice que Outf
 
 Consulté la Línea A de Maíz. Si te interesa otra área o línea, la reviso.}
 
-\notaeval{Las tres responden «unidades», que es el metadato del tag. E1 y E2 repiten la documentación del UNS (Infeed en bolsas, Outfeed en fardos) y advierten que no conviene restar ambos contadores, pero las cifras que ellas mismas muestran cumplen Infeed $-$ Outfeed = Waste, por lo que la advertencia no se sostiene con los datos (coherencia 4). E3 detecta esa diferencia entre la documentación del tag y los valores, y la plantea como hipótesis (pertinencia 3 por el espacio que le dedica). La inconsistencia está en la documentación de los tags del UNS y queda como corrección pendiente.}
+\notaeval{Las tres responden «unidades». E1 y E2 advierten que no conviene restar Infeed y Outfeed (según la documentación del UNS), pero sus propias cifras cumplen Infeed $-$ Outfeed = Waste (coherencia 4). E3 detecta esa diferencia entre documentación y datos (pertinencia 3). Queda como corrección pendiente de la documentación de los tags.}
 
 \fichapregunta{22}{Combinada}{¿Cómo está el OEE actual de la Línea A de Empaque Maíz frente a su OEE del 15 al 21 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{uns-mcp y mes-history-mcp}}{El OEE actual de la Línea A de Empaque Maíz (orden WO92) estuvo entre 60,8 \% y 62,2 \% según la hora de cada ejecución. Del 15 al 21 de septiembre de 2026 su OEE fue 80,0 \% (disponibilidad 95,4 \%, rendimiento 85,5 \%, calidad 97,9 \%).}
 
@@ -2088,7 +2088,7 @@ Hay dos cosas a tener en cuenta para la comparación:
 
 Si quieres, reviso las órdenes y los paros de esa semana, o comparo la velocidad actual de cada empacadora para ver dónde está el cuello de botella.}
 
-\notaeval{Las tres combinan correctamente la lectura en vivo (uns-mcp) con el histórico semanal (mes-history-mcp): el OEE actual cae dentro de la lectura de referencia de su hora y el del 15 al 21 de septiembre es 80,0 \%. Las cifras adicionales (21 corridas, 131.184 unidades, unos 188 minutos de paro no programado, OEE diario entre 74,2 \% y 86,2 \%) coinciden con el historial. Las tres recalculan la semana desde los componentes sumados y advierten que comparan una corrida corta con una semana completa. La pertinencia es 4 porque agregan detalle diario y de paros que no se pedía.}
+\notaeval{Las tres combinan bien la lectura en vivo con el histórico semanal: el OEE actual cae dentro de la referencia y el del 15 al 21 de septiembre es 80,0 \%. Los datos adicionales (21 corridas, 131.184 unidades, unos 188 minutos de paro) coinciden con el historial. La pertinencia es 4 por el detalle diario y de paros que no se pedía.}
 
 \fichapregunta{23}{Combinada}{¿Cuántas unidades lleva la Línea A de Empaque Maíz en la corrida actual y cuántas produjo en total el 18 de septiembre de 2026?}{D2.2}{\texttt{uns-mcp y mes-history-mcp}}{La corrida actual de la Línea A de Empaque Maíz (orden WO92) llevaba entre 160 y 187 unidades según la hora de cada ejecución. El 18 de septiembre de 2026 la línea produjo 12.578 unidades (12.340 buenas y 238 de desperdicio) por conteo de día calendario; por las corridas iniciadas ese día, 11.796.}
 
@@ -2122,7 +2122,7 @@ El ERP muestra 184 unidades producidas (ProducedQty). Esa cifra va un poco rezag
 
 \textbf{18 de septiembre de 2026 (día completo, hora de Colombia):} la línea produjo \textbf{12.578 unidades} en total. De esas, 12.340 fueron buenas y 238 fueron desperdicio (aprox. 1,9 \%). Solo se cuenta la producción asociada a corridas.}
 
-\notaeval{Las tres combinan la lectura en vivo (uns-mcp) con el histórico (mes-history-mcp). La cifra de la corrida actual cae dentro de la lectura de referencia de su hora y las tres dan 12.578 unidades para el 18 de septiembre, por conteo de día calendario. En E3 la coherencia y la pertinencia son 4: abre con una frase intermedia del modelo («Ahora consulto el histórico…») y agrega la comparación con el ERP, que no se pedía.}
+\notaeval{Las tres combinan la lectura en vivo con el histórico: la corrida actual cae dentro de la referencia y dan 12.578 unidades el 18 de septiembre (día calendario). En E3 coherencia y pertinencia son 4: abre con una frase intermedia («Ahora consulto el histórico…») y agrega la comparación con el ERP.}
 
 \fichapregunta{24}{Combinada}{¿Cuál es el OEE actual de la Línea B de Empaque Trigo y cómo se compara con el del 18 de septiembre de 2026?}{D2.1 y D2.2}{\texttt{uns-mcp y mes-history-mcp}}{El OEE actual de la Línea B de Empaque Trigo (orden WO95) estuvo entre 59,0 \% y 65,3 \% según la hora de cada ejecución. El 18 de septiembre de 2026 su OEE fue 81,5 \% (disponibilidad 95,0 \%, rendimiento 87,5 \%, calidad 98,0 \%).}
 
@@ -2230,7 +2230,7 @@ Hay un detalle a tener en cuenta en la comparación. El valor actual corresponde
 
 Si quieres, puedo revisar los paros de hoy o la producción por empacadora para ver dónde se está perdiendo la velocidad.}
 
-\notaeval{Las tres combinan la lectura en vivo (uns-mcp) con el histórico (mes-history-mcp): el OEE actual cae dentro de la tolerancia de la lectura de referencia de su hora y todas dan 81,5 \% para el 18 de septiembre con sus componentes correctos. La pertinencia es 4 porque agregan análisis por componente, proyecciones y detalle por corrida que no se pedía. En E1 la coherencia es 4: reporta una calidad de 95,9 \% que no cuadra con su propio conteo (4 malas de 121, es decir 96,7 \%) y un ritmo de 141 unidades/h algo inferior al que se deduce de sus cifras.}
+\notaeval{Las tres dan un OEE actual dentro de la tolerancia y 81,5 \% para el 18 de septiembre con sus componentes. La pertinencia es 4 por el análisis adicional. En E1 la coherencia es 4: su calidad de 95,9 \% no cuadra con su conteo (4 malas de 121 = 96,7 \%) y su ritmo de 141 u/h es inferior al que se deduce.}
 
 \fichapregunta{25}{Combinada}{¿Qué orden corre ahora en la Línea B de Empaque Maíz y cuántas órdenes tuvo esa línea del 15 al 21 de septiembre de 2026?}{D2.2}{\texttt{uns-mcp y mes-history-mcp}}{En la Línea B de Empaque Maíz corre la orden WO93 (producto 100201, Maíz, Kilo). Del 15 al 21 de septiembre de 2026 esa línea tuvo 21 órdenes (3 de ellas iniciadas el 21).}
 
@@ -2297,5 +2297,5 @@ Una advertencia: si se consulta el histórico con la fecha final "2026-09-21" si
 
 ¿Quieres que te arme la tabla de esas 21 órdenes con las cantidades planeadas frente a las reales?}
 
-\notaeval{Las tres identifican la orden WO93. La línea tuvo 21 órdenes del 15 al 21 de septiembre; E1 y E3 llegan a 21 con una segunda consulta que incluye el día completo, y E3 explica por qué la primera devuelve solo 18. E2 responde 18 porque la herramienta get\_production\_orders trata la fecha final «2026-09-21» como la medianoche del día 21 y deja por fuera las tres órdenes iniciadas ese día; es el mismo defecto de la pregunta 6 y no una cifra inventada. La pertinencia es 4 en las tres porque agregan datos de la corrida actual o de las órdenes que no se pedían.}
+\notaeval{Las tres identifican la WO93. Hubo 21 órdenes del 15 al 21 de septiembre; E1 y E3 llegan a 21 con una segunda consulta (E3 explica por qué la primera da 18). E2 responde 18 por el mismo defecto de get\_production\_orders de la pregunta 6, no por una cifra inventada. La pertinencia es 4 por los datos adicionales.}
 \end{singlespace}
