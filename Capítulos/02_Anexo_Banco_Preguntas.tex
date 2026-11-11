@@ -354,7 +354,7 @@ Las horas de 15:00 y 16:00 marcan el ritmo pleno, con unas 2.630 unidades por ho
 
 \fichapregunta{5}{Histórica}{¿Cuántas unidades buenas produjo cada turno el 20 de septiembre de 2026 en la Línea B de Empaque Maíz?}{D3.2}{\texttt{mes-history-mcp}}{Línea B de Empaque Maíz, 20 de septiembre de 2026, unidades buenas por turno: turno A 6.756; turno B 5.197; turno C 7.740.}
 
-\ejecucion{1}{\textcolor{blue}{[pendiente]}}{16,68}{3,54}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,99~s \;\textbullet\; \texttt{get\_count\_history} 1,53~s}{Estas son las unidades buenas (Outfeed) de la Línea B de Empaque Maíz en los turnos del 20 de septiembre de 2026:
+\ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{16,68}{3,54}{5/5/5}{\texttt{get\_count\_history} 1,99~s \;\textbullet\; \texttt{get\_count\_history} 1,53~s}{Estas son las unidades buenas (Outfeed) de la Línea B de Empaque Maíz en los turnos del 20 de septiembre de 2026:
 
 
 
@@ -378,7 +378,7 @@ El turno C es el que más produjo y el B el que menos, unas 2.500 unidades por d
 
 Puedo revisar los paros del turno B para ver por qué produjo menos.}
 
-\ejecucion{2}{\textcolor{blue}{[pendiente]}}{19,52}{3,98}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,64~s \;\textbullet\; \texttt{get\_count\_history} 2,33~s}{El 20 de septiembre de 2026, la Línea B de Empaque Maíz produjo estas unidades buenas (Outfeed) por turno:
+\ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{19,52}{3,98}{5/5/5}{\texttt{get\_count\_history} 1,64~s \;\textbullet\; \texttt{get\_count\_history} 2,33~s}{El 20 de septiembre de 2026, la Línea B de Empaque Maíz produjo estas unidades buenas (Outfeed) por turno:
 
 
 
@@ -408,7 +408,7 @@ Si en cambio necesitas el día calendario (00:00 a 24:00), el total es 19.754 un
 \item Solo 5.575 de las 7.740 unidades del turno C del 20, las que se hicieron antes de medianoche.
 \end{itemize}}
 
-\ejecucion{3}{\textcolor{blue}{[pendiente]}}{19,4}{3,38}{\textcolor{blue}{[C/P/S]}}{\texttt{get\_count\_history} 1,73~s \;\textbullet\; \texttt{get\_count\_history} 1,64~s}{Para la Línea B de Empaque Maíz, estos son los turnos que \textbf{empezaron} el 20 de septiembre de 2026 (unidades buenas, conteo Outfeed de la línea, hora de Colombia):
+\ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{19,4}{3,38}{4/5/5}{\texttt{get\_count\_history} 1,73~s \;\textbullet\; \texttt{get\_count\_history} 1,64~s}{Para la Línea B de Empaque Maíz, estos son los turnos que \textbf{empezaron} el 20 de septiembre de 2026 (unidades buenas, conteo Outfeed de la línea, hora de Colombia):
 
 
 
@@ -435,6 +435,8 @@ Cada turno se cuenta completo, aunque el C termine el 21 de septiembre. Si se to
 
 
 ¿Quiere que revise el desperdicio o los paros de esos turnos para ver por qué el B quedó por debajo?}
+
+\notaeval{En E3 la coherencia es 4: la alternativa por día calendario se da solo con dos componentes (2.226 y 5.575), sin el total ni los turnos A y B, y queda a medias.}
 
 \fichapregunta{6}{Histórica}{¿Qué órdenes de trabajo se ejecutaron en la Línea B de Empaque Trigo entre el 15 y el 21 de septiembre de 2026?}{D1.3}{\texttt{mes-history-mcp}}{Línea B de Empaque Trigo, corridas iniciadas del 15 al 21 de septiembre de 2026: 21 órdenes (WO02, WO06, WO10, WO15, WO20, WO21, WO25, WO31, WO36, WO39, WO43, WO47, WO52, WO56, WO59, WO63, WO66, WO72, WO75, WO79, WO84). Iniciadas el 21: WO75, WO79, WO84. Terminan después del 21: WO84.}
 
