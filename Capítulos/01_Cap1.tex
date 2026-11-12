@@ -140,10 +140,13 @@ El sistema LLM debe comprender consultas en lenguaje natural que incluyan térmi
 
 \textbf{Desafíos identificados:}
 
+\phantomsection\label{des:D1.1}
 \textit{D1.1 - Ambigüedad en términos técnicos:} Palabras como \textit{disponibilidad}, \textit{rendimiento} o \textit{producción} pueden tener diferentes significados según el contexto en el que se utilicen. Por ejemplo, \textit{disponibilidad} puede referirse a si la máquina está funcionando (uptime) o a si hay material disponible para producir. De manera similar, \textit{rendimiento} puede aludir al rendimiento de una máquina individual (unidades producidas por hora) o al rendimiento global de una línea de producción. El LLM debe entender el contexto de la pregunta para interpretar correctamente el término y acceder a las variables apropiadas del namespace. Esto requiere no solo procesamiento de lenguaje natural, sino también conocimiento del dominio industrial y la semántica de las métricas de manufactura.
 
+\phantomsection\label{des:D1.2}
 \textit{D1.2 - Comprensión de relaciones entre variables:} Preguntas como \textit{¿por qué bajó la producción ayer?} requieren analizar múltiples factores que pueden estar relacionados: paros de máquinas no programados, incremento en tiempos de ciclo, cambios de producto que requieren ajustes, o falta de material en los silos. El LLM debe saber qué variables están relacionadas causalmente y buscar correlaciones entre ellas, no solo reportar un dato aislado. Este desafío implica que el modelo debe tener capacidad de razonamiento sobre las relaciones funcionales entre diferentes componentes del sistema productivo y cómo estas interacciones afectan los KPIs resultantes.
 
+\phantomsection\label{des:D1.3}
 \textit{D1.3 - Mapeo de lenguaje natural a la estructura del namespace:} El usuario puede utilizar referencias ambiguas como \textit{la empacadora de trigo} sin especificar cuál de las 4 empacadoras del área de trigo se está consultando. De manera similar, expresiones como \textit{la línea A} pueden referirse a Línea A de Trigo o Línea A de Maíz. El LLM debe ser capaz de pedir aclaraciones cuando sea necesario (\textit{¿Te refieres a la Línea 1 del área de Trigo o de Maíz?}) o usar el contexto previo de la conversación para resolver la ambigüedad de forma inteligente. Esto requiere mantener estado conversacional y aplicar heurísticas de resolución de referencias.
 
 \subsubsection{R2: Generación de reportes personalizados con análisis comparativos}
@@ -154,8 +157,10 @@ La herramienta debe generar reportes que no solo muestren números crudos, sino 
 
 \textbf{Desafíos identificados:}
 
+\phantomsection\label{des:D2.1}
 \textit{D2.1 - Identificar qué comparaciones son relevantes:} No todas las comparaciones tienen sentido o aportan valor en el contexto de manufactura. Por ejemplo, comparar la producción de un lunes con un domingo puede ser engañoso si los turnos de fin de semana operan con menor personal o producen referencias diferentes. El LLM debe incorporar lógica operacional para saber qué comparaciones aportan valor en cada contexto. Esto incluye comparaciones con el mismo día de la semana anterior (para eliminar efectos de calendario), comparaciones entre líneas que producen el mismo producto (para identificar ineficiencias relativas), y comparaciones contra las metas establecidas en las órdenes de producción del MES.
 
+\phantomsection\label{des:D2.2}
 \textit{D2.2 - Combinar datos de múltiples fuentes:} Para generar reportes completos y contextualizados, el LLM debe integrar información de tres fuentes principales:
 
 \begin{itemize}
@@ -166,6 +171,7 @@ La herramienta debe generar reportes que no solo muestren números crudos, sino 
 
 La integración coherente de estas fuentes permite que el LLM genere análisis completos. Por ejemplo: \textit{La producción de hoy está 15\% por debajo del mismo día de la semana pasada (BD histórica), la Línea A de Trigo está trabajando en la WO \#12345 presentación kilo con una meta de 5000 unidades (MES), y actualmente la Empacadora 2 está en estado de alarma desde hace 10 minutos (UNS), lo que explica la desviación observada}. Este desafío requiere que el LLM orqueste consultas a múltiples sistemas, reconcilie diferencias en granularidad temporal entre fuentes, y sintetice la información de forma coherente.
 
+\phantomsection\label{des:D2.3}
 \textit{D2.3 - Adaptar el reporte según el perfil del usuario:} Diferentes stakeholders en la organización tienen necesidades de información distintas:
 
 \begin{itemize}
@@ -184,6 +190,7 @@ El sistema debe poder consultar tanto los datos en tiempo real disponibles en el
 
 \textbf{Desafíos identificados:}
 
+\phantomsection\label{des:D3.1}
 \textit{D3.1 - Generar consultas eficientes a la base de datos:} El LLM debe traducir preguntas en lenguaje natural a consultas de base de datos (SQL) que sean eficientes y no generen carga computacional excesiva. Por ejemplo, si el usuario pregunta \textit{¿cuál fue el promedio de producción del último mes?}, el LLM debe generar una query que utilice tablas agregadas pre-calculadas o índices apropiados, en lugar de escanear millones de registros individuales. Esto requiere que el LLM tenga conocimiento de:
 \begin{itemize}
     \item El esquema de la base de datos (tablas, columnas, relaciones)
@@ -194,6 +201,7 @@ El sistema debe poder consultar tanto los datos en tiempo real disponibles en el
 
 La generación de queries SQL eficientes es crítica para garantizar tiempos de respuesta aceptables, especialmente cuando se consultan periodos extensos con alta densidad de datos.
 
+\phantomsection\label{des:D3.2}
 \textit{D3.2 - Seleccionar la granularidad adecuada de los datos:} Los datos industriales se almacenan con diferentes frecuencias de muestreo dependiendo de la variable y el propósito. Para periodos cortos de tiempo (última hora, último turno) es apropiado usar datos de alta frecuencia que capturan cada evento significativo. Sin embargo, para periodos largos (último mes, último trimestre) es más eficiente usar agregaciones por hora, por turno, o por día. El LLM debe decidir automáticamente qué nivel de detalle (granularidad) usar según el rango temporal que especifica el usuario en su consulta. Por ejemplo:
 \begin{itemize}
     \item "Producción en los últimos 30 minutos" → datos con granularidad de minutos

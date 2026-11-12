@@ -1,3 +1,4 @@
+\providecommand{\desafio}[1]{\hyperref[des:#1]{#1}}
 \section{Capítulo 5: Validación del sistema integrado}
 \label{validacionsistema}
 
@@ -8,7 +9,7 @@ Este capítulo responde al quinto objetivo específico, que busca validar el fun
 
 La validación de desempeño mide el comportamiento del sistema sobre un conjunto de preguntas de referencia. Cada métrica cubre un aspecto distinto. La precisión y la tasa de alucinaciones indican si la respuesta es correcta y está respaldada por los datos del UNS, la latencia indica cuánto espera el usuario, y la calidad semántica indica si la respuesta es coherente y suficiente para el contexto industrial.
 
-La validación de cumplimiento verifica si el sistema resuelve los desafíos asociados a los tres requerimientos de la Sección~\ref{requerimientosdesafios}. Las métricas no reemplazan esa verificación, sino que la alimentan. Cada pregunta del conjunto se asocia al desafío que pone a prueba, y el veredicto sobre el desafío se apoya en los resultados de esas preguntas. El desafío de eficiencia de las consultas (D3.1) se verifica por el diseño de las Tools y no por una medición, como se explica en la Sección~\ref{cumplimientorequerimientos}. La adaptación del reporte al perfil del usuario (D2.3) no se implementó, por lo que queda fuera de la validación y se traslada al trabajo futuro.
+La validación de cumplimiento verifica si el sistema resuelve los desafíos asociados a los tres requerimientos de la Sección~\ref{requerimientosdesafios}. Las métricas no reemplazan esa verificación, sino que la alimentan. Cada pregunta del conjunto se asocia al desafío que pone a prueba, y el veredicto sobre el desafío se apoya en los resultados de esas preguntas. El desafío de eficiencia de las consultas (\desafio{D3.1}) se verifica por el diseño de las Tools y no por una medición, como se explica en la Sección~\ref{cumplimientorequerimientos}. La adaptación del reporte al perfil del usuario (\desafio{D2.3}) no se implementó, por lo que queda fuera de la validación y se traslada al trabajo futuro.
 
 \subsection{Diseño de la evaluación}
 \label{disenoevaluacion}
@@ -17,11 +18,11 @@ La validación de cumplimiento verifica si el sistema resuelve los desafíos aso
 
 Las pruebas se ejecutaron en un entorno controlado que reproduce la estructura del caso de estudio. Los valores de los tags del Tag Provider y los registros de la base \texttt{mes\_core} se generaron con scripts. La jerarquía, las unidades, la nomenclatura y las reglas de negocio corresponden al caso real, y las corridas simuladas respetan las tasas estándar de producción de cada línea. Los valores, en cambio, no provienen de una planta en operación. Esto tiene una ventaja y un límite. La ventaja es que la respuesta correcta de cada pregunta se conoce con exactitud, porque se calcula directamente sobre los datos cargados. El límite es que los resultados no describen el comportamiento del sistema ante el ruido, los vacíos y las irregularidades de datos reales.
 
-El sistema evaluado está compuesto por Claude Desktop como cliente, los servidores \texttt{uns-mcp} y \texttt{mes-history-mcp}, los endpoints del Web Dev Module en Ignition y la base PostgreSQL \texttt{mes\_core}, tal como se describió en el Capítulo~\ref{implementacionintegracion}. El cliente fue Claude Desktop en su versión 4.23118.1.0, con el modelo Opus 5.5 en la configuración «Medio». Cada una de las 25 preguntas del banco se ejecutó tres veces, para un total de 75 ejecuciones, con el fin de observar la variabilidad de las respuestas del modelo ante una misma pregunta. Todas las ejecuciones usaron el mismo modelo y la misma configuración, y cada una se hizo en una conversación nueva en modo incógnito, para que el modelo no conservara memoria de las ejecuciones anteriores ni de otras conversaciones.
+El sistema evaluado está compuesto por Claude Desktop como cliente (versión 4.23118.1.0), con el modelo Opus 5.5 en la configuración «Medio», los servidores \texttt{uns-mcp} y \texttt{mes-history-mcp}, los endpoints del Web Dev Module en Ignition y la base PostgreSQL \texttt{mes\_core}, tal como se describió en el Capítulo~\ref{implementacionintegracion}. Todas las ejecuciones usaron el mismo modelo y la misma configuración, de modo que las diferencias entre respuestas no se deben al cliente.
 
 \subsubsection{Banco de preguntas}
 
-El banco tiene 25 preguntas diseñadas a partir de los requerimientos de la Sección~\ref{requerimientosdesafios}. Cada una tiene una respuesta de referencia y se etiqueta con su categoría, la Tool que debería usar el modelo y el desafío que pone a prueba. La Tabla~\ref{tab:banco_resumen} resume las seis categorías. El listado completo está en el Anexo~\ref{anexo:banco_preguntas}.
+El banco tiene 25 preguntas diseñadas a partir de los requerimientos de la Sección~\ref{requerimientosdesafios}. Cada una tiene una respuesta de referencia y se etiqueta con su categoría, la Tool que debería usar el modelo y el desafío que pone a prueba (Sección~\ref{requerimientosdesafios}). La Tabla~\ref{tab:banco_resumen} resume las seis categorías. El listado completo está en el Anexo~\ref{anexo:banco_preguntas}.
 
 \begin{table}[H]
 \centering
@@ -88,9 +89,30 @@ Suficiencia & Faltan datos esenciales. & Da los datos principales sin unidades o
 
 En las preguntas ambiguas y sin datos, pedir una aclaración, cubrir explícitamente las interpretaciones posibles o reconocer que no hay datos se califica como pertinente y suficiente. En ellas el comportamiento correcto no es entregar un dato clave, por lo que el F1 no se calcula y la precisión mide si el modelo se comportó como se esperaba.
 
+\subsubsection{Cálculo de las métricas}
+\label{calculometricas}
+
+Esta subsección explica cómo se obtuvo cada valor de las tablas de resultados.
+
+\textit{Datos clave y precisión.} La respuesta de referencia de cada pregunta es una lista de datos clave, cada uno con su valor, su tipo y su tolerancia. Un conteo, un estado o un identificador debe coincidir exactamente; una razón, como el OEE y sus componentes, con una diferencia de hasta 0,5 puntos porcentuales; y una duración, con una diferencia de hasta un segundo. Por ejemplo, la pregunta~14 tiene tres datos clave: el número de paros no programados del 17 de septiembre, la duración del paro que más pesó y la hora en que ocurrió. Una ejecución es correcta cuando todos los datos clave que debía dar coinciden con la referencia. La precisión de una categoría es el cociente entre sus ejecuciones correctas y sus ejecuciones totales. En las preguntas ambiguas y sin datos no hay un dato clave que comparar, y la ejecución es correcta si el modelo se comportó como se esperaba: aclaró o cubrió las interpretaciones posibles, o reconoció que no había datos.
+
+\textit{F1.} El F1 se calcula sobre los datos clave individuales y no sobre las respuestas completas \cite{Powers2011Evaluation,Sokolova2009Measures}. Sea $E$ el número de datos clave esperados, $A$ el número de datos clave a los que la respuesta da un valor y $C$ el número de estos que coinciden con la referencia. La precisión de los datos es $P = C/A$, la exhaustividad es $R = C/E$, y el F1 es su media armónica:
+\begin{equation}
+F_1 = \frac{2PR}{P+R}.
+\end{equation}
+Un dato con valor erróneo reduce la precisión y la exhaustividad, y un dato omitido reduce solo la exhaustividad. Los valores de la Tabla~\ref{tab:res_precision} acumulan los datos de todas las ejecuciones de cada categoría. En las categorías tiempo real, histórica, combinada y causal hay 132 datos clave esperados, el sistema dio valor a 131 y acertó 126, lo que da $P = 0{,}962$, $R = 0{,}955$ y $F_1 = 0{,}958$. Los cinco datos erróneos son los cuatro de la pregunta~6 en las ejecuciones 1 y 2 (la lista y el número de órdenes) y el número de órdenes de la ejecución 2 de la pregunta~25. El dato omitido es la hora exacta del paro en la ejecución 1 de la pregunta~14, que respondió solo la franja horaria. Como ejemplo, la referencia de la pregunta~25 pide dos datos, la orden actual (WO93) y el número de órdenes del 15 al 21 de septiembre (21). La ejecución 2 respondió WO93 y 18 órdenes, de modo que $E = 2$, $A = 2$ y $C = 1$: la ejecución es incorrecta y aporta un dato erróneo a su categoría.
+
+El F1 no cuenta como afirmaciones las cifras adicionales que el modelo agrega sin que se le pidan. Una versión automática que contara toda cifra de la respuesta penalizaría al modelo por dar contexto verdadero, y en este banco reducía la precisión de los datos a 0,59. Por eso $A$ se restringe a los datos clave, y las demás cifras se verifican aparte como parte de la tasa de alucinaciones.
+
+\textit{Alucinaciones.} Una alucinación es contenido que no está respaldado por la fuente \cite{Ji2023Hallucination}. En este trabajo la fuente son las salidas de las Tools y los datos cargados, y cada ejecución guarda sus llamadas a las Tools con los parámetros, la duración y la respuesta. Una respuesta se marcó como alucinación si afirmaba una cifra, un nombre, un estado o una causa que no aparecía en esas salidas ni en los datos. Un script señaló como candidatas las cifras de la respuesta ausentes de la referencia, y el autor las contrastó una a una con el historial y con las salidas de las Tools. Las hipótesis presentadas como tales, con expresiones como «puede que» o «conviene revisar», no se contaron. La tasa de una categoría es el cociente entre las respuestas marcadas y sus ejecuciones totales.
+
+\textit{Latencia.} La latencia se midió con un script que automatiza la interfaz de Claude Desktop. El script registra el instante en que envía la pregunta y el instante en que la respuesta queda completa, y su diferencia es la latencia de extremo a extremo, en segundos. El tiempo en servidores es la suma de las duraciones de las llamadas a las Tools que registraron los propios servidores MCP, y el resto corresponde al modelo y al cliente. Para cada categoría se informan el promedio, la mediana y el percentil 95, este último con interpolación lineal entre observaciones vecinas. El percentil alto describe las esperas más largas que percibe el usuario y que el promedio oculta \cite{Dean2013Tail}. Con entre 9 y 24 ejecuciones por categoría, el percentil 95 depende de una o dos ejecuciones y debe leerse como indicativo.
+
+\textit{Calidad semántica.} La coherencia, la pertinencia y la suficiencia se puntuaron de 1 a 5 con la rúbrica de la Tabla~\ref{tab:rubrica}, con independencia de que la respuesta fuera correcta: una respuesta incorrecta puede ser coherente y una correcta puede ser poco pertinente. La puntuación de una ejecución es el promedio de sus tres criterios y la de una categoría es el promedio de sus ejecuciones. Cada puntuación inferior a 5 se justifica en la nota de su pregunta en el Anexo~\ref{anexo:banco_preguntas}.
+
 \subsubsection{Procedimiento}
 
-Cada pregunta se ejecutó tres veces, cada una en una conversación nueva en modo incógnito, para observar la variabilidad de las respuestas del modelo sin que arrastrara memoria de ejecuciones anteriores. En total fueron 75 ejecuciones. Para cada una se registró la respuesta completa, la latencia y las Tools que invocó el modelo. La precisión y las alucinaciones se determinaron comparando la respuesta con la referencia, y la calidad semántica se puntuó con la rúbrica.
+Cada una de las 25 preguntas se ejecutó tres veces, para un total de 75 ejecuciones, con el fin de observar la variabilidad de las respuestas del modelo ante una misma pregunta. Cada ejecución se hizo en una conversación nueva en modo incógnito, para que el modelo no conservara memoria de las ejecuciones anteriores ni de otras conversaciones. Para cada una se registró la respuesta completa, la latencia y las Tools que invocó el modelo. La precisión y las alucinaciones se determinaron comparando la respuesta con la referencia y con las salidas de las Tools, y la calidad semántica se puntuó con la rúbrica. La Sección~\ref{calculometricas} detalla el cálculo.
 
 La rúbrica la aplicó el tutor técnico, que es también el autor de este trabajo y trabaja en DAUTOM, la empresa del caso de estudio, por lo que conoce el proceso evaluado. Esa coincidencia limita la evaluación cualitativa y se discute en la Sección~\ref{discusionvalidacion}. Las otras tres métricas no dependen del juicio del evaluador, porque se calculan contra los datos o se miden con instrumentación.
 
@@ -186,20 +208,61 @@ La puntuación promedio fue de 4,83 en coherencia, 4,28 en pertinencia y 4,96 en
 \subsubsection{Lectura de los resultados}
 \label{lecturaresultados}
 
-Las categorías de tiempo real, causal y sin datos tuvieron el 100~\% de respuestas correctas. Las históricas y las combinadas llegaron al 91,7~\% (22 de 24 y 11 de 12) y las ambiguas al 88,9~\% (8 de 9). Las cuatro respuestas incorrectas son la primera y la segunda ejecución de la pregunta~6, la segunda de la pregunta~25 y la primera de la pregunta~10. Ninguna se debió a una cifra inventada.
+Las categorías de tiempo real, causal y sin datos tuvieron el 100~\% de respuestas correctas. Las históricas y las combinadas llegaron al 91,7~\% (22 de 24 y 11 de 12) y las ambiguas al 88,9~\% (8 de 9). Las cuatro respuestas incorrectas se resumen en la Tabla~\ref{tab:errores}. Ninguna se debió a una cifra inventada.
 
-Tres de las cuatro tienen la misma causa: el defecto de la Tool \texttt{get\_production\_orders}, que deja fuera las órdenes que empiezan el último día del rango y que se describe en la sección siguiente. Aparece en la pregunta~6, que pedía las órdenes de una semana, y en la pregunta~25, que las combinaba con el estado actual de la línea. En la pregunta~25, las otras dos ejecuciones obtuvieron las 21 órdenes con una segunda consulta que extendía la fecha hasta el final del día.
+\begin{table}[H]
+\centering
+\caption{Respuestas incorrectas y su causa. Elaboración propia.}
+\label{tab:errores}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{1.4cm}p{1.2cm}p{1.2cm}p{2.7cm}p{2.1cm}p{4.2cm}}
+\hline
+\textbf{Pregunta} & \textbf{Ejec.} & \textbf{Desafío} & \textbf{Respuesta} & \textbf{Referencia} & \textbf{Causa} \\
+\hline
+P6 & 1 y 2 & \desafio{D1.3} & 18 órdenes & 21 órdenes & Filtro de fecha de la Tool de órdenes. \\
+P25 & 2 & \desafio{D2.2} & 18 órdenes & 21 órdenes & Filtro de fecha de la Tool de órdenes. \\
+P10 & 1 & \desafio{D1.3} & 11.796 unidades & 12.578 unidades & Producción por corridas iniciadas el día, y no por día calendario. \\
+\hline
+\end{tabular}
+\end{table}
 
-La cuarta, la primera ejecución de la pregunta~10, muestra otro tipo de diferencia. Para la Línea A de Empaque Maíz del 18 de septiembre respondió 11.796 unidades, la producción de las corridas iniciadas ese día, mientras que la referencia es 12.578, el conteo del día calendario. Ambas cifras proceden de Tools válidas: la de OEE agrupa por el inicio de la corrida y la de conteos agrupa por día calendario, y las descripciones de cada una lo dicen. La diferencia no es un error del modelo ni de una Tool, sino que «producción del día» admite dos definiciones. El banco fijó la de día calendario, que es la que usaron las demás respuestas, pero la pregunta pone en evidencia que el sistema debería explicitar cuál usa cuando el usuario no lo indica.
+Tres de las cuatro tienen la misma causa: el defecto de la Tool \texttt{get\_production\_orders}, que deja fuera las órdenes que empiezan el último día del rango. Aparece en la pregunta~6, que pedía las órdenes de una semana, y en la pregunta~25, que las combinaba con el estado actual de la línea. Se describe en la sección siguiente. En la pregunta~25, las otras dos ejecuciones obtuvieron las 21 órdenes con una segunda consulta que extendía la fecha hasta el final del día.
 
-La variabilidad entre ejecuciones fue baja. En 22 de las 25 preguntas las tres ejecuciones tuvieron el mismo veredicto, y las tres que difirieron (6, 10 y 25) se explican por la Tool de órdenes y por el criterio de conteo, no por un comportamiento aleatorio del modelo. En las preguntas ambiguas~9 y~11, el modelo reconoció que «la Línea A» y «la línea de maíz» admiten más de una interpretación y, en lugar de detenerse a preguntar, respondió para todas ellas y cerró ofreciendo precisar. La referencia aceptó esa conducta, porque no elige una interpretación en silencio.
+La cuarta, la ejecución 1 de la pregunta~10, muestra otro tipo de diferencia. Para la Línea A de Empaque Maíz del 18 de septiembre respondió 11.796 unidades, la producción de las corridas iniciadas ese día, mientras que la referencia es 12.578, el conteo del día calendario. Ambas cifras proceden de Tools válidas: la de OEE agrupa por el inicio de la corrida y la de conteos agrupa por día calendario, y la descripción de cada una lo indica. No es un error del modelo ni de una Tool, sino que «producción del día» admite dos definiciones. El banco fijó la de día calendario, que usaron las demás respuestas. La pregunta muestra que el sistema debería explicitar cuál usa cuando el usuario no la indica.
 
-\subsubsection{Caso de la pregunta 6: filtro de fecha en la Tool de órdenes}
+La variabilidad entre ejecuciones fue baja. En 22 de las 25 preguntas las tres ejecuciones tuvieron el mismo veredicto, y las tres que difirieron (6, 10 y 25) se explican por la Tool de órdenes y por el criterio de conteo, no por un comportamiento aleatorio del modelo.
+
+En las preguntas ambiguas~9 y~11, el modelo reconoció que «la Línea A» y «la línea de maíz» admiten más de una interpretación y, en lugar de detenerse a preguntar, respondió para todas ellas y cerró ofreciendo precisar. La referencia aceptó esa conducta, porque no elige una interpretación en silencio. Esto responde al desafío \desafio{D1.3} de mapeo del lenguaje natural al namespace.
+
+\subsubsection{Defecto del filtro de fecha en la Tool de órdenes}
 \label{casop6}
 
-La pregunta 6 pedía las órdenes de trabajo de la Línea B de Empaque Trigo entre el 15 y el 21 de septiembre de 2026. La referencia, calculada con SQL directo, son 21 órdenes, tres de ellas iniciadas el 21. En dos de las tres ejecuciones el sistema respondió 18 órdenes y en la tercera respondió las 21 (Anexo~\ref{anexo:banco_preguntas}). La causa no fue una interpretación errónea del modelo, sino un defecto de la Tool \texttt{get\_production\_orders}: su descripción declara que la fecha final del rango es inclusiva, pero la consulta compara el inicio programado de cada orden con esa fecha, y cuando se entrega sin hora se evalúa como las 00:00 del día indicado. Las órdenes que empiezan durante ese último día quedan fuera del resultado. Las otras Tools de consulta histórica del mismo servidor sí extienden la fecha final hasta el cierre del día, por lo que el comportamiento de la Tool de órdenes no era uniforme con el resto.
+La pregunta~6 pedía las órdenes de trabajo de la Línea B de Empaque Trigo entre el 15 y el 21 de septiembre de 2026 y pone a prueba el desafío \desafio{D1.3}. La referencia, calculada con SQL directo, son 21 órdenes, tres de ellas iniciadas el 21. Dos de las tres ejecuciones respondieron 18 órdenes y la tercera respondió las 21 (Anexo~\ref{anexo:banco_preguntas}).
 
-Las dos respuestas incorrectas coinciden con lo que la Tool devolvió, por lo que no se calificaron como alucinación. Una de ellas llegó a sospechar que la consulta se detenía a las 00:00 del 21, pero no tenía forma de comprobarlo. La tercera ejecución obtuvo las 21 órdenes con dos consultas a la Tool. El defecto no se corrigió durante la evaluación, para no alterar las ejecuciones ya medidas, y queda registrado como una corrección pendiente de la Tool. Es un resultado útil de la validación: el banco de preguntas, con referencias calculadas fuera de los servidores evaluados, permitió detectar un error que el uso informal del sistema no habría mostrado.
+La causa no fue una interpretación errónea del modelo, sino un defecto de la Tool \texttt{get\_production\_orders}. Su descripción declara que la fecha final del rango es inclusiva, pero la consulta compara el inicio programado de cada orden con esa fecha. Cuando la fecha se entrega sin hora se evalúa como las 00:00 de ese día, y las órdenes que empiezan después quedan fuera del resultado. La Tabla~\ref{tab:defecto_fecha} muestra el efecto sobre el mismo rango.
+
+\begin{table}[H]
+\centering
+\caption{Efecto de la fecha final en la Tool de órdenes, para el rango del 15 al 21 de septiembre de 2026. Elaboración propia.}
+\label{tab:defecto_fecha}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lc}
+\hline
+\textbf{Fecha final entregada a la Tool} & \textbf{Órdenes devueltas} \\
+\hline
+\texttt{2026-09-21} & 18 \\
+\texttt{2026-09-21T23:59:59} & 21 \\
+\hline
+\end{tabular}
+\end{table}
+
+Las otras Tools de consulta histórica del mismo servidor sí extienden la fecha final hasta el cierre del día, por lo que el comportamiento de la Tool de órdenes no era uniforme con el resto.
+
+Las dos respuestas incorrectas coinciden con lo que la Tool devolvió, por lo que no se calificaron como alucinación. Una de ellas llegó a sospechar que la consulta se detenía a las 00:00 del 21, pero no tenía forma de comprobarlo. La tercera obtuvo las 21 órdenes con dos consultas. El mismo defecto reaparece en la pregunta~25, que pone a prueba el desafío \desafio{D2.2}: una de sus tres ejecuciones respondió 18 órdenes por la misma causa.
+
+El defecto no se corrigió durante la evaluación, para no alterar las ejecuciones ya medidas, y queda registrado como una corrección pendiente de la Tool. Es un resultado útil de la validación: el banco de preguntas, con referencias calculadas fuera de los servidores evaluados, permitió detectar un error que el uso informal del sistema no habría mostrado.
 
 \subsection{Cumplimiento de los desafíos}
 \label{cumplimientorequerimientos}
@@ -216,23 +279,23 @@ La Tabla~\ref{tab:cumplimiento} contrasta cada desafío de la Sección~\ref{requ
 \hline
 \textbf{Desafío} & \textbf{Qué exige} & \textbf{Preguntas} & \textbf{Resultado} & \textbf{Lo observado} \\
 \hline
-D1.1 & Interpretar términos técnicos ambiguos & P3, P20 y P21 & 9 de 9 & Asoció términos como paro no programado, OEE o unidad de conteo con la variable correcta. \\
-D1.2 & Relacionar variables para explicar un cambio & P12 a P14 & 9 de 9 & Relacionó paros, rendimiento y calidad, con más llamadas a las Tools y la menor coherencia (4,44). \\
-D1.3 & Resolver referencias incompletas a línea, celda o área & P6, P9 a P11, P18 y P19 & 15 de 18 & Las referencias se resolvieron bien. Los tres fallos vienen del filtro de fecha de la Tool de órdenes (P6) y del criterio de conteo del día (P10). \\
-D2.1 & Elegir comparaciones relevantes & P8, P22 y P24 & 9 de 9 & Comparó entre líneas y contra el histórico, y advirtió que una corrida corta no es comparable con una semana completa. \\
-D2.2 & Combinar el UNS y el histórico & P22 a P25 & 11 de 12 & Cruzó las dos fuentes sin errores propios. El fallo (P25) viene del filtro de fecha de la Tool de órdenes. \\
-D2.3 & Adaptar el reporte al perfil del usuario & No aplica & No cumplido & No se implementó y se traslada al trabajo futuro. \\
-D3.1 & Consultas eficientes & No aplica & Cumplido por diseño & Consultas parametrizadas, agregación en SQL y límite de 1000 filas. \\
-D3.2 & Elegir la granularidad según el rango & P1, P2, P4, P5 y P7 & 15 de 15 & Usó la agregación por hora, turno o día que correspondía a cada rango pedido. \\
+\desafio{D1.1} & Interpretar términos técnicos ambiguos & P3, P20 y P21 & 9 de 9 & Asoció términos como paro no programado, OEE o unidad de conteo con la variable correcta. \\
+\desafio{D1.2} & Relacionar variables para explicar un cambio & P12 a P14 & 9 de 9 & Relacionó paros, rendimiento y calidad, con más llamadas a las Tools y la menor coherencia (4,44). \\
+\desafio{D1.3} & Resolver referencias incompletas a línea, celda o área & P6, P9 a P11, P18 y P19 & 15 de 18 & Las referencias se resolvieron bien. Los tres fallos vienen del filtro de fecha de la Tool de órdenes (P6) y del criterio de conteo del día (P10). \\
+\desafio{D2.1} & Elegir comparaciones relevantes & P8, P22 y P24 & 9 de 9 & Comparó entre líneas y contra el histórico, y advirtió que una corrida corta no es comparable con una semana completa. \\
+\desafio{D2.2} & Combinar el UNS y el histórico & P22 a P25 & 11 de 12 & Cruzó las dos fuentes sin errores propios. El fallo (P25) viene del filtro de fecha de la Tool de órdenes. \\
+\desafio{D2.3} & Adaptar el reporte al perfil del usuario & No aplica & No cumplido & No se implementó y se traslada al trabajo futuro. \\
+\desafio{D3.1} & Consultas eficientes & No aplica & Cumplido por diseño & Consultas parametrizadas, agregación en SQL y límite de 1000 filas. \\
+\desafio{D3.2} & Elegir la granularidad según el rango & P1, P2, P4, P5 y P7 & 15 de 15 & Usó la agregación por hora, turno o día que correspondía a cada rango pedido. \\
 \hline
 \end{tabular}
 \end{table}
 
-De los ocho desafíos, cuatro se cumplieron sin ningún fallo (D1.1, D1.2, D2.1 y D3.2), dos se cumplieron con una salvedad (D1.3 y D2.2), uno se cumple por diseño (D3.1) y uno no se implementó (D2.3). Las dos salvedades tienen causas concretas y ajenas a la capacidad del modelo para entender la consulta: un defecto de la Tool de órdenes, que afecta a D1.3 en la pregunta~6 y a D2.2 en la pregunta~25, y el criterio con que se cuenta la producción de un día, que afecta a D1.3 en la pregunta~10.
+De los ocho desafíos, cuatro se cumplieron sin ningún fallo (\desafio{D1.1}, \desafio{D1.2}, \desafio{D2.1} y \desafio{D3.2}), dos se cumplieron con una salvedad (\desafio{D1.3} y \desafio{D2.2}), uno se cumple por diseño (\desafio{D3.1}) y uno no se implementó (\desafio{D2.3}). Las dos salvedades tienen causas concretas y ajenas a la capacidad del modelo para entender la consulta: un defecto de la Tool de órdenes, que afecta a \desafio{D1.3} en la pregunta~6 y a \desafio{D2.2} en la pregunta~25, y el criterio con que se cuenta la producción de un día, que afecta a \desafio{D1.3} en la pregunta~10.
 
-El desafío D3.1 pide consultas eficientes a la base de datos. El sistema lo resuelve por diseño y no con SQL generado por el modelo. Las Tools ejecutan consultas parametrizadas sobre una lista cerrada de tablas, agregan en SQL, limitan cada respuesta a 1000 filas y trabajan con un usuario de solo lectura, como se describió en las Secciones~\ref{alcanceseguridadhistorico} y~\ref{granularidadconsulta}. Por eso su verificación se apoya en esa descripción y en los tiempos de la Tabla~\ref{tab:res_latencia}, y no en una pregunta específica.
+El desafío \desafio{D3.1} pide consultas eficientes a la base de datos. El sistema lo resuelve por diseño y no con SQL generado por el modelo. Las Tools ejecutan consultas parametrizadas sobre una lista cerrada de tablas, agregan en SQL, limitan cada respuesta a 1000 filas y trabajan con un usuario de solo lectura, como se describió en las Secciones~\ref{alcanceseguridadhistorico} y~\ref{granularidadconsulta}. Por eso su verificación se apoya en esa descripción y en los tiempos de la Tabla~\ref{tab:res_latencia}, y no en una pregunta específica.
 
-El desafío D2.3 no se cumple porque la adaptación del reporte según el perfil del usuario no se implementó. Con esto, los requerimientos R1 y R3 quedan satisfechos y R2 se satisface en parte, por la ausencia de D2.3.
+El desafío \desafio{D2.3} no se cumple porque la adaptación del reporte según el perfil del usuario no se implementó. Con esto, los requerimientos R1 y R3 quedan satisfechos y R2 se satisface en parte, por la ausencia de D2.3.
 
 \subsection{Discusión y limitaciones}
 \label{discusionvalidacion}
