@@ -1,4 +1,3 @@
-\providecommand{\desafio}[1]{\hyperref[des:#1]{#1}}
 \section{Capítulo 5: Validación del sistema integrado}
 \label{validacionsistema}
 
@@ -295,7 +294,7 @@ De los ocho desafíos, cuatro se cumplieron sin ningún fallo (\desafio{D1.1}, \
 
 El desafío \desafio{D3.1} pide consultas eficientes a la base de datos. El sistema lo resuelve por diseño y no con SQL generado por el modelo. Las Tools ejecutan consultas parametrizadas sobre una lista cerrada de tablas, agregan en SQL, limitan cada respuesta a 1000 filas y trabajan con un usuario de solo lectura, como se describió en las Secciones~\ref{alcanceseguridadhistorico} y~\ref{granularidadconsulta}. Por eso su verificación se apoya en esa descripción y en los tiempos de la Tabla~\ref{tab:res_latencia}, y no en una pregunta específica.
 
-El desafío \desafio{D2.3} no se cumple porque la adaptación del reporte según el perfil del usuario no se implementó. Con esto, los requerimientos R1 y R3 quedan satisfechos y R2 se satisface en parte, por la ausencia de D2.3.
+El desafío \desafio{D2.3} no se cumple porque la adaptación del reporte según el perfil del usuario no se implementó. Con esto, los requerimientos \req{R1} y \req{R3} quedan satisfechos y \req{R2} se satisface en parte, por la ausencia de D2.3.
 
 \subsection{Discusión y limitaciones}
 \label{discusionvalidacion}

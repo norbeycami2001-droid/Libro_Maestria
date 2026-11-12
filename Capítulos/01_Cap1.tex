@@ -133,6 +133,7 @@ La arquitectura de almacenamiento está diseñada para mantener la integridad de
 A continuación se describe en detalle cada requerimiento identificado y los desafíos técnicos asociados a su implementación.
 
 \subsubsection{R1: Interpretación de consultas en lenguaje natural con conocimiento técnico del dominio}
+\label{req:R1}
 
 \textbf{Descripción del requerimiento:}
 
@@ -150,6 +151,7 @@ El sistema LLM debe comprender consultas en lenguaje natural que incluyan térmi
 \textit{D1.3 - Mapeo de lenguaje natural a la estructura del namespace:} El usuario puede utilizar referencias ambiguas como \textit{la empacadora de trigo} sin especificar cuál de las 4 empacadoras del área de trigo se está consultando. De manera similar, expresiones como \textit{la línea A} pueden referirse a Línea A de Trigo o Línea A de Maíz. El LLM debe ser capaz de pedir aclaraciones cuando sea necesario (\textit{¿Te refieres a la Línea 1 del área de Trigo o de Maíz?}) o usar el contexto previo de la conversación para resolver la ambigüedad de forma inteligente. Esto requiere mantener estado conversacional y aplicar heurísticas de resolución de referencias.
 
 \subsubsection{R2: Generación de reportes personalizados con análisis comparativos}
+\label{req:R2}
 
 \textbf{Descripción del requerimiento:}
 
@@ -183,6 +185,7 @@ La integración coherente de estas fuentes permite que el LLM genere análisis c
 El sistema debe ser capaz de ajustar automáticamente el contenido, nivel de detalle, métricas presentadas y formato de salida según el perfil del usuario que realiza la consulta. Esto implica implementar perfiles de usuario con permisos y preferencias diferenciadas.
 
 \subsubsection{R3: Acceso eficiente a datos históricos y en tiempo real}
+\label{req:R3}
 
 \textbf{Descripción del requerimiento:}
 

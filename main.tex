@@ -38,6 +38,11 @@
 \usepackage{booktabs,enumitem,needspace,array,setspace,colortbl}
 \usepackage[most]{tcolorbox}
 \definecolor{azulanexo}{HTML}{1F3A5F}\definecolor{tblhead}{HTML}{DCE5F0}\definecolor{tblzebra}{HTML}{F4F7FB}
+% Enlaces internos
+\hypersetup{colorlinks=true,linkcolor=azulanexo,citecolor=azulanexo,urlcolor=azulanexo}
+\newcommand{\desafio}[1]{\hyperref[des:#1]{#1}}
+\newcommand{\req}[1]{\hyperref[req:#1]{#1}}
+\newcommand{\desafioblanco}[1]{\hyperref[des:#1]{\textcolor{white}{#1}}}
 \newtcolorbox{fichap}[3]{enhanced,breakable,colback=azulanexo!5,colframe=azulanexo,colbacktitle=azulanexo,coltitle=white,boxrule=0.6pt,arc=2pt,
   left=5pt,right=5pt,top=3pt,bottom=3pt,fonttitle=\bfseries\small,
   title={Pregunta #1\hfill{\normalfont #2 \;\textbullet\; #3}},before skip=10pt,after skip=3pt}

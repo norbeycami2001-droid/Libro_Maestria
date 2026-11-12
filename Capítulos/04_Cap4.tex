@@ -17,7 +17,7 @@ justificación de este trabajo. Elaboración propia}
 \label{fig:flujo_uns_llm}
 \end{figure}
 
-La Figura~\ref{fig:mcp_lista_blanca} simplifica dos aspectos que este capítulo desarrolla en detalle. El primero es cómo accede el Servidor MCP al Tag Provider: hacerlo de forma directa expondría toda la superficie del Gateway de Ignition, en contravía del alcance mínimo definido en la Sección~\ref{seleccionmecanismo}. Por eso se construyó una capa intermedia de endpoints sobre el Web Dev Module de Ignition, que expone únicamente los contextos MES, Line, ERP y Edge diseñados en el Capítulo~\ref{tecnicasdiseñouns} y que se documenta en la Sección~\ref{capaendpoints}. El segundo es que la figura solo contempla el UNS en tiempo real, y deja sin resolver el requerimiento R3 identificado en el Capítulo~\ref{cap:caso_estudio}
+La Figura~\ref{fig:mcp_lista_blanca} simplifica dos aspectos que este capítulo desarrolla en detalle. El primero es cómo accede el Servidor MCP al Tag Provider: hacerlo de forma directa expondría toda la superficie del Gateway de Ignition, en contravía del alcance mínimo definido en la Sección~\ref{seleccionmecanismo}. Por eso se construyó una capa intermedia de endpoints sobre el Web Dev Module de Ignition, que expone únicamente los contextos MES, Line, ERP y Edge diseñados en el Capítulo~\ref{tecnicasdiseñouns} y que se documenta en la Sección~\ref{capaendpoints}. El segundo es que la figura solo contempla el UNS en tiempo real, y deja sin resolver el requerimiento \req{R3} identificado en el Capítulo~\ref{cap:caso_estudio}
 (acceso eficiente a datos históricos y en tiempo real). La Sección~\ref{accesodatoshistoricos} añade una segunda fuente de datos, la base de datos histórica documentada en el Capítulo~\ref{cap:caso_estudio}, a la que el LLM accede mediante un segundo servidor MCP independiente del que atiende el UNS.
 
 El resto del capítulo desarrolla estas dos piezas, describe cómo se contextualiza el modelo en cada servidor (Secciones~\ref{contextualizacionmodelouns} y
@@ -260,13 +260,13 @@ servidor conectado en Claude Desktop con sus Tools.
 \label{justificacionhistorico}
 
 El servidor \texttt{uns-mcp} resuelve el acceso en tiempo real a la planta: el valor actual de
-cualquier tag de \texttt{UNS\_Molinera}, con su contexto semántico. El requerimiento R3
+cualquier tag de \texttt{UNS\_Molinera}, con su contexto semántico. El requerimiento \req{R3}
 identificado en el Capítulo~\ref{cap:caso_estudio} pide algo más amplio: acceso eficiente
 tanto al dato en tiempo real como al histórico. El Tag Provider, por diseño, no conserva ese
 histórico. Quien lo conserva es el esquema relacional \texttt{mes\_core} de una base de datos
 PostgreSQL, que el módulo MES de la planta usa para registrar corridas de producción, eventos
 de paro y órdenes de trabajo. Ese esquema, y no la arquitectura UNS, es la fuente natural del
-segundo tipo de acceso que pide R3. En lugar de forzar ese histórico dentro del Tag Provider, o de hacer que \texttt{uns-mcp}
+segundo tipo de acceso que pide \req{R3}. En lugar de forzar ese histórico dentro del Tag Provider, o de hacer que \texttt{uns-mcp}
 también hable con PostgreSQL, se construyó un segundo servidor MCP dedicado exclusivamente a
 esta fuente.
 
@@ -364,7 +364,7 @@ Sección~\ref{contextualizacionmodelomeshistory}.
 \subsubsection{Granularidad según el rango de consulta}
 \label{granularidadconsulta}
 
-El desafío D3.2 del Capítulo~\ref{cap:caso_estudio} pide que el sistema use datos finos
+El desafío \desafio{D3.2} del Capítulo~\ref{cap:caso_estudio} pide que el sistema use datos finos
 para periodos cortos y datos agregados para periodos largos, sin que el usuario lo
 indique. Para cumplirlo, \texttt{get\_oee\_history}, \texttt{get\_downtime\_events} y
 \texttt{get\_count\_history} reciben el parámetro opcional \texttt{granularity}, con los
@@ -505,7 +505,7 @@ El LLM combina ambas respuestas en una sola salida. Ninguno de los dos servidore
 de la existencia del otro: cada uno atiende su fuente de datos con su propio modelado
 semántico, y es el LLM quien integra el resultado. El ejemplo muestra que la arquitectura de
 dos servidores independientes descrita en la Sección~\ref{conexionbdhistorica} cumple el
-requerimiento R3 (acceso eficiente tanto al dato en tiempo real como al histórico) sin que
+requerimiento \req{R3} (acceso eficiente tanto al dato en tiempo real como al histórico) sin que
 las dos fuentes tengan que converger en un único punto de acceso. La
 Figura~\ref{fig:flujo_integrado_chat} muestra esta consulta ejecutada en Claude Desktop, y el inicio de la respuesta. La transcripción completa de la conversación en la que se observa toda la respuesta es presentada en el \hyperref[anexo:conversacion_flujo]{Anexo~A}. 
 
@@ -532,7 +532,7 @@ parametrizadas, apoyada en el significado de cada tag cargado en \texttt{Documen
 protocolo: Tools para las operaciones que reciben parámetros y devuelven el resultado de una
 consulta puntual, y Resources para el contenido de referencia sin parámetros. La tercera es
 \texttt{mes-history-mcp} (Sección~\ref{accesodatoshistoricos}), un servidor independiente que
-atiende el acceso a datos históricos exigido por R3 conectándose directamente al esquema
+atiende el acceso a datos históricos exigido por \req{R3} conectándose directamente al esquema
 \texttt{mes\_core} de PostgreSQL; aplica el mismo modelado semántico, esta vez sobre
 \texttt{COMMENT ON}, el mismo criterio de Tools y Resources, y una Tool de consulta acotada
 (\texttt{query\_table}) que no deja al LLM construir SQL libre. La cuarta es la
@@ -561,5 +561,5 @@ El ejemplo de la Sección~\ref{flujoconsultaintegrado} mostró estas piezas ante
 combina tiempo real e histórico, sin que los dos servidores MCP se comuniquen entre sí. Con
 esto, la arquitectura planteada desde la justificación de este trabajo
 (Figura~\ref{fig:flujo_uns_llm}) queda implementada y validada contra datos reales de la
-planta. El capítulo siguiente evalúa esa implementación frente a los requerimientos planteados
+planta. El Capítulo~\ref{validacionsistema} evalúa esa implementación frente a los requerimientos planteados
 en el Capítulo~\ref{cap:caso_estudio}.

@@ -1,7 +1,7 @@
-\section{Capitulo 3: Selección del mecanismo de integración y herramienta LLM}
+\section{Capítulo 3: Selección del mecanismo de integración y herramienta LLM}
 \label{seleccionllm}
 
-Con la arquitectura UNS implementada (Capítulo 2), el siguiente paso consiste en definir cómo se conecta un modelo de lenguaje de gran tamaño (LLM) a esa estructura de datos. Esta decisión tiene dos partes: primero, qué mecanismo de comunicación usar entre el UNS y el LLM; segundo, qué herramienta LLM emplear. Este capítulo desarrolla ambos aspectos, siguiendo el análisis comparativo documentado que exige la propuesta de este trabajo.
+Con la arquitectura UNS implementada (Capítulo~\ref{tecnicasdiseñouns}), el siguiente paso consiste en definir cómo se conecta un modelo de lenguaje de gran tamaño (LLM) a esa estructura de datos. Esta decisión tiene dos partes: primero, qué mecanismo de comunicación usar entre el UNS y el LLM; segundo, qué herramienta LLM emplear. Este capítulo desarrolla ambos aspectos, siguiendo el análisis comparativo documentado que exige la propuesta de este trabajo.
 
 \subsection{Mecanismos de integración de LLM con sistemas externos en IIoT}
 \label{mecanismosintegracion}
@@ -40,14 +40,14 @@ El concepto central son las primitivas de contexto que el servidor expone al cli
 \subsection{Criterios de comparación}
 \label{criterioscomparacion}
 
-Comparar estos tres mecanismos exige criterios concretos, no una preferencia general por lo más reciente o lo más popular. Se definieron seis criterios, anclados a tres fuentes distintas: los tres primeros provienen textualmente de la justificación de la propuesta de este trabajo; el cuarto y el quinto se derivan de los requerimientos funcionales identificados en la caracterización del caso de estudio (Capítulo 1, R1 y R2/R3); el sexto es un criterio técnico complementario, sin anclaje directo en la propuesta, incluido por buenas prácticas de arquitectura de software.
+Comparar estos tres mecanismos exige criterios concretos, no una preferencia general por lo más reciente o lo más popular. Se definieron seis criterios, anclados a tres fuentes distintas: los tres primeros provienen textualmente de la justificación de la propuesta de este trabajo; el cuarto y el quinto se derivan de los requerimientos funcionales identificados en la caracterización del caso de estudio (Capítulo~\ref{cap:caso_estudio}, \req{R1} y \req{R2}/\req{R3}); el sexto es un criterio técnico complementario, sin anclaje directo en la propuesta, incluido por buenas prácticas de arquitectura de software.
 
 \begin{enumerate}
     \item \textbf{Acceso a variables en tiempo real} (propuesta). Mide si el mecanismo permite consultar el estado actual del proceso sin latencia significativa ni pasos intermedios de sincronización.
     \item \textbf{Acción bidireccional} (propuesta). Mide si el mecanismo permite no solo leer datos del UNS, sino también escribir o ejecutar acciones sobre el sistema.
     \item \textbf{Restricciones de privacidad IIoT} (propuesta). Mide la granularidad del control de acceso y la madurez de los mecanismos de autenticación y autorización propios del mecanismo.
-    \item \textbf{Capacidad de exponer contexto semántico} (R1). Mide si el mecanismo transmite al LLM el significado del dato (jerarquía, unidades, procedencia), no solo su valor crudo.
-    \item \textbf{Esfuerzo de desarrollo y mantenimiento} (R2/R3). Mide cuánto código a la medida hay que escribir y sostener para conectar cada fuente de datos del UNS.
+    \item \textbf{Capacidad de exponer contexto semántico} (\req{R1}). Mide si el mecanismo transmite al LLM el significado del dato (jerarquía, unidades, procedencia), no solo su valor crudo.
+    \item \textbf{Esfuerzo de desarrollo y mantenimiento} (\req{R2}/\req{R3}). Mide cuánto código a la medida hay que escribir y sostener para conectar cada fuente de datos del UNS.
     \item \textbf{Interoperabilidad multi-proveedor} (técnico). Mide el grado de acoplamiento de la solución a un único proveedor de LLM.
 \end{enumerate}
 
@@ -93,9 +93,9 @@ El balance final es de cinco criterios a favor de MCP y uno a favor de HTTP/REST
 
 Con base en el análisis de la Sección \ref{analisiscomparativo}, se selecciona MCP como mecanismo de integración entre el LLM y la arquitectura UNS del caso de estudio. La decisión se apoya en que las prioridades del caso de estudio (acceso a datos de producción en tiempo real, capacidad de que el LLM actúe sobre el sistema, y necesidad de exponer contexto semántico de una jerarquía de datos compleja) coinciden exactamente con los criterios donde MCP demostró ventaja.
 
-La brecha en privacidad no se ignora. Dado que MCP aún no iguala la madurez de REST en control de acceso, esta limitación se reconoce como un riesgo aceptado en esta fase de selección del mecanismo, que deberá abordarse durante la implementación de la integración sobre el caso de estudio (Capítulo 4), en vez de resolverse aquí con una medida que el análisis comparativo no sustentó.
+La brecha en privacidad no se ignora. Dado que MCP aún no iguala la madurez de REST en control de acceso, esta limitación se reconoce como un riesgo aceptado en esta fase de selección del mecanismo, que deberá abordarse durante la implementación de la integración sobre el caso de estudio (Capítulo~\ref{implementacionintegracion}), en vez de resolverse aquí con una medida que el análisis comparativo no sustentó.
 
-Como referencia para esa implementación, tres decisiones de diseño concretas pueden reducir esa brecha sin necesidad de mecanismos ajenos al protocolo: adoptar transporte STDIO en lugar de HTTP remoto, dado que el servidor Ignition del caso de estudio es local y no requiere exposición de red; limitar el alcance del servidor MCP a herramientas de lectura sobre los contextos MES, Line, ERP y Edge ya definidos en el Capítulo 2, sin incluir operaciones de escritura ni acceso a la configuración interna de Ignition; y, si en el futuro se requiere un transporte remoto, exigir autenticación OAuth en esa capa, tal como lo contempla la especificación del protocolo \cite{anthropic2024arch}.
+Como referencia para esa implementación, tres decisiones de diseño concretas pueden reducir esa brecha sin necesidad de mecanismos ajenos al protocolo: adoptar transporte STDIO en lugar de HTTP remoto, dado que el servidor Ignition del caso de estudio es local y no requiere exposición de red; limitar el alcance del servidor MCP a herramientas de lectura sobre los contextos MES, Line, ERP y Edge ya definidos en el Capítulo~\ref{tecnicasdiseñouns}, sin incluir operaciones de escritura ni acceso a la configuración interna de Ignition; y, si en el futuro se requiere un transporte remoto, exigir autenticación OAuth en esa capa, tal como lo contempla la especificación del protocolo \cite{anthropic2024arch}.
 
 % TODO-FIGURA 2
 \begin{figure}[H]
