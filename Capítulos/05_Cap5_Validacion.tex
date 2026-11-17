@@ -6,7 +6,7 @@ Este capítulo responde al quinto objetivo específico, que busca validar el fun
 \subsection{Alcance y criterios de validación}
 \label{alcancevalidacion}
 
-La validación de desempeño mide el comportamiento del sistema sobre un conjunto de preguntas de referencia. Cada métrica cubre un aspecto distinto. La precisión y la tasa de alucinaciones indican si la respuesta es correcta y está respaldada por los datos del UNS, la latencia indica cuánto espera el usuario, y la calidad semántica indica si la respuesta es coherente y suficiente para el contexto industrial.
+La validación de desempeño mide el comportamiento del sistema sobre un conjunto de preguntas de referencia. Cada métrica cubre un aspecto distinto. La precisión y la tasa de alucinaciones indican si la respuesta es correcta y está respaldada por los datos del UNS y de la base de datos histórica, la latencia indica cuánto espera el usuario, y la calidad semántica indica si la respuesta es coherente y suficiente para el contexto industrial.
 
 La validación de cumplimiento verifica si el sistema resuelve los desafíos asociados a los tres requerimientos de la Sección~\ref{requerimientosdesafios}. Las métricas no reemplazan esa verificación, sino que la alimentan. Cada pregunta del conjunto se asocia al desafío que pone a prueba, y el veredicto sobre el desafío se apoya en los resultados de esas preguntas. El desafío de eficiencia de las consultas (\desafio{D3.1}) se verifica por el diseño de las Tools y no por una medición, como se explica en la Sección~\ref{cumplimientorequerimientos}. La adaptación del reporte al perfil del usuario (\desafio{D2.3}) no se implementó, por lo que queda fuera de la validación y se traslada al trabajo futuro.
 
@@ -29,7 +29,7 @@ El banco tiene 25 preguntas diseñadas a partir de los requerimientos de la Secc
 \label{tab:banco_resumen}
 \small
 \renewcommand{\arraystretch}{1.3}
-\begin{tabular}{p{2.6cm}p{8.2cm}p{2.4cm}c}
+\begin{tabular}{p{2.6cm}p{7.2cm}p{3.4cm}c}
 \hline
 \textbf{Categoría} & \textbf{Qué evalúa} & \textbf{Servidor} & \textbf{N.º} \\
 \hline
@@ -45,7 +45,7 @@ Sin datos & Preguntas sobre días o periodos sin registros en \texttt{mes\_core}
 \end{tabular}
 \end{table}
 
-La respuesta de referencia no se obtiene con las Tools del sistema, para evitar que la validación dependa de lo que se está validando. Las de tipo histórico se calculan con consultas SQL directas sobre \texttt{mes\_core}. Las de tiempo real se toman de una lectura de los tags de Ignition antes y después de cada ejecución, y la respuesta es correcta si coincide con alguna de las dos lecturas o cae entre ellas. En las categorías ambigua y sin datos, la respuesta correcta es pedir una aclaración o reconocer que no hay datos.
+La respuesta de referencia se obtiene por una vía distinta a las Tools del sistema, para que el sistema no se compare contra sí mismo. Las de tipo histórico se calculan con consultas SQL directas sobre \texttt{mes\_core}. Las de tiempo real se toman de una lectura de los tags de Ignition antes y después de cada ejecución, y la respuesta es correcta si coincide con alguna de las dos lecturas o cae entre ellas. En las categorías ambigua y sin datos, la respuesta correcta es pedir una aclaración o reconocer que no hay datos.
 
 \subsubsection{Métricas}
 
@@ -95,13 +95,13 @@ Esta subsección explica cómo se obtuvo cada valor de las tablas de resultados.
 
 \textit{Datos clave y precisión.} La respuesta de referencia de cada pregunta es una lista de datos clave, cada uno con su valor, su tipo y su tolerancia. Un conteo, un estado o un identificador debe coincidir exactamente; una razón, como el OEE y sus componentes, con una diferencia de hasta 0,5 puntos porcentuales; y una duración, con una diferencia de hasta un segundo. Por ejemplo, la pregunta~14 tiene tres datos clave: el número de paros no programados del 17 de septiembre, la duración del paro que más pesó y la hora en que ocurrió. Una ejecución es correcta cuando todos los datos clave que debía dar coinciden con la referencia. La precisión de una categoría es el cociente entre sus ejecuciones correctas y sus ejecuciones totales. En las preguntas ambiguas y sin datos no hay un dato clave que comparar, y la ejecución es correcta si el modelo se comportó como se esperaba: aclaró o cubrió las interpretaciones posibles, o reconoció que no había datos.
 
-\textit{F1.} El F1 se calcula sobre los datos clave individuales y no sobre las respuestas completas \cite{Powers2011Evaluation,Sokolova2009Measures}. Sea $E$ el número de datos clave esperados, $A$ el número de datos clave a los que la respuesta da un valor y $C$ el número de estos que coinciden con la referencia. La precisión de los datos es $P = C/A$, la exhaustividad es $R = C/E$, y el F1 es su media armónica:
+\textit{F1.} Se calcula sobre los datos clave individuales y no sobre las respuestas completas \cite{Powers2011Evaluation,Sokolova2009Measures}. Sea $E$ el número de datos clave esperados, $A$ el número de datos clave a los que la respuesta da un valor y $C$ el número de estos que coinciden con la referencia. La precisión de los datos es $P = C/A$, la exhaustividad es $R = C/E$, y el F1 es su media armónica:
 \begin{equation}
 F_1 = \frac{2PR}{P+R}.
 \end{equation}
 Un dato con valor erróneo reduce la precisión y la exhaustividad, y un dato omitido reduce solo la exhaustividad. Los valores de la Tabla~\ref{tab:res_precision} acumulan los datos de todas las ejecuciones de cada categoría. En las categorías tiempo real, histórica, combinada y causal hay 132 datos clave esperados, el sistema dio valor a 131 y acertó 126, lo que da $P = 0{,}962$, $R = 0{,}955$ y $F_1 = 0{,}958$. Los cinco datos erróneos son los cuatro de la pregunta~6 en las ejecuciones 1 y 2 (la lista y el número de órdenes) y el número de órdenes de la ejecución 2 de la pregunta~25. El dato omitido es la hora exacta del paro en la ejecución 1 de la pregunta~14, que respondió solo la franja horaria. Como ejemplo, la referencia de la pregunta~25 pide dos datos, la orden actual (WO93) y el número de órdenes del 15 al 21 de septiembre (21). La ejecución 2 respondió WO93 y 18 órdenes, de modo que $E = 2$, $A = 2$ y $C = 1$: la ejecución es incorrecta y aporta un dato erróneo a su categoría.
 
-El F1 no cuenta como afirmaciones las cifras adicionales que el modelo agrega sin que se le pidan. Una versión automática que contara toda cifra de la respuesta penalizaría al modelo por dar contexto verdadero, y en este banco reducía la precisión de los datos a 0,59. Por eso $A$ se restringe a los datos clave, y las demás cifras se verifican aparte como parte de la tasa de alucinaciones.
+No cuenta como afirmaciones las cifras adicionales que el modelo agrega sin que se le pidan. Una versión automática que contara toda cifra de la respuesta penalizaría al modelo por dar contexto verdadero, y en este banco reducía la precisión de los datos a 0,59. Por eso $A$ se restringe a los datos clave, y las demás cifras se verifican aparte como parte de la tasa de alucinaciones.
 
 \textit{Alucinaciones.} Una alucinación es contenido que no está respaldado por la fuente \cite{Ji2023Hallucination}. En este trabajo la fuente son las salidas de las Tools y los datos cargados, y cada ejecución guarda sus llamadas a las Tools con los parámetros, la duración y la respuesta. Una respuesta se marcó como alucinación si afirmaba una cifra, un nombre, un estado o una causa que no aparecía en esas salidas ni en los datos. Un script señaló como candidatas las cifras de la respuesta ausentes de la referencia, y el autor las contrastó una a una con el historial y con las salidas de las Tools. Las hipótesis presentadas como tales, con expresiones como «puede que» o «conviene revisar», no se contaron. La tasa de una categoría es el cociente entre las respuestas marcadas y sus ejecuciones totales.
 
@@ -113,7 +113,7 @@ El F1 no cuenta como afirmaciones las cifras adicionales que el modelo agrega si
 
 Cada una de las 25 preguntas se ejecutó tres veces, para un total de 75 ejecuciones, con el fin de observar la variabilidad de las respuestas del modelo ante una misma pregunta. Cada ejecución se hizo en una conversación nueva en modo incógnito, para que el modelo no conservara memoria de las ejecuciones anteriores ni de otras conversaciones. Para cada una se registró la respuesta completa, la latencia y las Tools que invocó el modelo. La precisión y las alucinaciones se determinaron comparando la respuesta con la referencia y con las salidas de las Tools, y la calidad semántica se puntuó con la rúbrica. La Sección~\ref{calculometricas} detalla el cálculo.
 
-La rúbrica la aplicó el tutor técnico, que es también el autor de este trabajo y trabaja en DAUTOM, la empresa del caso de estudio, por lo que conoce el proceso evaluado. Esa coincidencia limita la evaluación cualitativa y se discute en la Sección~\ref{discusionvalidacion}. Las otras tres métricas no dependen del juicio del evaluador, porque se calculan contra los datos o se miden con instrumentación.
+La rúbrica la aplicó el tutor técnico, que trabaja en DAUTOM, la empresa del caso de estudio, por lo que conoce el proceso evaluado. Ese conocimiento previo limita la evaluación cualitativa y se discute en la Sección~\ref{discusionvalidacion}. Las otras tres métricas no dependen del juicio del evaluador, porque se calculan contra los datos o se miden con instrumentación.
 
 \subsection{Resultados de desempeño}
 \label{resultadosvalidacion}
@@ -307,6 +307,6 @@ Los resultados tienen límites que deben tenerse presentes. El primero es que lo
 
 El segundo límite es el tamaño y la repetibilidad del banco. Son 25 preguntas y 75 ejecuciones con un único modelo y una única configuración, en dos días, y tres ejecuciones por pregunta bastan para observar la variabilidad pero no para estimar con rigor su distribución. Los porcentajes del capítulo describen este banco y no pretenden generalizarse. El banco tampoco incluye preguntas con granularidad de minuto, aunque las Tools la admiten, ni preguntas con varias líneas de conversación.
 
-El tercer límite es que la calidad semántica la puntuó el propio autor, que conoce el proceso evaluado y no tuvo un segundo evaluador. Se mitiga con referencias calculadas fuera de las Tools, con una rúbrica definida de antemano y con una nota por pregunta en el anexo que justifica cada puntuación distinta de 5, pero la coherencia, la pertinencia y la suficiencia siguen dependiendo de su juicio. Las otras tres métricas no dependen de él.
+El tercer límite es que la calidad semántica la puntuó el tutor técnico, que conoce el proceso evaluado y no tuvo un segundo evaluador. Se mitiga con referencias calculadas fuera de las Tools, con una rúbrica definida de antemano y con una nota por pregunta en el anexo que justifica cada puntuación distinta de 5, pero la coherencia, la pertinencia y la suficiencia siguen dependiendo de su juicio. Las otras tres métricas no dependen de él.
 
 También quedaron hallazgos sobre los propios datos y metadatos, que son un resultado útil de la validación y quedan como correcciones pendientes. La tasa estándar de producción registrada en \texttt{standardrate} no es coherente con la producción de las corridas simuladas, y el modelo lo advirtió en las tres ejecuciones de la pregunta~12, por lo que cualquier análisis de rendimiento que use esa tasa directamente se debe leer con reserva. Además, la documentación de los tags del UNS describe el Infeed como bolsas y el Outfeed como fardos, pero los valores cumplen Infeed igual a Outfeed más Waste, como mostró la pregunta~21. Por último, la medición de la latencia se hizo sobre la interfaz de Claude Desktop y depende del cliente y de la red del equipo de pruebas.
