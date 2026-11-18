@@ -1,7 +1,7 @@
 \section{Capítulo 5: Validación del sistema integrado}
 \label{validacionsistema}
 
-Este capítulo responde al quinto objetivo específico, que busca validar el funcionamiento del sistema integrado mediante métricas de desempeño. El Capítulo~\ref{implementacionintegracion} mostró que cada pieza funciona por separado y que el flujo de consulta integrado produce una respuesta. Falta saber qué tan bien responde el sistema de forma sostenida y si cumple los \hyperref[requerimientosdesafios]{requerimientos} del caso de estudio. Por eso se hacen dos validaciones. La primera mide el desempeño con las cuatro métricas definidas en la propuesta. La segunda verifica el cumplimiento de los desafíos de la Sección~\ref{requerimientosdesafios}. El capítulo presenta el diseño de la evaluación y sus resultados agregados. Las preguntas, las respuestas de referencia y las respuestas del sistema se reproducen completas en el Anexo~\ref{anexo:banco_preguntas}.
+Este capítulo responde al quinto objetivo específico, que busca validar el funcionamiento del sistema integrado mediante métricas de desempeño. El Capítulo~\ref{implementacionintegracion} mostró que cada pieza funciona por separado y que el flujo de consulta integrado produce una respuesta. Falta comprobar que la integración del LLM con el UNS se realizó con éxito: que el sistema responde de forma correcta, respaldada por los datos y en un tiempo útil, y que cumple los \hyperref[requerimientosdesafios]{requerimientos} del caso de estudio. No se compara ni se evalúa el modelo, solo la integración. Por eso se hacen dos validaciones. La primera mide el desempeño con las cuatro métricas definidas en la propuesta. La segunda verifica el cumplimiento de los desafíos de la Sección~\ref{requerimientosdesafios}. El capítulo presenta el diseño de la evaluación y sus resultados agregados. Las preguntas, las respuestas de referencia y las respuestas del sistema se reproducen completas en el Anexo~\ref{anexo:banco_preguntas}.
 
 \subsection{Alcance y criterios de validación}
 \label{alcancevalidacion}
@@ -154,13 +154,13 @@ La Tabla~\ref{tab:res_latencia} muestra la latencia de extremo a extremo por cat
 
 \begin{table}[H]
 \centering
-\caption{Latencia de respuesta por categoría, en segundos. Elaboración propia.}
+\caption{Latencia de respuesta por categoría, en segundos. El tiempo en servidores es la suma de las duraciones de las llamadas a las Tools en cada ejecución, promediada por categoría. Elaboración propia.}
 \label{tab:res_latencia}
 \small
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{lcccc}
 \hline
-\textbf{Categoría} & \textbf{Promedio} & \textbf{Mediana} & \textbf{P95} & \textbf{Tiempo en servidores} \\
+\textbf{Categoría} & \textbf{Promedio} & \textbf{Mediana} & \textbf{P95} & \textbf{Tiempo en servidores (promedio)} \\
 \hline
 Tiempo real & 16,1 & 16,1 & 23,5 & 0,5 \\
 Histórica & 16,0 & 13,4 & 30,1 & 1,1 \\
@@ -202,7 +202,7 @@ Sin datos & 5,00 & 4,00 & 5,00 & 4,67 \\
 \end{tabular}
 \end{table}
 
-La puntuación promedio fue de 4,83 en coherencia, 4,28 en pertinencia y 4,96 en suficiencia, con 4,69 como promedio de los tres criterios. La pertinencia es el criterio más bajo en el total y en cuatro de las seis categorías, con 3,92 en tiempo real. En la causal el más bajo es la coherencia (4,44), y en la ambigua ambos empatan en 4,67. En 50 de las 75 respuestas la pertinencia fue 4 porque el modelo agregó análisis que no se pedía, como el desglose diario, la proyección del cierre de una orden o hipótesis sobre una causa. Es un rasgo del modelo más que un defecto de las Tools: tiende a ofrecer contexto adicional aunque la pregunta sea puntual. La coherencia bajó a 4 o a 3 en 11 respuestas, por frases intermedias del modelo que se contradicen con su conclusión (pregunta~13), por alternativas que quedan a medias (pregunta~5) o por cifras que no cuadran entre sí (preguntas~21 y~24). La suficiencia fue 5 en 72 de las 75 respuestas.
+La puntuación promedio fue de 4,83 en coherencia, 4,28 en pertinencia y 4,96 en suficiencia, con 4,69 como promedio de los tres criterios. La pertinencia es el criterio más bajo en el total y en cuatro de las seis categorías, con 3,92 en tiempo real. En la causal el más bajo es la coherencia (4,44), y en la ambigua ambos empatan en 4,67. En 50 de las 75 respuestas la pertinencia fue 4 porque el modelo agregó análisis que no se pedía, como el desglose diario, la proyección del cierre de una orden o hipótesis sobre una causa. Es el comportamiento del cliente sobre la integración y no un defecto de las Tools: ofrece contexto adicional aunque la pregunta sea puntual. La coherencia bajó a 4 o a 3 en 11 respuestas, por frases intermedias del modelo que se contradicen con su conclusión (pregunta~13), por alternativas que quedan a medias (pregunta~5) o por cifras que no cuadran entre sí (preguntas~21 y~24). La suficiencia fue 5 en 72 de las 75 respuestas.
 
 \subsubsection{Lectura de los resultados}
 \label{lecturaresultados}
@@ -294,17 +294,17 @@ De los ocho desafíos, cuatro se cumplieron sin ningún fallo (\desafio{D1.1}, \
 
 El desafío \desafio{D3.1} pide consultas eficientes a la base de datos. El sistema lo resuelve por diseño y no con SQL generado por el modelo. Las Tools ejecutan consultas parametrizadas sobre una lista cerrada de tablas, agregan en SQL, limitan cada respuesta a 1000 filas y trabajan con un usuario de solo lectura, como se describió en las Secciones~\ref{alcanceseguridadhistorico} y~\ref{granularidadconsulta}. Por eso su verificación se apoya en esa descripción y en los tiempos de la Tabla~\ref{tab:res_latencia}, y no en una pregunta específica.
 
-El desafío \desafio{D2.3} no se cumple porque la adaptación del reporte según el perfil del usuario no se implementó. Con esto, los requerimientos \req{R1} y \req{R3} quedan satisfechos y \req{R2} se satisface en parte, por la ausencia de D2.3.
+El desafío \desafio{D2.3} no se cumple porque la adaptación del reporte según el perfil del usuario no se implementó. Con esto, la integración cumple los requerimientos del caso de estudio, salvo la adaptación del reporte al perfil del usuario (\desafio{D2.3}), que queda como trabajo futuro.
 
 \subsection{Discusión y limitaciones}
 \label{discusionvalidacion}
 
 El caso de la pregunta~6 permite una conclusión sobre el diseño del sistema. Una Tool del servidor de histórico es una función corta, con una consulta SQL parametrizada y una descripción en lenguaje natural; la de órdenes de producción ocupa menos de cuarenta líneas, consulta incluida. Corregir un defecto como el anterior, o cubrir una pregunta nueva que ninguna Tool atiende, no exige cambiar la arquitectura ni el modelo: basta ajustar o agregar una Tool. El costo de ampliar la capacidad del sistema es por tanto bajo, y se puede crear tantas Tools como el dominio requiera. La contrapartida es que cada Tool nueva debe verificarse con preguntas y con referencias independientes, como se hizo en este banco, porque un error en ella llega al usuario como una respuesta de apariencia segura.
 
-Los resultados indican que un LLM con acceso a un UNS y a un histórico puede responder con exactitud preguntas operativas de tiempo real, históricas y combinadas, siempre que las Tools entreguen datos con significado explícito. En este banco no hubo una sola cifra inventada, y los errores que aparecieron provinieron de una Tool o de una definición, no del modelo. Esto desplaza el riesgo principal: el modelo confía en lo que devuelve la Tool y lo presenta con seguridad, de modo que un defecto en ella, como el del filtro de fecha, llega al usuario como una respuesta de apariencia correcta. Las ejecuciones que obtuvieron las 21 órdenes lo hicieron porque el modelo sospechó del resultado y volvió a consultar, lo que ayuda pero no sustituye la verificación de las Tools.
+Los resultados indican que la integración del LLM con el UNS y el histórico funciona: responde con exactitud preguntas operativas de tiempo real, históricas y combinadas, siempre que las Tools entreguen datos con significado explícito. En este banco no hubo una sola cifra inventada, lo que indica que las Tools entregan datos fiables, y los errores que aparecieron provinieron de una Tool o de una definición, no del modelo. Esto desplaza el riesgo principal: el modelo confía en lo que devuelve la Tool y lo presenta con seguridad, de modo que un defecto en ella, como el del filtro de fecha, llega al usuario como una respuesta de apariencia correcta. Las ejecuciones que obtuvieron las 21 órdenes lo hicieron porque el modelo sospechó del resultado y volvió a consultar, lo que muestra que la integración permite verificar los resultados, aunque no sustituye la verificación de las Tools.
 
 Los resultados tienen límites que deben tenerse presentes. El primero es que los datos se generaron con scripts: las corridas históricas y los valores en vivo se generaron con scripts, y las corridas de tiempo real se abrieron para la prueba, por lo que el comportamiento ante el ruido, los vacíos y las irregularidades de una planta en operación no se evaluó. Las corridas abiertas tenían menos de una hora de marcha, de modo que los OEE en vivo son valores tempranos y cambiantes, y las respuestas de referencia se aceptaron como un rango entre dos lecturas.
 
-El segundo límite es el tamaño y la repetibilidad del banco. Son 25 preguntas y 75 ejecuciones con un único modelo y una única configuración, en dos días, y tres ejecuciones por pregunta bastan para observar la variabilidad pero no para estimar con rigor su distribución. Los porcentajes del capítulo describen este banco y no pretenden generalizarse. El banco tampoco incluye preguntas con granularidad de minuto, aunque las Tools la admiten, ni preguntas con varias líneas de conversación.
+El segundo límite es el alcance del banco. El propósito de la validación es comprobar que la integración del LLM con el UNS funciona, no comparar modelos, por lo que se usó un único modelo y una única configuración. Son 25 preguntas y 75 ejecuciones, en dos días, y los porcentajes del capítulo describen esta integración sobre este banco, sin pretender generalizarse a otros modelos.
 
 También quedaron hallazgos sobre los propios datos y metadatos, que son un resultado útil de la validación y quedan como correcciones pendientes. La tasa estándar de producción registrada en \texttt{standardrate} no es coherente con la producción de las corridas simuladas, y el modelo lo advirtió en las tres ejecuciones de la pregunta~12, por lo que cualquier análisis de rendimiento que use esa tasa directamente se debe leer con reserva. Además, la documentación de los tags del UNS describe el Infeed como bolsas y el Outfeed como fardos, pero los valores cumplen Infeed igual a Outfeed más Waste, como mostró la pregunta~21. Por último, la medición de la latencia se hizo sobre la interfaz de Claude Desktop y depende del cliente y de la red del equipo de pruebas.
