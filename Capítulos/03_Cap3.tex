@@ -28,7 +28,6 @@ Su arquitectura sigue un modelo cliente-servidor: una aplicación de IA actúa c
 
 El concepto central son las primitivas de contexto que el servidor expone al cliente: \textit{Tools} (funciones ejecutables, como consultar un tag o disparar una acción), \textit{Resources} (fuentes de datos con contexto estructurado) y \textit{Prompts} (plantillas reutilizables) \cite{anthropic2024arch}. Sobre esta base, MCP también incorpora un sistema de notificaciones al que el cliente puede suscribirse para mantenerse sincronizado con cambios en el servidor, evitando así las consultas repetidas propias de otros mecanismos.
 
-% TODO-FIGURA 1
 \begin{figure}[H]
 \centering
  \centerline{\includegraphics[width=13cm]{Figuras/mecanismos_integracion.png}}
@@ -97,7 +96,6 @@ La brecha en privacidad no se ignora. Dado que MCP aún no iguala la madurez de 
 
 Como referencia para esa implementación, tres decisiones de diseño concretas pueden reducir esa brecha sin necesidad de mecanismos ajenos al protocolo: adoptar transporte STDIO en lugar de HTTP remoto, dado que el servidor Ignition del caso de estudio es local y no requiere exposición de red; limitar el alcance del servidor MCP a herramientas de lectura sobre los contextos MES, Line, ERP y Edge ya definidos en el Capítulo~\ref{tecnicasdiseñouns}, sin incluir operaciones de escritura ni acceso a la configuración interna de Ignition; y, si en el futuro se requiere un transporte remoto, exigir autenticación OAuth en esa capa, tal como lo contempla la especificación del protocolo \cite{anthropic2024arch}.
 
-% TODO-FIGURA 2
 \begin{figure}[H]
 \centering
  \centerline{\includegraphics[width=15cm]{Figuras/mcp_uns.png}}

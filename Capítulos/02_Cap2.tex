@@ -15,7 +15,7 @@ El \textbf{método de Schultz} utiliza múltiples brokers MQTT (uno por nivel o 
 \label{fig:schultz}
 \end{figure}
 
-Por su parte, el \textbf{método de Parris} usa un único broker para todo el UNS \cite{web4}. A diferencia delmétodo de Schultz, donde la jerarquía surge de la topología de brokers, aquí la jerarquía completa se codifica dentro del campo \textit{group\_id} del tópico Sparkplug, usando un delimitador (por ejemplo, "\texttt{:}") para separar los niveles:
+Por su parte, el \textbf{método de Parris} usa un único broker para todo el UNS \cite{web4}. A diferencia del método de Schultz, donde la jerarquía surge de la topología de brokers, aquí la jerarquía completa se codifica dentro del campo \textit{group\_id} del tópico Sparkplug, usando un delimitador (por ejemplo, "\texttt{:}") para separar los niveles:
 
 \begin{center}
     \textit{spBv1.0/Plant:Area:Line:Cell/DDATA/<edgenode\_id>}

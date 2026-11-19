@@ -44,9 +44,6 @@ Cada unidad se validó con los valores reales del Tag Provider: los tiempos de l
 \texttt{Outfeed} y \texttt{Waste} quedaron en \texttt{unidades} y documentados como contadores acumulados, porque solo crecen mientras el equipo está en marcha y permanecen fijos cuando está detenido. En los tags de estado (\texttt{Status} en \texttt{Edge} y \texttt{State} en \texttt{Line}), la \texttt{Documentation} incluye además el diccionario de códigos
 (0 = indefinido, 1 = detenido, 2 = en marcha), que es el mismo que usa el histórico en \texttt{mes\_core.statereason}. Así el LLM no tiene que deducir la unidad de un valor ni el significado de un código numérico.
 
-% PENDIENTE: reemplazar por la captura real del Designer mostrando un tag con
-% Documentation y EngUnit ya configurados, en el mismo estilo que las Figuras 10 a 13
-% del Capítulo 2.
 \begin{figure}[H]
 \centerline{\includegraphics[width=15cm]{Figuras/tag_documentado_designer.png}}
 \vspace{0.2cm}
@@ -159,9 +156,6 @@ sin recorrer la jerarquía completa. Las descripciones de \texttt{Documentation}
 
 Los cuatro endpoints comparten un mismo esquema de manejo de errores. Una solicitud sin los parámetros obligatorios devuelve código \texttt{400} con un motivo explícito (\texttt{MISSING\_PARAMETER} o \texttt{INVALID\_PARAMETER}); una combinación de área, línea y celda inexistente en \texttt{/uns/equipment} devuelve \texttt{404} (\texttt{EQUIPMENT\_NOT\_FOUND}); y cualquier excepción no anticipada se responde con \texttt{500} (\texttt{UNHANDLED\_EXCEPTION}) en vez de propagarse sin control.
 
-% PENDIENTE: reemplazar por la captura real del árbol de endpoints en el Designer
-% (dau_fc_demo/com.inductiveautomation.webdev/resources/uns/), en el mismo estilo que
-% las Figuras 10 a 13 del Capítulo 2 para los UDT.
 \begin{figure}[H]
 \centerline{\includegraphics[width=11cm]{Figuras/endpoints_webdev_designer.png}}
 \vspace{0.2cm}
@@ -244,8 +238,6 @@ condiciones levanta la excepción que el SDK define para Resources (\texttt{Reso
 Para validarlo, el servidor se conectó a Claude Desktop, un cliente MCP real, y se comprobó que este listara sus Tools. La Figura~\ref{fig:claude_desktop_tools} muestra el
 servidor conectado en Claude Desktop con sus Tools.
 
-% PENDIENTE: reemplazar por la captura real de Claude Desktop con el servidor uns-mcp
-% conectado, las 3 tools y los 2 resources listados.
 \begin{figure}[H]
 \centerline{\includegraphics[width=16cm]{Figuras/claude_desktop_tools.png}}
 \vspace{0.2cm}
@@ -419,9 +411,6 @@ parámetros estructurados de cada Tool, y es el servidor quien arma la consulta 
 La validación se hizo con el servidor MCP real y no solo con consultas SQL directas. Las seis Tools respondieron sin error al invocarlas con datos reales de la planta; una combinación de
 área y línea inexistente devuelve un mensaje de error. La Figura~\ref{fig:claude_desktop_mes_history} muestra el servidor conectado en Claude Desktop, junto a \texttt{uns-mcp}, con sus Tools y su Resource disponibles.
 
-% PENDIENTE: reemplazar por la captura real de Claude Desktop con el servidor
-% mes-history-mcp conectado, las 6 tools y el resource mes-history://schema listados,
-% en el mismo estilo que la Figura fig:claude_desktop_tools.
 \begin{figure}[H]
 \centerline{\includegraphics[width=16cm]{Figuras/claude_desktop_mes_history.png}}
 \vspace{0.2cm}
@@ -443,8 +432,6 @@ El glosario tiene dos partes. La primera es una explicación fija de qué repres
 
 La validación se realizó con un cliente MCP real, que ejecutó las dos operaciones con las que un cliente descubre y consume Resources: \texttt{resources/list}, que solicita el catálogo de Resources disponibles, y \texttt{resources/read}, que solicita el contenido de uno de ellos a partir de su URI. La primera devolvió exactamente los dos Resources definidos en \texttt{uns-mcp}: \texttt{uns://glosario} y \texttt{uns://hierarchy}. La segunda devolvió su contenido en ambos casos. En \texttt{uns://hierarchy}, la respuesta coincide con la jerarquía implementada en Ignition, con \texttt{Molinera} como raíz y \texttt{UNS\_Molinera} como Tag Provider. En \texttt{uns://glosario}, la lista de nombres incluye las celdas físicas de cada línea (\texttt{Empacadora 1}, \texttt{Empacadora 2} y \texttt{Enfardadora}) y excluye las instancias de los UDT \texttt{MES}, \texttt{Line} y \texttt{ERP} que conviven con ellas. La Figura~\ref{fig:resource_glosario} muestra \texttt{uns://glosario} adjunto a una conversación en Claude Desktop, con el contenido tal como lo recibe el LLM.
 
-% PENDIENTE: captura de Claude Desktop con uns://glosario adjunto desde el menú "+" y su
-% contenido visible (niveles ISA-95, nombres reales y criterio de selección de servidor).
 \begin{figure}[H]
 \centerline{\includegraphics[width=16cm]{Figuras/resource_glosario_claude_desktop.png}}
 \vspace{0.2cm}
@@ -465,8 +452,6 @@ La validación confirmó que \texttt{resources/list} devuelve \texttt{mes-histor
 tablas, con sus columnas, documentación y relaciones. La Figura~\ref{fig:resource_schema} muestra \texttt{mes-history://schema}
 adjunto a una conversación en Claude Desktop.
 
-% PENDIENTE: captura de Claude Desktop con mes-history://schema adjunto desde el menú "+",
-% donde se vea parte del catálogo (una tabla con sus columnas y la lista de relaciones).
 \begin{figure}[H]
 \centerline{\includegraphics[width=16cm]{Figuras/resource_schema_claude_desktop.png}}
 \vspace{0.2cm}
@@ -509,8 +494,6 @@ requerimiento \req{R3} (acceso eficiente tanto al dato en tiempo real como al hi
 las dos fuentes tengan que converger en un único punto de acceso. La
 Figura~\ref{fig:flujo_integrado_chat} muestra esta consulta ejecutada en Claude Desktop, y el inicio de la respuesta. La transcripción completa de la conversación en la que se observa toda la respuesta es presentada en el \hyperref[anexo:conversacion_flujo]{Anexo~A}. 
 
-% PENDIENTE: captura de Claude Desktop con la pregunta de esta sección, el glosario adjunto,
-% las llamadas a get_context y get_oee_history expandidas y el inicio de la respuesta.
 \begin{figure}[H]
 \centerline{\includegraphics[width=16cm]{Figuras/flujo_integrado_chat.png}}
 \vspace{0.2cm}
