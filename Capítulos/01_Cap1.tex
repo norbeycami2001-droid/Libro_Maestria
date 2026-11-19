@@ -25,7 +25,7 @@ Cada área de empaque —trigo y maíz— opera con dos líneas de producción i
 
 Este proceso se ejecuta siempre dentro del contexto de una orden de producción (\textit{Work Order}, WO): un registro creado en el MES sobre la plataforma Ignition, a nivel de línea, que especifica el producto a envasar (harina de trigo o de maíz), la presentación (libra o kilo) y la cantidad meta de unidades. La ejecución de una WO, con sus tiempos reales de inicio y fin, se denomina \textit{corrida}. Una vez inicia la corrida, el sistema vincula automáticamente los datos capturados en planta con la WO correspondiente, y registra en tiempo real los eventos del ciclo productivo: inicio, pausas, reanudaciones y cierre. Esta vinculación entre los datos operativos y el contexto de negocio de cada corrida es lo que permite, más adelante, calcular indicadores como el cumplimiento de la orden o la eficiencia de línea, y es también uno de los elementos que la herramienta LLM deberá interpretar para responder consultas que combinen información en tiempo real con el estado de la producción planificada.
 
-    La figura \ref{fig:flujo_empaque} muestra esquema que representa el flujo operativo descrito anteriormente. 
+    La Figura~\ref{fig:flujo_empaque} muestra un esquema que representa el flujo operativo descrito anteriormente. 
     
     \begin{figure}[H]
         \centering
@@ -94,7 +94,7 @@ El centro de control constituye el núcleo de la arquitectura. Sobre él corre l
 
 \subsubsection{Aplicación MES}
 
-La aplicación MES implementada sobre Ignition gestiona la planificación y ejecución de la producción a través de las órdenes de producción (WO) y las corridas descritas anteriormente. Entre sus capacidades se incluyen:
+La aplicación MES implementada sobre Ignition gestiona la planificación y ejecución de la producción a través de las órdenes de producción (WO) y las corridas descritas anteriormente. Sobre el papel de los MES en la Industria 4.0 puede consultarse \cite{dos-exploring}. Entre sus capacidades se incluyen:
 
 \begin{itemize}
     \item Crear y administrar WO para cada línea de producción (Línea A y B, tanto de Trigo como de Maíz), especificando producto, presentación y cantidad meta.
@@ -104,7 +104,7 @@ La aplicación MES implementada sobre Ignition gestiona la planificación y ejec
 
 \subsubsection{Generación de KPIs}
 
-La integración entre el MES y los datos adquiridos en tiempo real habilita el cálculo automático de indicadores clave de desempeño (KPIs), eliminando la captura manual y garantizando que los indicadores se basen en información confiable y actualizada:
+La integración entre el MES y los datos adquiridos en tiempo real habilita el cálculo automático de indicadores clave de desempeño (KPIs) \cite{iso22400_2}, eliminando la captura manual y garantizando que los indicadores se basen en información confiable y actualizada:
 
 \begin{itemize}
     \item \textbf{Disponibilidad:} porcentaje del tiempo de la corrida durante el cual la empacadora estuvo operando, descontando paros no programados y mantenimientos.
@@ -117,7 +117,7 @@ Esta integración constituye un elemento fundamental de la arquitectura, ya que 
 
 \subsubsection{Base de datos histórica}
 
-El sistema incorpora una base de datos histórica que almacena series temporales de todas las variables monitorizadas, cumpliendo tres funciones críticas:
+El sistema incorpora una base de datos histórica relacional que almacena los registros del MES (órdenes de producción, corridas y paros), los indicadores calculados y el historial de conteos de las celdas, cumpliendo tres funciones críticas:
 
 \begin{itemize}
     \item \textbf{Análisis retrospectivo:} permite realizar estudios de tendencias, identificación de patrones de producción y evaluación del desempeño histórico de equipos y procesos.
@@ -194,7 +194,7 @@ El sistema debe poder consultar tanto los datos en tiempo real disponibles en el
 \textbf{Desafíos identificados:}
 
 \phantomsection\label{des:D3.1}
-\textit{D3.1 - Generar consultas eficientes a la base de datos:} El LLM debe traducir preguntas en lenguaje natural a consultas de base de datos (SQL) que sean eficientes y no generen carga computacional excesiva. Por ejemplo, si el usuario pregunta \textit{¿cuál fue el promedio de producción del último mes?}, el LLM debe generar una query que utilice tablas agregadas pre-calculadas o índices apropiados, en lugar de escanear millones de registros individuales. Esto requiere que el LLM tenga conocimiento de:
+\textit{D3.1 - Consultar la base de datos de forma eficiente:} Las consultas que el sistema envía a la base de datos deben ser eficientes y no generar carga computacional excesiva, aun cuando la pregunta del usuario abarque periodos extensos. Por ejemplo, si el usuario pregunta \textit{¿cuál fue el promedio de producción del último mes?}, la consulta debe apoyarse en agregaciones y en índices apropiados, en lugar de escanear millones de registros individuales. Esto requiere que la capa que accede a la base de datos conozca:
 \begin{itemize}
     \item El esquema de la base de datos (tablas, columnas, relaciones)
     \item Los índices disponibles y cómo aprovecharlos
@@ -202,7 +202,7 @@ El sistema debe poder consultar tanto los datos en tiempo real disponibles en el
     \item Limitaciones de rendimiento del sistema de base de datos
 \end{itemize}
 
-La generación de queries SQL eficientes es crítica para garantizar tiempos de respuesta aceptables, especialmente cuando se consultan periodos extensos con alta densidad de datos.
+La eficiencia de estas consultas es crítica para garantizar tiempos de respuesta aceptables, especialmente cuando se consultan periodos extensos con alta densidad de datos.
 
 \phantomsection\label{des:D3.2}
 \textit{D3.2 - Seleccionar la granularidad adecuada de los datos:} Los datos industriales se almacenan con diferentes frecuencias de muestreo dependiendo de la variable y el propósito. Para periodos cortos de tiempo (última hora, último turno) es apropiado usar datos de alta frecuencia que capturan cada evento significativo. Sin embargo, para periodos largos (último mes, último trimestre) es más eficiente usar agregaciones por hora, por turno, o por día. El LLM debe decidir automáticamente qué nivel de detalle (granularidad) usar según el rango temporal que especifica el usuario en su consulta. Por ejemplo:
