@@ -111,9 +111,9 @@ Los tags descritos a continuación corresponden a los definidos en cada UDT del 
 \begin{itemize}
     \item \texttt{State}: estado general de la línea (marcha, paro, alarma, mantenimiento).
     \item \texttt{Run Enabled}: indica si la línea está habilitada para operar en este momento.
-    \item \texttt{Infeed}: flujo de material que ingresa a la línea.
-    \item \texttt{Outfeed}: flujo de producto que sale de la línea ya empacado.
-    \item \texttt{Waste}: material desperdiciado durante el proceso.
+    \item \texttt{Infeed}: contador acumulado del total producido por la línea, en fardos. Es el mismo contador de la Enfardadora de la línea.
+    \item \texttt{Outfeed}: contador acumulado de fardos buenos.
+    \item \texttt{Waste}: contador acumulado de fardos desperdiciados. Se cumple que \texttt{Infeed} = \texttt{Outfeed} + \texttt{Waste}.
     \item \texttt{Run Time}: tiempo acumulado de operación durante la corrida actual.
     \item \texttt{Cycle Time}: tiempo que tarda la línea en completar un ciclo de producción.
     \item \texttt{Start Time}, \texttt{Current Time}: hora de inicio de la corrida y tiempo transcurrido hasta ahora.
@@ -173,13 +173,15 @@ Este contexto corresponde al nivel 0 de ISA-95: el proceso físico, donde se ori
 
 \paragraph{Empacadora y Enfardadora.} El UDT \textbf{Edge} agrupa, para ambos tipos de equipo, los mismos cuatro tags:
 \begin{itemize}
-    \item \texttt{Infeed}: flujo de material que ingresa al equipo (harina en la Empacadora, bolsas en la Enfardadora).
-    \item \texttt{Outfeed}: flujo de producto que sale del equipo (bolsas empacadas en la Empacadora, fardos formados en la Enfardadora).
-    \item \texttt{Waste}: material desperdiciado durante el proceso.
+    \item \texttt{Infeed}: contador acumulado del total producido por el equipo, en la unidad propia de cada uno: bolsas en la Empacadora y fardos en la Enfardadora.
+    \item \texttt{Outfeed}: contador acumulado de unidades buenas, en la misma unidad que \texttt{Infeed}.
+    \item \texttt{Waste}: contador acumulado de unidades desperdiciadas, también en la misma unidad. En cada equipo se cumple que \texttt{Infeed} = \texttt{Outfeed} + \texttt{Waste}.
     \item \texttt{Status}: estado operativo del equipo (marcha, paro, alarma, mantenimiento).
 \end{itemize}
 
-Con estos tags, el LLM puede aislar el origen de un problema hasta el equipo específico: por ejemplo, distinguir si una caída en el \texttt{Outfeed} de la línea viene de la Empacadora 1, de la Empacadora 2 o de la Enfardadora que recibe a ambas. La Figura \ref{fig:uns_tree_equipos} resume visualmente esta estructura.
+Los tres contadores solo crecen mientras el equipo está en marcha y permanecen fijos cuando está detenido. Como la Enfardadora agrupa 24 bolsas por fardo en la presentación de libra y 20 en la de kilo, y cada línea tiene dos Empacadoras que la alimentan, la suma de los contadores de las dos Empacadoras es unas 20 a 24 veces el de la Enfardadora, que es también el de la línea.
+
+Con estos tags, el LLM puede aislar el origen de un problema hasta el equipo específico: por ejemplo, distinguir si una caída en el \texttt{Outfeed} de la línea (en fardos) viene de la Empacadora 1, de la Empacadora 2 o de la Enfardadora que recibe a ambas. La Figura \ref{fig:uns_tree_equipos} resume visualmente esta estructura.
 
 \begin{figure}[H]
 \centering
@@ -269,7 +271,7 @@ Enfardadoras.}
 
 \subsubsection{Instanciación en las cuatro líneas de producción}
 
-Una vez definidas las plantillas, se instanciaron en las cuatro líneas del caso de estudio (Maíz A, Maíz B, Trigo A y Trigo B) manteniendo el mismo conjunto de UDT y la misma organización interna descrita en la Sección \ref{sec:diseno_jerarquia}. Esto significa que una modificación a una plantilla, por ejemplo agregar un nuevo indicador al UDT \texttt{MES}, se refleja automáticamente en las ocho instancias de Empacadora y las cuatro de Enfardadora del caso de estudio, sin repetir el trabajo de configuración manual en cada una.
+Una vez definidas las plantillas, se instanciaron en las cuatro líneas del caso de estudio (Maíz A, Maíz B, Trigo A y Trigo B) manteniendo el mismo conjunto de UDT y la misma organización interna descrita en la Sección \ref{sec:diseno_jerarquia}. Esto significa que una modificación a una plantilla, por ejemplo agregar un nuevo tag al UDT \texttt{Edge}, se refleja automáticamente en las ocho instancias de Empacadora y las cuatro de Enfardadora del caso de estudio, sin repetir el trabajo de configuración manual en cada una.
 
 \subsubsection{Generación de valores para validar la estructura}
 
