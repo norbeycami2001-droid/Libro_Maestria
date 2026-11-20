@@ -173,7 +173,7 @@ El servidor MCP \texttt{uns-mcp} expone los cuatro endpoints del
 apartado~\ref{disenoendpoints} con dos de las primitivas del protocolo. Las Tools son
 funciones que el LLM invoca explícitamente dentro de su razonamiento, con parámetros y un
 resultado puntual. Los Resources son contenido de solo lectura que el cliente puede adjuntar a
-la conversación sin que el LLM lo solicite. El criterio para elegir entre ambas es simple: si
+la conversación sin que el LLM lo solicite \cite{HouMCPLandscape2025}. El criterio para elegir entre ambas es simple: si
 la operación recibe parámetros y devuelve el resultado de una consulta específica, es una
 Tool; si no recibe parámetros y su función es dar contexto u orientación de referencia, es un
 Resource.

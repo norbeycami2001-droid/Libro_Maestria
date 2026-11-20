@@ -15,7 +15,7 @@ El \textbf{método de Schultz} utiliza múltiples brokers MQTT (uno por nivel o 
 \label{fig:schultz}
 \end{figure}
 
-Por su parte, el \textbf{método de Parris} usa un único broker para todo el UNS \cite{web4}. A diferencia del método de Schultz, donde la jerarquía surge de la topología de brokers, aquí la jerarquía completa se codifica dentro del campo \textit{group\_id} del tópico Sparkplug, usando un delimitador (por ejemplo, "\texttt{:}") para separar los niveles:
+Por su parte, el \textbf{método de Parris} usa un único broker para todo el UNS \cite{ref17}. A diferencia del método de Schultz, donde la jerarquía surge de la topología de brokers, aquí la jerarquía completa se codifica dentro del campo \textit{group\_id} del tópico Sparkplug, usando un delimitador (por ejemplo, "\texttt{:}") para separar los niveles, como en el ejemplo que recoge \cite{web4}:
 
 \begin{center}
     \textit{spBv1.0/Plant:Area:Line:Cell/DDATA/<edgenode\_id>}
@@ -102,7 +102,7 @@ Los tags descritos a continuación corresponden a los definidos en cada UDT del 
     \item \texttt{Planned Downtime}: tiempo de parada programada (por ejemplo, mantenimiento).
     \item \texttt{Unplanned Downtime}: tiempo de parada no programada (fallas o incidencias).
     \item \texttt{Run Time}: tiempo total que la línea estuvo efectivamente en marcha.
-    \item \texttt{Current Time}: tiempo transcurrido desde el inicio de la corrida hasta el momento actual.
+    \item \texttt{Current Time}: hora actual en el momento de la lectura.
     \item \texttt{WorkOrder}: número de la orden de producción (WO) asociada a esta corrida.
     \item \texttt{Start Time}, \texttt{End Time}: hora de inicio y fin de la corrida.
 \end{itemize}
@@ -116,7 +116,7 @@ Los tags descritos a continuación corresponden a los definidos en cada UDT del 
     \item \texttt{Waste}: contador acumulado de fardos desperdiciados. Se cumple que \texttt{Infeed} = \texttt{Outfeed} + \texttt{Waste}.
     \item \texttt{Run Time}: tiempo acumulado de operación durante la corrida actual.
     \item \texttt{Cycle Time}: tiempo que tarda la línea en completar un ciclo de producción.
-    \item \texttt{Start Time}, \texttt{Current Time}: hora de inicio de la corrida y tiempo transcurrido hasta ahora.
+    \item \texttt{Start Time}, \texttt{Current Time}: hora de inicio de la corrida y hora actual en el momento de la lectura.
     \item Indicadores de desempeño: replica el mismo conjunto de indicadores descrito en el contexto MES, calculado en tiempo real a nivel de línea.
 \end{itemize}
 
@@ -226,7 +226,7 @@ Dentro del Designer de Ignition se creó un único Tag Provider \cite{ignition_t
 
 \subsubsection{Definición de los UDT}
 
-Cada contexto de datos definido en el diseño (MES, Line, ERP, Edge) se implementó como una plantilla de \textit{User-Defined Type} independiente \cite{ignition_udt}, de modo que la estructura se defina una sola vez y se reutilice en las cuatro líneas sin duplicar la definición de tags. Cada UDT define sus tags en un único nivel: el UDT \texttt{MES} integra los indicadores base de desempeño junto con el desglose completo de su cálculo, y el UDT \texttt{Edge} agrupa las cuatro señales de estado del equipo.
+Cada contexto de datos definido en el diseño (MES, Line, ERP, Edge) se implementó como una plantilla de \textit{User-Defined Type} independiente \cite{ignition_udt}, de modo que la estructura se defina una sola vez y se reutilice en las cuatro líneas sin duplicar la definición de tags. Cada UDT define sus tags a partir de una sola plantilla (el UDT \texttt{Line} anida además la carpeta \texttt{OEE} con el desglose de los indicadores): el UDT \texttt{MES} integra los indicadores base de desempeño junto con el desglose completo de su cálculo, y el UDT \texttt{Edge} agrupa las cuatro señales de estado del equipo.
 
 El caso más representativo de esta reutilización es el UDT \textbf{Edge}: al tener la misma estructura para ambos tipos de equipo, se definió una única vez y se instanció en las doce celdas del caso de estudio (ocho Empacadoras y cuatro Enfardadoras), de modo que una modificación a la plantilla se refleja automáticamente en las doce instancias sin repetir el trabajo de configuración manual.
 
