@@ -62,11 +62,11 @@ Las diez preguntas se ejecutaron tres veces cada una en Claude Desktop el 19 de 
 \hline
 Rango de fechas & 3 & 3/3 & 0/3 & 21,55 & 0,22 \\
 Unidades & 12 & 12/12 & 0/12 & 9,79 & 0,80 \\
-Comparativa & 6 & 6/6 & 1/6 & 21,97 & 0,32 \\
+Comparativa & 6 & 6/6 & 0/6 & 21,97 & 0,32 \\
 Causal & 6 & 6/6 & 0/6 & 9,86 & 0,21 \\
 Sin datos & 3 & 3/3 & 0/3 & 13,29 & 1,29 \\
 \hline
-\textbf{Total} & 30 & 30/30 & \textbf{1/30} & 13,77 & 0,58 \\
+\textbf{Total} & 30 & 30/30 & \textbf{0/30} & 13,77 & 0,58 \\
 \hline
 \end{tabular}
 \end{table}
@@ -78,7 +78,7 @@ Las 30 ejecuciones fueron correctas. Las dos correcciones se comprueban así:
 \item \textbf{Unidades de conteo.} En las 12 ejecuciones de la categoría Unidades el sistema nombró la unidad que corresponde a cada nivel: fardos para la línea (C2 y C5), bolsas para la Empacadora (C3) y las bolsas por fardo del producto (C4: 20 en la presentación kilo), tomadas de la descripción de producto corregida. En las preguntas de las demás categorías, las cantidades de la línea también se expresaron en fardos.
 \end{itemize}
 
-Hay tres diferencias que no afectan el veredicto. En la pregunta C4 la referencia calcula 19,98 bolsas por fardo y las ejecuciones responden 20, que es el valor del producto; la ejecución 3 calculó 20,3 con los fardos buenos y atribuyó la diferencia a producto en tránsito, una explicación que los datos no respaldan. En la pregunta C8 el sistema reportó 92,9 \% de calidad el 5 de noviembre, porque el MES asigna cada corrida al día en que empieza, y la referencia por día calendario da 94,4 \%; en ambas el día de peor calidad es el mismo. En la ejecución 3 de la pregunta C6 hay una frase incorrecta: dice que la Línea B produjo unos 12 puntos por debajo de su velocidad ideal, pero esos 12 puntos son la diferencia con la Línea A y el rendimiento de la Línea B fue 77,2 \%. Esa es la única ejecución marcada con alucinación.
+Hay tres diferencias que no afectan el veredicto. En la pregunta C4 la referencia calcula 19,98 bolsas por fardo y las ejecuciones responden 20, que es el valor del producto; la ejecución 3 calculó 20,3 con los fardos buenos y atribuyó la diferencia a producto en tránsito, una explicación que los datos no respaldan. En la pregunta C8 el sistema reportó 92,9 \% de calidad el 5 de noviembre, porque el MES asigna cada corrida al día en que empieza, y la referencia por día calendario da 94,4 \%; en ambas el día de peor calidad es el mismo. En la ejecución 3 de la pregunta C6 hay una frase imprecisa: dice que la Línea B produjo unos 12 puntos por debajo de su velocidad ideal, pero esos 12 puntos son la diferencia con la Línea A y el rendimiento de la Línea B fue 77,2 \%. Las cifras de la respuesta son correctas y el error está en cómo se expresa la comparación, por lo que no se cuenta como alucinación y la coherencia de esa ejecución se calificó con 3.
 
 El banco es pequeño y se ejecutó con un solo modelo y una sola configuración, igual que el Anexo~\ref{anexo:banco_preguntas}. Los datos de la semana son simulados, con la misma estructura que los del Capítulo~\ref{validacionsistema}; su valor es comprobar que las correcciones funcionan, no repetir la validación completa.
 
@@ -347,7 +347,7 @@ La Línea A tuvo mejor OEE todos los días de la semana. Sus días más altos fu
 \item El MES asigna cada corrida completa al día en que empieza. Por eso las corridas que comenzaron el 8 de noviembre cuentan enteras, y una corrida que empezó el 1 y terminó el 2 no está incluida.
 \end{itemize}
 Si quieres, puedo revisar los paros y la velocidad de la Línea B para ver de dónde sale su pérdida de rendimiento.\par}
-  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: Sí}{28,46}{0,41}{3/4/5}{\texttt{get\_oee\_history} 0,19~s}{Voy a consultar el historial de OEE en el MES para las líneas de Empaque Maíz en esa semana.\par
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{28,46}{0,41}{3/4/5}{\texttt{get\_oee\_history} 0,19~s}{Voy a consultar el historial de OEE en el MES para las líneas de Empaque Maíz en esa semana.\par
 \textbf{La Línea A} tuvo el mejor OEE de Empaque Maíz entre el 2 y el 8 de noviembre: \textbf{84,8 \%}, frente a \textbf{73,3 \%} de la Línea B. Fue mejor en cada uno de los siete días.\par
 \par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
 \begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lrr@{}}
