@@ -239,7 +239,7 @@ En las preguntas ambiguas~9 y~11, el modelo reconoció que «la Línea A» y «l
 
 La pregunta~6 pedía las órdenes de trabajo de la Línea B de Empaque Trigo entre el 15 y el 21 de septiembre de 2026 y pone a prueba el desafío \desafio{D1.3}. La referencia, calculada con SQL directo, son 21 órdenes, tres de ellas iniciadas el 21. Dos de las tres ejecuciones respondieron 18 órdenes y la tercera respondió las 21 (Anexo~\ref{anexo:banco_preguntas}).
 
-La causa no fue una interpretación errónea del modelo, sino un defecto de la Tool \texttt{get\_production\_orders}. Su descripción declara que la fecha final del rango es inclusiva, pero la consulta compara el inicio programado de cada orden con esa fecha. Cuando la fecha se entrega sin hora se evalúa como las 00:00 de ese día, y las órdenes que empiezan después quedan fuera del resultado. La Tabla~\ref{tab:defecto_fecha} muestra el efecto sobre el mismo rango.
+La causa no fue una interpretación errónea del modelo, sino un defecto de la Tool \texttt{get\_production\_orders}. Su descripción declara que la fecha final del rango es inclusiva, pero la consulta compara el inicio programado de cada orden con esa fecha. Cuando la fecha se entrega sin hora se evalúa como las 00:00 de ese día, y las órdenes que empiezan después quedan fuera del resultado. La Tabla~\ref{tab:defecto_fecha} muestra el efecto sobre el mismo rango. La Tool se corrigió después de la validación, y la corrección se comprueba en el Anexo~\ref{anexo:validacion_correcciones}.
 
 \begin{table}[H]
 \centering
@@ -309,4 +309,4 @@ El segundo límite es el alcance del banco. El propósito de la validación es c
 
 Un límite adicional del simulador es que la tasa estándar de producción registrada en \texttt{standardrate} no coincide con la producción de las corridas simuladas. Es una limitación de los datos simulados y no de la planta ni del sistema. Lo relevante es que el modelo lo advirtió en las tres ejecuciones de la pregunta~12, lo que muestra que detecta incoherencias entre los datos. Con datos reales habría que confirmar esa tasa antes de usarla en un análisis de rendimiento.
 
-En conjunto, la validación contrasta que la integración del LLM con el UNS y el histórico funciona: responde de forma correcta, respaldada por los datos y en un tiempo útil. Los puntos pendientes son correcciones de las Tools que no cambian esa conclusión.
+En conjunto, la validación contrasta que la integración del LLM con el UNS y el histórico funciona: responde de forma correcta, respaldada por los datos y en un tiempo útil. Las correcciones de las Tools y de la documentación de unidades que se hicieron después de la validación se comprueban en el Anexo~\ref{anexo:validacion_correcciones} y no cambian esa conclusión.

@@ -1,0 +1,546 @@
+\section*{Anexo C: Validación de las correcciones de unidades y de fechas}
+\phantomsection
+\addcontentsline{toc}{section}{Anexo C: Validación de las correcciones de unidades y de fechas}
+\makeatletter\def\@currentlabel{C}\makeatother
+\label{anexo:validacion_correcciones}
+
+La validación del Anexo~\ref{anexo:banco_preguntas} mostró dos problemas del sistema. Primero, la Tool \texttt{get\_production\_orders} interpretaba una fecha final sin hora como el inicio de ese día y dejaba fuera las órdenes del último día del rango. Segundo, la documentación de los tags y de la base de datos describía todos los conteos en ``unidades'', sin distinguir los equipos. Este anexo describe las dos correcciones y las valida con un banco de diez preguntas sobre una semana de producción generada para ese fin.
+
+\subsection*{Correcciones}
+
+\begin{itemize}
+\item \textbf{Fecha final inclusiva.} \texttt{get\_production\_orders} normaliza el rango igual que las demás Tools de historia: una fecha final sin hora incluye el día completo y una fecha con hora se respeta. Con el rango de la pregunta 6 del Anexo~\ref{anexo:banco_preguntas} la Tool devuelve ahora las 21 órdenes, antes 18.
+\item \textbf{Unidades de conteo.} La Empacadora cuenta \textbf{bolsas} y la Enfardadora \textbf{fardos} (20 bolsas por fardo en la presentación kilo y 24 en la libra). La línea cuenta en fardos, porque su contador es el mismo de la Enfardadora. Los tags de Ignition, los comentarios de la base de datos, las respuestas de las Tools y el glosario del UNS indican ahora esa unidad. Los equipos usan dos UDT distintos, \texttt{Empacadora} y \texttt{Enfardadora}.
+\end{itemize}
+
+\subsection*{Semana de producción para la validación}
+
+Se generó en \texttt{mes\_core} una semana completa, del lunes 2 al domingo 8 de noviembre de 2026, con el mismo patrón de los datos del Anexo~\ref{anexo:banco_preguntas}: tres corridas por línea y día, una por turno, y solo el turno A el domingo. A diferencia de esos datos, la producción respeta la velocidad estándar del producto (5 fardos por minuto en libra y 4 en kilo) multiplicada por un rendimiento entre 0,75 y 0,98. Se registraron los conteos de la línea y de las tres celdas: la Enfardadora en fardos, igual a la línea, y cada Empacadora en bolsas. Por corrida, las bolsas de las dos Empacadoras suman exactamente los fardos por las bolsas por fardo del producto. La Tabla~\ref{tab:anexoc_semana} resume la semana.
+
+\begin{table}[H]
+\centering
+\caption{Semana generada del 2 al 8 de noviembre de 2026, por línea. Elaboración propia.}
+\label{tab:anexoc_semana}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lccccc}
+\hline
+\textbf{Línea} & \textbf{Corridas} & \textbf{Fardos} & \textbf{Fardos buenos} & \textbf{Fardos/min} & \textbf{Rendimiento} \\
+\hline
+Maíz A & 19 & 34.216 & 33.578 & 4,47 & 0,89 \\
+Maíz B & 19 & 23.390 & 22.961 & 3,09 & 0,77 \\
+Trigo A & 19 & 30.162 & 29.705 & 3,92 & 0,87 \\
+Trigo B & 19 & 26.889 & 26.215 & 3,49 & 0,87 \\
+\hline
+\end{tabular}
+\end{table}
+
+La semana incluye estos eventos controlados, que sirven de base para las preguntas comparativas y causales:
+
+\begin{itemize}
+\item \textbf{2026-11-04, Maíz A} (paro largo): Mechanical failure; 52 min de paro no programado.
+\item \textbf{2026-11-05, Trigo B} (desperdicio alto): tasa de desperdicio de 6 a 7,5 \% en las tres corridas; calidad por debajo de 0,95.
+\item \textbf{2026-11-06, Maíz B} (disponibilidad baja): 6 paros cortos no programados (4 a 8 min) por corrida; 12 paros en el día.
+\item \textbf{2026-11-05, Trigo A} (cambio de producto): pasa de 100202 (Trigo Libra, 24 bolsas por fardo) a 100203 (Trigo Kilo, 20 bolsas por fardo); desde el turno A del jueves.
+\item \textbf{2026-11-02 a 2026-11-08, Maíz B frente a Maíz A} (OEE menor que su par): factor de rendimiento centrado en 0,79 frente a 0,90; unos 10 puntos de rendimiento.
+\item \textbf{2026-11-08, las cuatro} (domingo reducido): solo el turno A, de 4 a 5 h; 1 corrida por línea.
+\end{itemize}
+
+\subsection*{Banco de preguntas y resultados}
+
+Las diez preguntas se ejecutaron tres veces cada una en Claude Desktop el 19 de noviembre de 2026, con el mismo procedimiento del Anexo~\ref{anexo:banco_preguntas}. La referencia de cada pregunta se calculó con consultas SQL directas a \texttt{mes\_core}, sin pasar por los servidores MCP. La Tabla~\ref{tab:anexoc_resultados} resume los resultados.
+
+\begin{table}[H]
+\centering
+\caption{Resultados de la validación de las correcciones por categoría. Elaboración propia.}
+\label{tab:anexoc_resultados}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lccccc}
+\hline
+\textbf{Categoría} & \textbf{Ejec.} & \textbf{Correctas} & \textbf{Alucinaciones} & \textbf{Latencia (s)} & \textbf{Tools (s)} \\
+\hline
+Rango de fechas & 3 & 3/3 & 0/3 & 21,55 & 0,22 \\
+Unidades & 12 & 12/12 & 0/12 & 9,79 & 0,80 \\
+Comparativa & 6 & 6/6 & 1/6 & 21,97 & 0,32 \\
+Causal & 6 & 6/6 & 0/6 & 9,86 & 0,21 \\
+Sin datos & 3 & 3/3 & 0/3 & 13,29 & 1,29 \\
+\hline
+\textbf{Total} & 30 & 30/30 & \textbf{1/30} & 13,77 & 0,58 \\
+\hline
+\end{tabular}
+\end{table}
+
+Las 30 ejecuciones fueron correctas. Las dos correcciones se comprueban así:
+
+\begin{itemize}
+\item \textbf{Fecha final inclusiva.} En las tres ejecuciones de la pregunta C1 el sistema listó las 19 órdenes de la Línea B de Empaque Trigo, incluida la WO171 del domingo 8 de noviembre, que es la del último día del rango y la que la Tool dejaba fuera antes de la corrección.
+\item \textbf{Unidades de conteo.} En las 12 ejecuciones de la categoría Unidades el sistema nombró la unidad que corresponde a cada nivel: fardos para la línea (C2 y C5), bolsas para la Empacadora (C3) y las bolsas por fardo del producto (C4: 20 en la presentación kilo), tomadas de la descripción de producto corregida. En las preguntas de las demás categorías, las cantidades de la línea también se expresaron en fardos.
+\end{itemize}
+
+Hay tres diferencias que no afectan el veredicto. En la pregunta C4 la referencia calcula 19,98 bolsas por fardo y las ejecuciones responden 20, que es el valor del producto; la ejecución 3 calculó 20,3 con los fardos buenos y atribuyó la diferencia a producto en tránsito, una explicación que los datos no respaldan. En la pregunta C8 el sistema reportó 92,9 \% de calidad el 5 de noviembre, porque el MES asigna cada corrida al día en que empieza, y la referencia por día calendario da 94,4 \%; en ambas el día de peor calidad es el mismo. En la ejecución 3 de la pregunta C6 hay una frase incorrecta: dice que la Línea B produjo unos 12 puntos por debajo de su velocidad ideal, pero esos 12 puntos son la diferencia con la Línea A y el rendimiento de la Línea B fue 77,2 \%. Esa es la única ejecución marcada con alucinación.
+
+El banco es pequeño y se ejecutó con un solo modelo y una sola configuración, igual que el Anexo~\ref{anexo:banco_preguntas}. Los datos de la semana son simulados, con la misma estructura que los del Capítulo~\ref{validacionsistema}; su valor es comprobar que las correcciones funcionan, no repetir la validación completa.
+
+\subsection*{Preguntas: rango de fechas}
+
+\fichapregunta{C1}{Rango de fechas}{¿Qué órdenes de trabajo se ejecutaron en la Línea B de Empaque Trigo entre el 2 y el 8 de noviembre de 2026?}{Corrección D (date\_to inclusivo)}{\texttt{get\_production\_orders}}{Línea B de Empaque Trigo, 2 al 8 de noviembre de 2026: 19 órdenes (WO105 a WO171), todas del producto 100203 (Trigo Kilo); la del domingo 8 es WO171.}
+  \ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{24,34}{0,26}{5/4/5}{\texttt{get\_production\_orders} 0,25~s}{Voy a consultar el historial del MES para la Línea B de Empaque Trigo en ese rango de fechas.\par
+Entre el 2 y el 8 de noviembre la Línea B de Empaque Trigo ejecutó \textbf{19 órdenes de trabajo}, todas del mismo producto: \textbf{100203 -- Trigo, Kilo, 20 bolsas por fardo}. Hubo tres turnos por día (06:00, 14:00 y 22:00), salvo el 8 de noviembre, cuando solo corrió el turno de la mañana.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllrrr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{OT} & \textbf{Inicio real} & \textbf{Fin real} & \textbf{Planeado (fardos)} & \textbf{Real (fardos)} & \textbf{Cumplimiento} \\
+\midrule
+WO105 & 02-nov 06:06 & 02-nov 12:51 & 1.370 & 1.344 & 98,1 \% \\
+\rowcolor{tblzebra}WO106 & 02-nov 14:06 & 02-nov 21:15 & 1.518 & 1.423 & 93,7 \% \\
+WO107 & 02-nov 22:04 & 03-nov 05:05 & 1.549 & 1.457 & 94,1 \% \\
+\rowcolor{tblzebra}WO117 & 03-nov 06:09 & 03-nov 13:36 & 1.542 & 1.529 & 99,2 \% \\
+WO118 & 03-nov 14:07 & 03-nov 21:18 & 1.456 & 1.430 & 98,2 \% \\
+\rowcolor{tblzebra}WO119 & 03-nov 22:04 & 04-nov 05:16 & 1.629 & 1.551 & 95,2 \% \\
+WO129 & 04-nov 06:09 & 04-nov 13:33 & 1.452 & 1.438 & 99,0 \% \\
+\rowcolor{tblzebra}WO130 & 04-nov 14:04 & 04-nov 20:56 & 1.595 & 1.490 & 93,4 \% \\
+WO131 & 04-nov 22:09 & 05-nov 05:28 & 1.606 & 1.554 & 96,8 \% \\
+\rowcolor{tblzebra}WO141 & 05-nov 06:04 & 05-nov 12:51 & 1.428 & 1.401 & 98,1 \% \\
+WO142 & 05-nov 14:05 & 05-nov 21:05 & 1.490 & 1.417 & 95,1 \% \\
+\rowcolor{tblzebra}WO143 & 05-nov 22:04 & 06-nov 04:55 & 1.364 & 1.361 & 99,8 \% \\
+WO153 & 06-nov 06:08 & 06-nov 13:13 & 1.548 & 1.479 & 95,5 \% \\
+\rowcolor{tblzebra}WO154 & 06-nov 14:02 & 06-nov 21:14 & 1.341 & 1.339 & 99,9 \% \\
+WO155 & 06-nov 22:06 & 07-nov 05:15 & 1.560 & 1.447 & 92,8 \% \\
+\rowcolor{tblzebra}WO165 & 07-nov 06:04 & 07-nov 13:25 & 1.523 & 1.474 & 96,8 \% \\
+WO166 & 07-nov 14:08 & 07-nov 21:15 & 1.429 & 1.350 & 94,5 \% \\
+\rowcolor{tblzebra}WO167 & 07-nov 22:03 & 08-nov 04:58 & 1.465 & 1.432 & 97,7 \% \\
+WO171 & 08-nov 06:07 & 08-nov 11:04 & 988 & 973 & 98,5 \% \\
+\rowcolor{tblzebra}\textbf{Total} &  &  & \textbf{27.853} & \textbf{26.889} & \textbf{96,5 \%} \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+\textbf{Resumen:}\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item Ninguna orden alcanzó el 100 \% de lo planeado. En total faltaron \textbf{964 fardos}.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item Las órdenes con menor cumplimiento fueron \textbf{WO155} (92,8 \%, turno noche del 6 al 7), \textbf{WO130} (93,4 \%) y \textbf{WO106} (93,7 \%). Las dos últimas corresponden a turnos de tarde.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item Todas las órdenes arrancaron unos 3 minutos tarde. Aun así, todas cerraron antes del fin planeado, con corridas de entre 5 y 7,5 horas frente a ventanas de 8 horas. Es decir, la diferencia no se explica porque se acabara el tiempo del turno.
+\end{itemize}
+Si quieres, puedo cruzar estas órdenes con los eventos de parada o el OEE de esa semana para ver qué afectó a las de menor cumplimiento.\par}
+  \ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{18,97}{0,20}{5/5/5}{\texttt{get\_production\_orders} 0,19~s}{Voy a consultar el historial del MES para las órdenes de producción de esa línea en ese rango de fechas.\par
+En la Línea B de Empaque Trigo se ejecutaron \textbf{19 órdenes de trabajo} entre el 2 y el 8 de noviembre. Todas fueron del mismo producto, \textbf{100203 -- Trigo Kilo, 20 bolsas por fardo}. Se trabajaron tres turnos diarios ($\approx$06:00, 14:00 y 22:00), salvo el domingo 8, que solo tuvo el turno de la mañana.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllrrr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Fecha} & \textbf{Turno} & \textbf{OT} & \textbf{Planeado (fardos)} & \textbf{Real (fardos)} & \textbf{Cumplimiento} \\
+\midrule
+2-nov & Mañana & WO105 & 1.370 & 1.344 & 98,1 \% \\
+\rowcolor{tblzebra}2-nov & Tarde & WO106 & 1.518 & 1.423 & 93,7 \% \\
+2-nov & Noche & WO107 & 1.549 & 1.457 & 94,1 \% \\
+\rowcolor{tblzebra}3-nov & Mañana & WO117 & 1.542 & 1.529 & 99,2 \% \\
+3-nov & Tarde & WO118 & 1.456 & 1.430 & 98,2 \% \\
+\rowcolor{tblzebra}3-nov & Noche & WO119 & 1.629 & 1.551 & 95,2 \% \\
+4-nov & Mañana & WO129 & 1.452 & 1.438 & 99,0 \% \\
+\rowcolor{tblzebra}4-nov & Tarde & WO130 & 1.595 & 1.490 & 93,4 \% \\
+4-nov & Noche & WO131 & 1.606 & 1.554 & 96,8 \% \\
+\rowcolor{tblzebra}5-nov & Mañana & WO141 & 1.428 & 1.401 & 98,1 \% \\
+5-nov & Tarde & WO142 & 1.490 & 1.417 & 95,1 \% \\
+\rowcolor{tblzebra}5-nov & Noche & WO143 & 1.364 & 1.361 & 99,8 \% \\
+6-nov & Mañana & WO153 & 1.548 & 1.479 & 95,5 \% \\
+\rowcolor{tblzebra}6-nov & Tarde & WO154 & 1.341 & 1.339 & 99,9 \% \\
+6-nov & Noche & WO155 & 1.560 & 1.447 & 92,8 \% \\
+\rowcolor{tblzebra}7-nov & Mañana & WO165 & 1.523 & 1.474 & 96,8 \% \\
+7-nov & Tarde & WO166 & 1.429 & 1.350 & 94,5 \% \\
+\rowcolor{tblzebra}7-nov & Noche & WO167 & 1.465 & 1.432 & 97,7 \% \\
+8-nov & Mañana & WO171 & 988 & 973 & 98,5 \% \\
+\rowcolor{tblzebra}\textbf{Total} &  & \textbf{19 OT} & \textbf{27.853} & \textbf{26.889} & \textbf{96,5 \%} \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+\textbf{Puntos a destacar}\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Producción.} La semana cerró con 964 fardos por debajo de lo planeado.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Órdenes con menor cumplimiento.} WO155 (92,8 \%), WO130 (93,4 \%) y WO106 (93,7 \%), todas de turnos de tarde o noche.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Órdenes con mejor cumplimiento.} WO154 y WO143 quedaron prácticamente en el plan ($\approx$99,9 \%).
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Horarios.} Todas las órdenes arrancaron unos 3 minutos después de lo planeado. Todas terminaron antes de la hora de fin planeada, en general entre 40 minutos y 1 hora y 15 minutos antes. Aun así, no alcanzaron la cantidad planeada.
+\end{itemize}
+Si quieres, puedo cruzar estas órdenes con los eventos de parada o el OEE de la línea para ver qué explica las de menor cumplimiento.\par}
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{21,35}{0,21}{5/4/5}{\texttt{get\_production\_orders} 0,20~s}{Voy a consultar el historial MES de órdenes de producción para esa línea y ese rango de fechas.\par
+Entre el 2 y el 8 de noviembre de 2026 se ejecutaron \textbf{19 órdenes de trabajo} en la Línea B de Empaque Trigo. Todas fueron del mismo producto, \textbf{100203 -- Trigo Kilo, 20 bolsas por fardo}, programadas en tres turnos diarios. El 8 de noviembre solo hubo turno de mañana.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllrrr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Orden} & \textbf{Inicio real} & \textbf{Fin real} & \textbf{Planeado (fardos)} & \textbf{Real (fardos)} & \textbf{Cumplimiento} \\
+\midrule
+WO105 & 02-nov 06:06 & 02-nov 12:51 & 1.370 & 1.344 & 98,1 \% \\
+\rowcolor{tblzebra}WO106 & 02-nov 14:06 & 02-nov 21:15 & 1.518 & 1.423 & 93,7 \% \\
+WO107 & 02-nov 22:04 & 03-nov 05:05 & 1.549 & 1.457 & 94,1 \% \\
+\rowcolor{tblzebra}WO117 & 03-nov 06:09 & 03-nov 13:36 & 1.542 & 1.529 & 99,2 \% \\
+WO118 & 03-nov 14:07 & 03-nov 21:18 & 1.456 & 1.430 & 98,2 \% \\
+\rowcolor{tblzebra}WO119 & 03-nov 22:04 & 04-nov 05:16 & 1.629 & 1.551 & 95,2 \% \\
+WO129 & 04-nov 06:09 & 04-nov 13:33 & 1.452 & 1.438 & 99,0 \% \\
+\rowcolor{tblzebra}WO130 & 04-nov 14:04 & 04-nov 20:56 & 1.595 & 1.490 & 93,4 \% \\
+WO131 & 04-nov 22:09 & 05-nov 05:28 & 1.606 & 1.554 & 96,8 \% \\
+\rowcolor{tblzebra}WO141 & 05-nov 06:04 & 05-nov 12:51 & 1.428 & 1.401 & 98,1 \% \\
+WO142 & 05-nov 14:05 & 05-nov 21:05 & 1.490 & 1.417 & 95,1 \% \\
+\rowcolor{tblzebra}WO143 & 05-nov 22:04 & 06-nov 04:55 & 1.364 & 1.361 & 99,8 \% \\
+WO153 & 06-nov 06:08 & 06-nov 13:13 & 1.548 & 1.479 & 95,5 \% \\
+\rowcolor{tblzebra}WO154 & 06-nov 14:02 & 06-nov 21:14 & 1.341 & 1.339 & 99,9 \% \\
+WO155 & 06-nov 22:06 & 07-nov 05:15 & 1.560 & 1.447 & 92,8 \% \\
+\rowcolor{tblzebra}WO165 & 07-nov 06:04 & 07-nov 13:25 & 1.523 & 1.474 & 96,8 \% \\
+WO166 & 07-nov 14:08 & 07-nov 21:15 & 1.429 & 1.350 & 94,5 \% \\
+\rowcolor{tblzebra}WO167 & 07-nov 22:03 & 08-nov 04:58 & 1.465 & 1.432 & 97,7 \% \\
+WO171 & 08-nov 06:07 & 08-nov 11:04 & 988 & 973 & 98,5 \% \\
+\rowcolor{tblzebra}\textbf{Total} &  &  & \textbf{27.853} & \textbf{26.889} & \textbf{96,5 \%} \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+\textbf{Resultado de la semana}\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Faltante total:} 964 fardos frente a lo planeado.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Órdenes más bajas:} WO155 (92,8 \%), WO130 (93,4 \%) y WO106 (93,7 \%). Las tres fueron de turno de tarde o de noche.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Órdenes casi completas:} WO154 (99,9 \%) y WO143 (99,8 \%).
+\end{itemize}
+Todas las órdenes iniciaron unos 3 minutos tarde y cerraron entre 45 minutos y 1 hora antes del fin planeado, aunque ninguna llegó a la cantidad planeada. Puede valer la pena revisarlo.\par
+Puedo cruzar esto con los eventos de paro u OEE de esos días para ver qué explica las órdenes más bajas.\par}
+
+\subsection*{Preguntas: unidades}
+
+\fichapregunta{C2}{Unidades}{¿Cuántos fardos buenos produjo la Línea A de Empaque Maíz el 3 de noviembre de 2026?}{Unidad de la línea (fardos)}{\texttt{get\_count\_history o get\_oee\_history}}{Línea A de Empaque Maíz, 3 de noviembre de 2026: 5.523 fardos buenos (5.625 en total, 102 de desperdicio).}
+  \ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{6,14}{0,60}{5/5/5}{\texttt{get\_count\_history} 0,59~s}{La Línea A de Empaque Maíz produjo \textbf{5.523 fardos buenos} el 3 de noviembre de 2026 (día completo, de 00:00 a 24:00 hora de Colombia).\par
+Este es el conteo de unidades buenas de la línea, que coincide con el de la Enfardadora. Solo incluye la producción registrada dentro de corridas.\par}
+  \ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{13,34}{1,05}{5/4/5}{\texttt{get\_count\_history} 0,53~s}{El 3 de noviembre de 2026, la Línea A de Empaque Maíz produjo \textbf{5.523 fardos buenos} en el día calendario (00:00 a 24:00, hora de Colombia).\par
+Si en la planta cuentan el día por turnos (A, B y C que arrancan el 3), el total es \textbf{5.487 fardos buenos}.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Turno} & \textbf{Horario} & \textbf{Fardos buenos} \\
+\midrule
+C del 2 nov (parte después de medianoche) & 00:00--06:00 & 1.350 \\
+\rowcolor{tblzebra}A & 06:00--14:00 & 1.812 \\
+B & 14:00--22:00 & 1.831 \\
+\rowcolor{tblzebra}C del 3 nov (parte antes de medianoche) & 22:00--24:00 & 530 \\
+C del 3 nov (turno completo) & 22:00--06:00 del 4 & 1.844 \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+La diferencia entre los dos totales sale del turno C, que cruza la medianoche. Este conteo es el de la línea, que es el mismo de la Enfardadora.\par}
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{12,03}{1,15}{5/4/5}{\texttt{get\_count\_history} 0,57~s}{El 3 de noviembre de 2026, la Línea A de Empaque Maíz produjo \textbf{5.523 fardos buenos} en el día calendario, de 00:00 a 24:00.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Tramo del día} & \textbf{Fardos buenos} \\
+\midrule
+00:00--06:00 (final del turno C del 2-nov) & 1.350 \\
+\rowcolor{tblzebra}06:00--14:00 (turno A) & 1.812 \\
+14:00--22:00 (turno B) & 1.831 \\
+\rowcolor{tblzebra}22:00--24:00 (inicio del turno C) & 530 \\
+\textbf{Total} & \textbf{5.523} \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+Si lo miran por día de producción, es decir los turnos A, B y C que empiezan el 3-nov (de 06:00 a 06:00 del día siguiente), el total es \textbf{5.487 fardos}. El turno C completo de esa noche aportó 1.844.\par}
+
+\fichapregunta{C3}{Unidades}{¿Cuántas bolsas empacó la Empacadora 1 de la Línea A de Empaque Trigo el 4 de noviembre de 2026?}{Unidad de la celda (bolsas)}{\texttt{get\_count\_history (cell)}}{Empacadora 1 de la Línea A de Empaque Trigo, 4 de noviembre de 2026: 63.985 bolsas en total (63.305 buenas y 680 de desperdicio).}
+  \ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{12,11}{0,63}{5/4/5}{\texttt{get\_count\_history} 0,62~s}{La Empacadora 1 de la Línea A (Empaque Trigo) empacó \textbf{63.985 bolsas} el 4 de noviembre de 2026, contando de 00:00 a 24:00. De ese total, \textbf{63.305 fueron buenas} y \textbf{680 se perdieron como desperdicio}, es decir, cerca del 1,1 \%.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}llrrr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Tramo del día} & \textbf{Turno} & \textbf{Total} & \textbf{Buenas} & \textbf{Desperdicio} \\
+\midrule
+00:00--06:00 & C (iniciado el 3 nov) & 16.793 & 16.596 & 197 \\
+\rowcolor{tblzebra}06:00--14:00 & A & 20.964 & 20.706 & 258 \\
+14:00--22:00 & B & 20.191 & 20.023 & 168 \\
+\rowcolor{tblzebra}22:00--24:00 & C (iniciado el 4 nov) & 6.037 & 5.980 & 57 \\
+\textbf{Total} &  & \textbf{63.985} & \textbf{63.305} & \textbf{680} \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+Si lo necesita por día de producción (turnos A, B y C del 4 de noviembre, con el turno C completo hasta las 06:00 del 5), la cifra cambia. Puedo calcularla.\par}
+  \ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{7,41}{0,63}{5/5/5}{\texttt{get\_count\_history} 0,62~s}{El 4 de noviembre de 2026, la Empacadora 1 de la Línea A (Empaque Trigo) empacó \textbf{63.985 bolsas} en total:\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Buenas:} 63.305 bolsas
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Desperdicio:} 680 bolsas (aprox. 1,1 \%)
+\end{itemize}
+Esta cifra cuenta solo la producción asociada a corridas, de 00:00 a 24:00 hora de Colombia, según el historial del MES.\par}
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{8,02}{0,73}{5/5/5}{\texttt{get\_count\_history} 0,72~s}{Voy a consultar el historial de conteos del MES para esa empacadora.\par
+El 4 de noviembre de 2026, la \textbf{Empacadora 1 de la Línea A (Empaque Trigo)} empacó \textbf{63.985 bolsas} en total, según el historial del MES:\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Bolsas buenas:} 63.305
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Desperdicio:} 680 bolsas ($\approx$1,1 \%)
+\end{itemize}
+Estas cifras solo incluyen la producción asociada a corridas, así que cuadran con los totales por corrida del OEE. El día completo va de 00:00 a 24:00, hora de Colombia.\par}
+
+\fichapregunta{C4}{Unidades}{¿Cuántas bolsas por fardo se empacaron en la Línea B de Empaque Maíz el 2 de noviembre de 2026?}{Relación bolsas por fardo}{\texttt{get\_count\_history (cell)}}{Línea B de Empaque Maíz, 2 de noviembre de 2026: las empacadoras sacaron 59.775 bolsas buenas y la enfardadora formó 2.991 fardos, 19,98 bolsas por fardo (producto 100201, Maíz Kilo, 20 bolsas por fardo).}
+  \ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{10,85}{0,86}{5/4/5}{\texttt{get\_production\_orders} 0,54~s}{Voy a consultar el historial del MES para la Línea B de Empaque Maíz.\par
+Se empacó con \textbf{20 bolsas por fardo} durante todo el día.\par
+Las tres órdenes de trabajo de ese día en la Línea B (WO99, WO100 y WO101) fueron del mismo producto, el \textbf{100201 "Maíz -- Kilo -- 20 bolsas por fardo"}, así que no hubo cambio de presentación.\par
+Como referencia, la línea produjo \textbf{2.991 fardos} el 2 de noviembre (00:00--24:00): 2.945 buenos y 46 de desperdicio. La orden WO101 empezó a las 22:03 y terminó a las 05:25 del día 3, así que una parte de sus 1.303 fardos cae el 3 de noviembre.\par}
+  \ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{7,49}{0,20}{5/5/5}{\texttt{get\_production\_orders} 0,19~s}{Voy a consultar el historial del MES para la Línea B de Empaque Maíz.\par
+El 2 de noviembre de 2026 la Línea B de Empaque Maíz empacó \textbf{20 bolsas por fardo}.\par
+Las tres órdenes del día (WO99, WO100 y WO101) fueron del mismo producto, el código 100201 "Maiz - Kilo - 20 bolsas por fardo", así que la presentación no cambió en toda la jornada. La WO101 arrancó a las 22:03 y terminó a las 05:25 del 3 de noviembre.\par}
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{16,53}{1,97}{4/4/5}{\texttt{get\_production\_orders} 0,51~s}{Voy a consultar el historial del MES para la Línea B de Empaque Maíz.\par
+El 2 de noviembre de 2026 la Línea B de Empaque Maíz empacó \textbf{20 bolsas por fardo}. Las tres órdenes del día (WO99, WO100 y WO101) fueron del mismo producto, el 100201 "Maíz -- Kilo -- 20 bolsas por fardo".\par
+Los contadores del día cuadran con ese formato:\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Empacadoras 1 y 2:} 59.775 bolsas buenas (29.440 + 30.335).
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Enfardadora:} 2.945 fardos buenos, que equivalen a 58.900 bolsas a 20 por fardo.
+\end{itemize}
+La relación real da unas 20,3 bolsas por fardo. Las cerca de 875 bolsas de diferencia probablemente son producto en tránsito entre las empacadoras y la enfardadora, o bolsas que se rechazaron en el enfardado sin que se registraran como desperdicio en las empacadoras.\par
+Los conteos cubren el día calendario, de 00:00 a 24:00. La orden WO101 empezó a las 22:03 y terminó la madrugada del 3 de noviembre, así que solo una parte de ella entra en estos totales.\par}
+
+\fichapregunta{C5}{Unidades}{¿Cuánto produjo la Línea A de Empaque Trigo el 6 de noviembre de 2026 y en qué unidad?}{Unidad sin pista en la pregunta}{\texttt{get\_count\_history o get\_oee\_history}}{Línea A de Empaque Trigo, 6 de noviembre de 2026: 4.468 fardos en total (4.413 buenos y 55 de desperdicio). La línea cuenta en fardos.}
+  \ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{8,17}{0,59}{5/5/5}{\texttt{get\_count\_history} 0,58~s}{Consulto el historial del MES para esa línea y fecha.\par
+El 6 de noviembre de 2026, la Línea A de Empaque Trigo produjo \textbf{4.468 fardos} en total (día completo, hora de Colombia).\par
+De ese total, 4.413 fueron fardos buenos y 55 fueron desperdicio, lo que da un rendimiento de calidad de aproximadamente 98,8 \%.\par
+El conteo de la línea es el mismo de la Enfardadora, por eso está en fardos. Las Empacadoras cuentan en bolsas; si quieres la producción de cada una en bolsas, te la saco.\par}
+  \ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{7,54}{0,56}{5/5/5}{\texttt{get\_count\_history} 0,55~s}{Voy a consultar el historial de producción del MES para esa línea y fecha.\par
+El 6 de noviembre de 2026, la Línea A de Empaque Trigo produjo \textbf{4.468 fardos} en total. De ese total, \textbf{4.413 fardos} fueron buenos y \textbf{55 fardos} fueron desperdicio, lo que equivale a una tasa de calidad cercana al 98,8 \%.\par
+La unidad es el \textbf{fardo} porque el conteo de la línea es el mismo de la Enfardadora. Si necesitas la producción de cada Empacadora, esa se mide en \textbf{bolsas} y te la puedo consultar por separado.\par}
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{7,81}{0,65}{5/5/5}{\texttt{get\_count\_history} 0,64~s}{Voy a consultar el historial de producción del MES para esa línea y fecha.\par
+El 6 de noviembre de 2026, la Línea A de Empaque Trigo produjo \textbf{4.468 fardos} en total. De ellos, \textbf{4.413 fueron buenos} y \textbf{55 fueron desperdicio}, es decir, un rendimiento de calidad de aproximadamente 98,8 \%.\par
+La unidad es \textbf{fardos}, porque el conteo de la línea es el de la Enfardadora. Las Empacadoras 1 y 2 cuentan en bolsas; si quieres esa cifra, la consulto por separado. El total incluye solo la producción asociada a corridas, en hora de Colombia (00:00 a 24:00).\par}
+
+\subsection*{Preguntas: comparativa}
+
+\fichapregunta{C6}{Comparativa}{¿Qué línea de Empaque Maíz tuvo mejor OEE entre el 2 y el 8 de noviembre de 2026?}{D2.1}{\texttt{get\_oee\_history}}{2 al 8 de noviembre de 2026. Línea A de Empaque Maíz: OEE 84,8 \% (disponibilidad 96,6 \%, rendimiento 89,4 \%, calidad 98,1 \%); 19 corridas, 34.216 total, 33.578 buenas, 638 desperdicio. Línea B de Empaque Maíz: OEE 73,3 \% (disponibilidad 96,8 \%, rendimiento 77,2 \%, calidad 98,2 \%); 19 corridas, 23.390 total, 22.961 buenas, 429 desperdicio. Mejor OEE: Línea A de Empaque Maíz.}
+  \ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{29,36}{0,41}{5/4/5}{\texttt{get\_oee\_history} 0,24~s}{Voy a consultar el historial de OEE en el MES para las líneas de Empaque Maíz en ese rango.\par
+\textbf{La Línea A} tuvo el mejor OEE del 2 al 8 de noviembre: \textbf{84,8 \%}, frente a \textbf{73,3 \%} de la Línea B, unos 11,5 puntos de diferencia. Fue mejor los siete días, y su mejor día fue el 3 de noviembre, con 87,4 \%.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lrr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Semana 2--8 nov} & \textbf{Línea A} & \textbf{Línea B} \\
+\midrule
+\textbf{OEE} & \textbf{84,8 \%} & \textbf{73,3 \%} \\
+\rowcolor{tblzebra}Disponibilidad & 96,6 \% & 96,8 \% \\
+Rendimiento & 89,4 \% & 77,2 \% \\
+\rowcolor{tblzebra}Calidad & 98,1 \% & 98,2 \% \\
+Fardos totales / buenos & 34.216 / 33.578 & 23.390 / 22.961 \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+Casi toda la diferencia viene del \textbf{rendimiento}. En disponibilidad y calidad las dos líneas están prácticamente iguales. La Línea B produjo a cerca del 77 \% de su velocidad ideal, mientras que la A estuvo cerca del 89 \%. Por eso, si se quiere mejorar la B, lo más importante es revisar microparos y velocidad reducida, no los paros largos.\par
+\textbf{Cómo calculé el OEE semanal:} sumé los tiempos y conteos de todas las corridas del MES que empezaron en ese rango y recalculé el OEE con esos totales, sin promediar los OEE diarios. Si una corrida empezó el 1 de noviembre, no está incluida.\par
+¿Quieres que revise los eventos de paro o la tasa estándar de la Línea B para ver qué está bajando su rendimiento?\par}
+  \ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{26,40}{0,35}{5/4/5}{\texttt{get\_oee\_history} 0,17~s}{Voy a consultar el historial de OEE en el MES para las líneas de Empaque Maíz en ese rango.\par
+La \textbf{Línea A} tuvo el mejor OEE en Empaque Maíz entre el 2 y el 8 de noviembre: \textbf{84,8 \%}, frente a \textbf{73,3 \%} de la Línea B. La diferencia es de unos 11,5 puntos.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Indicador} & \textbf{Línea A} & \textbf{Línea B} \\
+\midrule
+\textbf{OEE} & \textbf{84,8 \%} & \textbf{73,3 \%} \\
+\rowcolor{tblzebra}Disponibilidad & 96,6 \% & 96,8 \% \\
+Rendimiento & 89,4 \% & 77,2 \% \\
+\rowcolor{tblzebra}Calidad & 98,1 \% & 98,2 \% \\
+Fardos producidos (buenos) & 34.216 (33.578) & 23.390 (22.961) \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+\textbf{Qué explica la diferencia}\par
+La brecha está casi entera en el \textbf{rendimiento}. Disponibilidad y calidad son prácticamente iguales en las dos líneas. La Línea B produce cerca de 23 \% menos fardos que su tasa ideal, mientras que la A pierde un poco más del 10 \%.\par
+La Línea A tuvo mejor OEE todos los días de la semana. Sus días más altos fueron el 3 de noviembre (87,4 \%) y el 7 de noviembre (87,2 \%). El día más bajo de la B fue el 6 de noviembre (70,2 \%), por 1,5 h de paros no programados.\par
+\textbf{Cómo se calcularon los totales}\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item Los indicadores de la semana se recalcularon a partir de los tiempos y conteos sumados de cada día, sin promediar porcentajes.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item El MES asigna cada corrida completa al día en que empieza. Por eso las corridas que comenzaron el 8 de noviembre cuentan enteras, y una corrida que empezó el 1 y terminó el 2 no está incluida.
+\end{itemize}
+Si quieres, puedo revisar los paros y la velocidad de la Línea B para ver de dónde sale su pérdida de rendimiento.\par}
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: Sí}{28,46}{0,41}{3/4/5}{\texttt{get\_oee\_history} 0,19~s}{Voy a consultar el historial de OEE en el MES para las líneas de Empaque Maíz en esa semana.\par
+\textbf{La Línea A} tuvo el mejor OEE de Empaque Maíz entre el 2 y el 8 de noviembre: \textbf{84,8 \%}, frente a \textbf{73,3 \%} de la Línea B. Fue mejor en cada uno de los siete días.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lrr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Semana 2--8 nov} & \textbf{Línea A} & \textbf{Línea B} \\
+\midrule
+\textbf{OEE} & \textbf{84,8 \%} & \textbf{73,3 \%} \\
+\rowcolor{tblzebra}Disponibilidad & 96,6 \% & 96,8 \% \\
+Rendimiento & 89,4 \% & 77,2 \% \\
+\rowcolor{tblzebra}Calidad & 98,1 \% & 98,2 \% \\
+Fardos producidos & 34.216 & 23.390 \\
+\rowcolor{tblzebra}Fardos buenos & 33.578 & 22.961 \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+Las dos líneas están prácticamente igual en disponibilidad y calidad. La diferencia completa sale del \textbf{rendimiento}: la Línea B produjo cerca de 12 puntos por debajo de su velocidad ideal toda la semana, de forma constante (entre 75 y 81 \% al día). Eso apunta más a microparadas o a velocidad reducida que a paros largos.\par
+El mejor día de la Línea A fue el martes 3 de noviembre, con 87,4 \%. El peor de la Línea B fue el viernes 6, con 70,2 \%, por casi 1,5 h de paro no programado.\par
+Para el total semanal sumé tiempos y conteos de todas las corridas y recalculé cada componente, sin promediar los OEE diarios. Las corridas que empezaron el 8 de noviembre se contaron completas aunque terminaran el 9.\par
+Si quieres, puedo revisar los paros y las tasas de la Línea B para ver qué le está quitando rendimiento.\par}
+
+\fichapregunta{C9}{Comparativa}{¿Qué productos empacó la Línea A de Empaque Trigo entre el 2 y el 8 de noviembre de 2026 y cuándo cambió de producto?}{D1.3}{\texttt{get\_production\_orders}}{Línea A de Empaque Trigo, 2 al 8 de noviembre de 2026: empacó 100202 (Trigo Libra, 24 bolsas por fardo) hasta el 4 de noviembre y 100203 (Trigo Kilo, 20 bolsas por fardo) desde el 5 de noviembre a las 06:08.}
+  \ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{14,96}{0,27}{5/4/5}{\texttt{get\_production\_orders} 0,25~s}{Voy a consultar el historial del MES para las órdenes de producción de la Línea A de Empaque Trigo en ese rango.\par
+La Línea A de Empaque Trigo empacó \textbf{dos productos} entre el 2 y el 8 de noviembre, con \textbf{un único cambio de producto el jueves 5 de noviembre}.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllllr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Periodo} & \textbf{Producto} & \textbf{Órdenes} & \textbf{Planeado} & \textbf{Real} & \textbf{Cumplimiento} \\
+\midrule
+2 nov 06:08 $\rightarrow$ 5 nov 05:13 & \textbf{100202} -- Trigo Libra, 24 bolsas/fardo & WO102--104, WO114--116, WO126--128 (9) & 16.905 fardos & 16.288 fardos & 96,4 \% \\
+\rowcolor{tblzebra}5 nov 06:08 $\rightarrow$ 8 nov 10:51 & \textbf{100203} -- Trigo Kilo, 20 bolsas/fardo & WO138--140, WO150--152, WO162--164, WO170 (10) & 14.257 fardos & 13.874 fardos & 97,3 \% \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+\textbf{El cambio de producto:}\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item La última orden de Libra fue la WO128, del turno de noche del 4 al 5 de noviembre. Terminó el 5 de noviembre a las 05:13:36.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item La primera orden de Kilo fue la WO138. Arrancó ese mismo día a las 06:08.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item Entre las dos hay unos \textbf{54 minutos sin orden activa}. Esa ventana coincide con el fin del turno de noche y el arranque del turno de mañana.
+\end{itemize}
+\textbf{Otros detalles:}\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item La línea trabajó en tres turnos con una orden por turno, que arrancaban hacia las 06:00, 14:00 y 22:00.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item El 8 de noviembre solo corrió la WO170. Era más corta que las demás (941 fardos planeados) y terminó a las 10:51. Después de esa hora no aparece ninguna orden dentro del rango que consultaste.
+\end{itemize}
+Puedo revisar los paros registrados alrededor del cambio del 5 de noviembre para ver cuánto duró el alistamiento en realidad.\par}
+  \ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{16,52}{0,22}{5/4/5}{\texttt{get\_production\_orders} 0,21~s}{Voy a consultar el historial del MES para la Línea A de Empaque Trigo en ese rango.\par
+La Línea A de Empaque Trigo empacó \textbf{dos productos} en esa semana y \textbf{cambió una sola vez}: el \textbf{5 de noviembre de 2026}, de la presentación Libra a la presentación Kilo.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllllr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Producto} & \textbf{Período} & \textbf{Órdenes} & \textbf{Planeado} & \textbf{Real} & \textbf{Cumplimiento} \\
+\midrule
+\textbf{100202} -- Trigo Libra, 24 bolsas/fardo & 2 nov 06:08 $\rightarrow$ 5 nov 05:13 & WO102--104, WO114--116, WO126--128 (9) & 16.905 fardos & 16.288 fardos & 96,4 \% \\
+\rowcolor{tblzebra}\textbf{100203} -- Trigo Kilo, 20 bolsas/fardo & 5 nov 06:08 $\rightarrow$ 8 nov 10:51 & WO138--140, WO150--152, WO162--164, WO170 (10) & 14.257 fardos & 13.874 fardos & 97,3 \% \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+\textbf{El cambio de producto:}\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item La última orden de Libra fue \textbf{WO128}, en el turno de noche del 4 al 5 de noviembre (22:05 $\rightarrow$ 05:13:36).
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item La primera orden de Kilo fue \textbf{WO138}, que arrancó el \textbf{5 de noviembre a las 06:08}, al inicio del turno de la mañana.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item Entre una y otra no hubo ninguna orden. La línea estuvo sin producir unos \textbf{54 minutos}, y el cambio coincidió con el relevo de turno de las 06:00.
+\end{itemize}
+La última orden del período, WO170 del 8 de noviembre, era más corta que las demás (941 fardos planeados) y terminó a las 10:51. Después de ella no hay más órdenes registradas hasta el cierre del rango.\par
+Si quieres, puedo revisar los eventos de parada de esa ventana del 5 de noviembre para ver cuánto del hueco se registró como cambio de formato.\par}
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{16,14}{0,27}{5/4/5}{\texttt{get\_production\_orders} 0,24~s}{Voy a consultar el historial de órdenes de producción del MES para la Línea A de Empaque Trigo.\par
+En esa semana la Línea A empacó \textbf{dos productos}, y cambió de uno a otro \textbf{una sola vez, el jueves 5 de noviembre a primera hora}.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lrllrrr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Producto} & \textbf{Código} & \textbf{Periodo} & \textbf{Órdenes} & \textbf{Fardos planeados} & \textbf{Fardos reales} & \textbf{Cumplimiento} \\
+\midrule
+Trigo -- Libra -- 24 bolsas/fardo & 100202 & 2 nov 06:08 $\rightarrow$ 5 nov 05:13 & 9 (WO102--WO128) & 16.905 & 16.288 & 96,4 \% \\
+\rowcolor{tblzebra}Trigo -- Kilo -- 20 bolsas/fardo & 100203 & 5 nov 06:08 $\rightarrow$ 8 nov 10:51 & 10 (WO138--WO170) & 14.257 & 13.874 & 97,3 \% \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+\textbf{El cambio de producto:}\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Última orden de Libra:} WO128, turno noche del 4 al 5 de noviembre. Terminó el 5 nov a las 05:13:36.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item \textbf{Primera orden de Kilo:} WO138, turno de la mañana. Arrancó el 5 nov a las 06:08:00.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item Entre una y otra pasaron unos \textbf{54 minutos}. Esa es la ventana del cambio de formato. Coincide además con el cambio de turno de las 06:00.
+\end{itemize}
+\textbf{Otros puntos del periodo:}\par
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item La línea trabajó en tres turnos ($\approx$06:00, 14:00 y 22:00) todos los días. Hubo una orden por turno.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item El domingo 8 solo hubo una orden, WO170, y fue más corta: 941 fardos planeados frente a unos 1.400--1.500 en los demás turnos de Kilo. Terminó a las 10:51.
+\end{itemize}
+\begin{itemize}\setlength{\itemsep}{0pt}
+\item Todas las órdenes cerraron antes de la hora planeada y ninguna llegó al 100 \% de la cantidad planeada. La de menor cumplimiento fue WO150 (6 nov, mañana, Kilo), con 1.431 de 1.544 fardos (92,7 \%).
+\end{itemize}
+Puedo cruzar esto con los eventos de paro del 5 de noviembre para ver cómo se registró el cambio de formato y cuánto duró realmente.\par}
+
+\subsection*{Preguntas: causal}
+
+\fichapregunta{C7}{Causal}{¿Cuál fue el paro más largo de la Línea A de Empaque Maíz el 4 de noviembre de 2026 y cuál fue su causa?}{D1.2}{\texttt{get\_downtime\_events}}{Línea A de Empaque Maíz, 4 de noviembre de 2026: el paro más largo empezó a las 16:55 y duró 52 min 0 s; causa: falla mecánica (Mechanical failure).}
+  \ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{9,60}{0,24}{5/4/5}{\texttt{get\_downtime\_events} 0,24~s}{Voy a consultar el historial de paros del MES para esa línea y fecha.\par
+El paro más largo de la \textbf{Línea A de Empaque Maíz} el 4 de noviembre de 2026 fue de \textbf{52 minutos} (3.120 s). Empezó a las \textbf{16:55} y terminó hacia las \textbf{17:47} (hora de Colombia). Su causa fue una \textbf{falla mecánica} (\textit{Mechanical failure}), un paro no programado.\par
+Ese paro concentró más de la mitad del tiempo parado del día. Hubo 7 paros en total, que suman unos 99 minutos. El siguiente más largo duró menos de 11 minutos: empezó a las 23:05 y está registrado solo como "Unplanned", sin un motivo más específico.\par
+El MES registra la causa únicamente como "falla mecánica" y no indica qué equipo falló.\par}
+  \ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{8,03}{0,21}{5/5/5}{\texttt{get\_downtime\_events} 0,20~s}{El paro más largo de la Línea A de Empaque Maíz el 4 de noviembre de 2026 empezó a las \textbf{16:55} y duró \textbf{52 minutos} (3.120 s), hasta cerca de las 17:47. Su causa registrada fue una \textbf{falla mecánica} (\textit{Mechanical failure}), y fue un paro no programado.\par
+Ese día hubo 7 paros en total. Este fue unas cinco veces más largo que el siguiente, de unos 11 minutos (648 s) a las 23:05, cuyo motivo quedó registrado solo como "Unplanned", sin una causa específica.\par}
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{9,76}{0,21}{5/4/5}{\texttt{get\_downtime\_events} 0,20~s}{Voy a consultar los eventos de paro en el historial del MES.\par
+El paro más largo de la \textbf{Línea A de Empaque Maíz} el 4 de noviembre de 2026 duró \textbf{52 minutos} (3.120 s). Empezó a las \textbf{16:55} y terminó hacia las \textbf{17:47} (hora de Colombia). La causa registrada fue una \textbf{falla mecánica} ("Mechanical failure"), y no estaba programado.\par
+Para comparar, ese día hubo 7 paros. Los demás duraron entre 5 y 11 minutos:\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lll@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Inicio} & \textbf{Duración} & \textbf{Motivo} \\
+\midrule
+02:16 & 5,8 min & Mantenimiento preventivo (programado) \\
+\rowcolor{tblzebra}08:57 & 6,2 min & No programado \\
+11:00 & 9,5 min & No programado \\
+\rowcolor{tblzebra}15:36 & 10,0 min & No programado \\
+16:17 & 5,1 min & No programado \\
+\rowcolor{tblzebra}\textbf{16:55} & \textbf{52,0 min} & \textbf{Falla mecánica} \\
+23:05 & 10,8 min & No programado \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+El registro no detalla qué equipo falló. Si quieres, puedo buscar el estado de cada celda de la línea en esa franja para ubicar la máquina.\par}
+
+\fichapregunta{C8}{Causal}{¿Qué día entre el 2 y el 8 de noviembre de 2026 tuvo peor calidad la Línea B de Empaque Trigo?}{D1.2}{\texttt{get\_oee\_history o get\_count\_history}}{Línea B de Empaque Trigo, 2 al 8 de noviembre de 2026: la peor calidad fue el 5 de noviembre, 94,4 \% (245 fardos de desperdicio de 4.378).}
+  \ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{10,80}{0,22}{5/4/5}{\texttt{get\_oee\_history} 0,21~s}{Voy a consultar el historial de OEE/calidad de la Línea B en el MES.\par
+El \textbf{jueves 5 de noviembre de 2026} fue el día con peor calidad en la Línea B de Empaque Trigo: \textbf{92,9 \%}, con \textbf{295 fardos de desperdicio} sobre 4.179 producidos. El resto de los días estuvo entre 98,1 \% y 98,5 \%, con 16 a 80 fardos de desperdicio, así que el 5 de noviembre tuvo casi cuatro veces el desperdicio de un día normal.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lrrr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Calidad} & \textbf{Producidos} & \textbf{Desperdicio} \\
+\midrule
+Lun 2 & 98,4 \% & 4.224 & 68 \\
+\rowcolor{tblzebra}Mar 3 & 98,2 \% & 4.510 & 79 \\
+Mié 4 & 98,4 \% & 4.482 & 72 \\
+\rowcolor{tblzebra}\textbf{Jue 5} & \textbf{92,9 \%} & \textbf{4.179} & \textbf{295} \\
+Vie 6 & 98,1 \% & 4.265 & 80 \\
+\rowcolor{tblzebra}Sáb 7 & 98,5 \% & 4.256 & 64 \\
+Dom 8 & 98,4 \% & 973 & 16 \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+Ese día también tuvo el OEE más bajo de la semana (78,4 \%) y el mayor tiempo de paro no programado (unos 58 minutos). Una aclaración: el MES asigna cada corrida completa al día en que empezó, así que una corrida que comenzó el 5 en la noche cuenta toda para ese día. El domingo 8 solo tuvo una corrida, por eso su producción es baja.\par
+Si quieres, puedo revisar las corridas del 5 por turno o los paros de ese día para encontrar de dónde vino el desperdicio.\par}
+  \ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{10,56}{0,19}{5/4/5}{\texttt{get\_oee\_history} 0,19~s}{Voy a consultar el historial OEE de la Línea B en el MES para esas fechas.\par
+El \textbf{jueves 5 de noviembre} fue el día de peor calidad en la Línea B de Empaque Trigo: \textbf{92,9 \%} (3.884 fardos buenos de 4.179, con \textbf{295 fardos de desperdicio}).\par
+Fue un caso aislado. El resto de la semana la calidad estuvo entre 98,1 \% y 98,5 \%, con 64 a 80 fardos de desperdicio diarios. Ese día hubo unas cuatro veces más desperdicio de lo normal.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lrrl@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Calidad} & \textbf{Desperdicio (fardos)} & \textbf{Total (fardos)} \\
+\midrule
+Lun 2 & 98,4 \% & 68 & 4.224 \\
+\rowcolor{tblzebra}Mar 3 & 98,2 \% & 79 & 4.510 \\
+Mié 4 & 98,4 \% & 72 & 4.482 \\
+\rowcolor{tblzebra}\textbf{Jue 5} & \textbf{92,9 \%} & \textbf{295} & \textbf{4.179} \\
+Vie 6 & 98,1 \% & 80 & 4.265 \\
+\rowcolor{tblzebra}Sáb 7 & 98,5 \% & 64 & 4.256 \\
+Dom 8 & 98,4 \% & 16 & 973 (1 corrida) \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+El MES asigna cada corrida completa al día en que empieza. Por eso parte del desperdicio del día 5 pudo producirse en la madrugada del 6, si una corrida nocturna cruzó la medianoche. Si quiere, reviso el desperdicio hora por hora del 5 y 6 de noviembre para ver en qué turno se concentró.\par}
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{10,39}{0,18}{5/4/5}{\texttt{get\_oee\_history} 0,17~s}{Voy a consultar el historial de OEE de la Línea B de Empaque Trigo para esa semana.\par
+El \textbf{jueves 5 de noviembre de 2026} fue el día con peor calidad en la Línea B de Empaque Trigo: \textbf{92,9 \%}, con 295 fardos de desperdicio sobre 4.179 producidos. Los demás días de la semana se mantuvieron entre 98,2 \% y 98,5 \%, con 64 a 80 fardos de desperdicio diarios (16 el domingo 8, que tuvo una sola corrida). Ese día se desperdició casi cuatro veces lo normal.\par
+\par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
+\begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lrrr@{}}
+\toprule
+\rowcolor{tblhead}\textbf{Día} & \textbf{Calidad} & \textbf{Producidos} & \textbf{Desperdicio} \\
+\midrule
+Lun 2 & 98,4 \% & 4.224 & 68 \\
+\rowcolor{tblzebra}Mar 3 & 98,2 \% & 4.510 & 79 \\
+Mié 4 & 98,4 \% & 4.482 & 72 \\
+\rowcolor{tblzebra}\textbf{Jue 5} & \textbf{92,9 \%} & \textbf{4.179} & \textbf{295} \\
+Vie 6 & 98,1 \% & 4.265 & 80 \\
+\rowcolor{tblzebra}Sáb 7 & 98,5 \% & 4.256 & 64 \\
+Dom 8 & 98,4 \% & 973 & 16 \\
+\bottomrule\end{tabular}\end{adjustbox}\endgroup\par\smallskip
+El 5 de noviembre también tuvo el OEE más bajo de la semana (78,4 \%) y la mayor cantidad de paro no programado (unos 58 minutos). Los días se agrupan según la hora de inicio de cada corrida. Si quiere, puedo revisar ese día por hora o por empacadora para ver cuándo y dónde se concentró el desperdicio.\par}
+
+\subsection*{Preguntas: sin datos}
+
+\fichapregunta{C10}{Sin datos}{¿Cuántos fardos produjo la Línea A de Empaque Maíz el 1 de noviembre de 2026?}{Alucinación}{\texttt{ninguna (no hay datos)}}{Línea A de Empaque Maíz, 1 de noviembre de 2026: no hay producción registrada (run 0, counthistory 0 filas). En statehistory solo sigue abierto el estado en marcha sin corrida que venía del 23 de septiembre.}
+  \ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{13,33}{1,41}{5/4/5}{\texttt{get\_count\_history} 0,25~s}{Consulto el historial de producción del MES para esa línea y fecha.\par
+\textbf{Cero fardos.} La Línea A de Empaque Maíz no produjo nada el 1 de noviembre de 2026 (domingo).\par
+El MES no tiene corridas, conteos ni órdenes de trabajo para ese día. La línea tampoco tuvo producción el 31 de octubre. La actividad se reanudó el \textbf{2 de noviembre a las 06:03}, con tres órdenes (WO96, WO97 y WO98) del producto Maíz Libra de 24 bolsas por fardo. Ese día produjo \textbf{5.480 fardos}, de los cuales 5.369 fueron buenos.\par
+Si esperabas producción el día 1, puedo revisar los eventos de paro de esas fechas para confirmar si fue una parada programada.\par}
+  \ejecucion{2}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{14,76}{1,41}{5/5/5}{\texttt{get\_count\_history} 0,20~s}{Consulto el historial de producción del MES para esa línea y fecha.\par
+\textbf{El MES no registra producción para la Línea A de Empaque Maíz el 1 de noviembre de 2026: 0 fardos.}\par
+Ese día no hay ninguna corrida registrada, y tampoco aparecen paros, ni programados ni no programados. Por eso no es una línea que se detuvo, sino una ausencia total de registros. Ese 1 de noviembre fue domingo, así que lo más probable es que la línea no estuviera programada. Si debería haber operado, valdría la pena revisar si hubo un hueco en la captura de datos.\par
+¿Quiere que revise los días cercanos (por ejemplo, 31 de octubre y 2 de noviembre) para comparar?\par}
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{11,78}{1,06}{5/4/5}{\texttt{get\_count\_history} 0,17~s}{Consulto el historial de producción del MES para esa fecha.\par
+\textbf{Cero fardos.} El MES no registra producción de la Línea A de Empaque Maíz el 1 de noviembre de 2026 (domingo). No hubo ninguna corrida ese día.\par
+Tampoco hubo corridas el 31 de octubre. La línea volvió a producir el 2 de noviembre, con 3 corridas y 5.480 fardos: 5.369 buenos y 111 de desperdicio, con un OEE de 82,4 \%.\par
+Si quiere, reviso los paros de ese día para confirmar si fue una parada programada o si simplemente no hay datos cargados.\par}
+

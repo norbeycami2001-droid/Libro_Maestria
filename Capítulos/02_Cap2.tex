@@ -169,9 +169,9 @@ referencia la Línea A del área de Empaque Maíz.}
 \subsubsection{Datos expuestos a nivel de Celda}
 \label{sec:datos_celda}
 
-Este contexto corresponde al nivel 0 de ISA-95: el proceso físico, donde se originan las señales antes de cualquier agregación por línea o por sistema de negocio (Figura \ref{fig:isa95_niveles}). Cada celda (Empacadora o Enfardadora) contiene una UDT llamada \textbf{Edge}, que expone las señales de estado inmediato del equipo. A continuación se describe, tomando como referencia la Línea A del área de Empaque Maíz; la misma estructura se replica sin variaciones en las tres líneas restantes del caso de estudio, y es idéntica tanto para Empacadoras como para Enfardadoras.
+Este contexto corresponde al nivel 0 de ISA-95: el proceso físico, donde se originan las señales antes de cualquier agregación por línea o por sistema de negocio (Figura \ref{fig:isa95_niveles}). Cada celda (Empacadora o Enfardadora) contiene una instancia llamada \textbf{Edge}, que expone las señales de estado inmediato del equipo. A continuación se describe, tomando como referencia la Línea A del área de Empaque Maíz; la misma estructura se replica sin variaciones en las tres líneas restantes del caso de estudio, y es idéntica en estructura tanto para Empacadoras como para Enfardadoras.
 
-\paragraph{Empacadora y Enfardadora.} El UDT \textbf{Edge} agrupa, para ambos tipos de equipo, los mismos cuatro tags:
+\paragraph{Empacadora y Enfardadora.} La instancia \textbf{Edge} es de tipo \texttt{Empacadora} o \texttt{Enfardadora}, dos UDT con la misma estructura que solo se diferencian en la unidad y la documentación de los conteos (bolsas en la Empacadora y fardos en la Enfardadora, como se explica en el Anexo~\ref{anexo:validacion_correcciones}). Agrupa, para ambos tipos de equipo, los mismos cuatro tags:
 \begin{itemize}
     \item \texttt{Infeed}: contador acumulado del total producido por el equipo, en la unidad propia de cada uno: bolsas en la Empacadora y fardos en la Enfardadora.
     \item \texttt{Outfeed}: contador acumulado de unidades buenas, en la misma unidad que \texttt{Infeed}.
@@ -228,7 +228,7 @@ Dentro del Designer de Ignition se creó un único Tag Provider \cite{ignition_t
 
 Cada contexto de datos definido en el diseño (MES, Line, ERP, Edge) se implementó como una plantilla de \textit{User-Defined Type} independiente \cite{ignition_udt}, de modo que la estructura se defina una sola vez y se reutilice en las cuatro líneas sin duplicar la definición de tags. Cada UDT define sus tags a partir de una sola plantilla (el UDT \texttt{Line} anida además la carpeta \texttt{OEE} con el desglose de los indicadores): el UDT \texttt{MES} integra los indicadores base de desempeño junto con el desglose completo de su cálculo, y el UDT \texttt{Edge} agrupa las cuatro señales de estado del equipo.
 
-El caso más representativo de esta reutilización es el UDT \textbf{Edge}: al tener la misma estructura para ambos tipos de equipo, se definió una única vez y se instanció en las doce celdas del caso de estudio (ocho Empacadoras y cuatro Enfardadoras), de modo que una modificación a la plantilla se refleja automáticamente en las doce instancias sin repetir el trabajo de configuración manual.
+El caso más representativo de esta reutilización es el UDT \textbf{Edge}: al tener la misma estructura para ambos tipos de equipo, se definió una vez. Después, para que cada equipo declare la unidad de sus conteos, de él se derivaron los UDT \texttt{Empacadora} y \texttt{Enfardadora}, de igual estructura, que se instanciaron en las doce celdas del caso de estudio (ocho Empacadoras y cuatro Enfardadoras), de modo que una modificación a la plantilla de cada tipo se refleja automáticamente en sus instancias sin repetir el trabajo de configuración manual.
 
 Las Figuras \ref{fig:udt_mes}, \ref{fig:udt_line}, \ref{fig:udt_erp} y
 \ref{fig:udt_edge} muestran el editor de UDT de Ignition para las cuatro
@@ -264,14 +264,13 @@ los tags que conectan la línea con la planificación de negocio.}
 \centerline{\includegraphics[width=4cm]{Figuras/UDT_Edge.png}}
 \vspace{0.2cm}
 \caption{Definición del UDT \texttt{Edge} en el editor de Ignition, con
-las cuatro señales de estado del equipo, común a Empacadoras y
-Enfardadoras.}
+las cuatro señales de estado del equipo. Los UDT \texttt{Empacadora} y \texttt{Enfardadora}, que usan las celdas, tienen esta misma estructura.}
 \label{fig:udt_edge}
 \end{figure}
 
 \subsubsection{Instanciación en las cuatro líneas de producción}
 
-Una vez definidas las plantillas, se instanciaron en las cuatro líneas del caso de estudio (Maíz A, Maíz B, Trigo A y Trigo B) manteniendo el mismo conjunto de UDT y la misma organización interna descrita en la Sección \ref{sec:diseno_jerarquia}. Esto significa que una modificación a una plantilla, por ejemplo agregar un nuevo tag al UDT \texttt{Edge}, se refleja automáticamente en las ocho instancias de Empacadora y las cuatro de Enfardadora del caso de estudio, sin repetir el trabajo de configuración manual en cada una.
+Una vez definidas las plantillas, se instanciaron en las cuatro líneas del caso de estudio (Maíz A, Maíz B, Trigo A y Trigo B) manteniendo el mismo conjunto de UDT y la misma organización interna descrita en la Sección \ref{sec:diseno_jerarquia}. Esto significa que una modificación a una plantilla, por ejemplo agregar un nuevo tag al UDT \texttt{Empacadora}, se refleja automáticamente en las ocho instancias de Empacadora del caso de estudio, sin repetir el trabajo de configuración manual en cada una.
 
 \subsubsection{Generación de valores para validar la estructura}
 
