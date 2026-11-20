@@ -31,7 +31,7 @@ Para que el servidor MCP pueda exponer las operaciones definidas en la Sección~
 \subsubsection{Justificación del uso del Web Dev Module}
 \label{justificacionwebdev}
 
-El Web Dev Module es un módulo nativo de Ignition que permite definir endpoints HTTP mediante scripts Python ejecutados directamente en el Gateway \cite{ignition_webdev}. Se eligió sobre un framework externo (por ejemplo, FastAPI o Flask corriendo como un servicio aparte) por cuatro razones. Primero, corre dentro del mismo proceso que aloja el Tag Provider, sin infraestructura adicional que instalar ni mantener. Segundo, permite controlar con precisión qué queda expuesto hacia afuera, en línea con el alcance mínimo fijado en la Sección~\ref{seleccionmecanismo}: solo son visibles las rutas que se definen explícitamente en este módulo, nunca el árbol completo de tags ni la configuración interna del Gateway. Tercero, tiene acceso directo a las funciones de scripting de Ignition
+El Web Dev Module es un módulo nativo de Ignition que permite definir endpoints HTTP mediante scripts Python ejecutados directamente en el Gateway \cite{ignition_webdev}. Se eligió sobre un framework externo (por ejemplo, FastAPI o Flask corriendo como un servicio aparte) por cuatro razones. Primero, corre dentro del mismo proceso que aloja el Tag Provider, sin infraestructura adicional que instalar ni mantener. Segundo, permite controlar con precisión qué queda expuesto hacia afuera, en línea con el alcance mínimo fijado en la Sección~\ref{seleccionmecanismo}: solo son visibles las rutas que se definen explícitamente en este módulo, nunca el árbol completo de tags ni la configuración interna del Gateway. Es el principio de exposición mínima que la norma IEC 62443 formaliza con las zonas y los conductos \cite{Jaatun2026Zones}. Tercero, tiene acceso directo a las funciones de scripting de Ignition
 (\texttt{system.tag.browse}, \texttt{system.tag.readBlocking},
 \texttt{system.tag.getConfiguration}) sin necesitar un adaptador intermedio entre el servidor HTTP y el Tag Provider. Cuarto, es coherente con el transporte STDIO local adoptado en la Sección~\ref{seleccionmecanismo}: todo el stack, desde el servidor MCP hasta el Tag Provider, corre en la misma máquina o red interna, sin exponer nada a internet.
 
@@ -405,7 +405,7 @@ la consulta, en vez de aceptarse como texto libre. Los nombres de tabla y de col
 como identificadores parametrizados, nunca por interpolación de cadenas, y el número de filas
 que puede devolver una llamada tiene un tope fijo. \texttt{query\_table} no permite combinar
 varias tablas en una misma consulta (\textit{JOIN}); esa necesidad la cubren las cinco Tools
-específicas. En ningún caso el LLM construye o envía una sentencia SQL: entrega los
+específicas. La literatura reporta que los modelos de texto a SQL pueden ser inducidos a generar sentencias que inyectan SQL \cite{Lin2025ToxicSQL}, riesgo que este diseño evita al no dejar que el modelo escriba SQL. En ningún caso el LLM construye o envía una sentencia SQL: entrega los
 parámetros estructurados de cada Tool, y es el servidor quien arma la consulta parametrizada.
 
 La validación se hizo con el servidor MCP real y no solo con consultas SQL directas. Las seis Tools respondieron sin error al invocarlas con datos reales de la planta; una combinación de
