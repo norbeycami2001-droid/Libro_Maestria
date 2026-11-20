@@ -63,13 +63,13 @@ Las diez preguntas se ejecutaron tres veces cada una en Claude Desktop el 19 de 
 \hline
 \textbf{Categoría} & \textbf{Ejec.} & \textbf{Correctas} & \textbf{Alucinaciones} & \textbf{Latencia (s)} & \textbf{Tools (s)} \\
 \hline
-Rango de fechas & 3 & 3/3 & 1/3 & 21,55 & 0,22 \\
+Rango de fechas & 3 & 3/3 & 0/3 & 21,55 & 0,22 \\
 Unidades & 12 & 12/12 & 0/12 & 9,79 & 0,80 \\
 Comparativa & 6 & 6/6 & 0/6 & 21,97 & 0,32 \\
 Causal & 6 & 6/6 & 0/6 & 9,86 & 0,21 \\
 Sin datos & 3 & 3/3 & 0/3 & 13,29 & 1,29 \\
 \hline
-\textbf{Total} & 30 & 30/30 & \textbf{1/30} & 13,77 & 0,58 \\
+\textbf{Total} & 30 & 30/30 & \textbf{0/30} & 13,77 & 0,58 \\
 \hline
 \end{tabular}
 \end{table}
@@ -81,7 +81,7 @@ Las 30 ejecuciones fueron correctas. Las dos correcciones se comprueban así:
 \item \textbf{Unidades de conteo.} En las 12 ejecuciones de la categoría Unidades el sistema nombró la unidad que corresponde a cada nivel: fardos para la línea (C2 y C5), bolsas para la Empacadora (C3) y las bolsas por fardo del producto (C4: 20 en la presentación kilo), tomadas de la descripción de producto corregida. En las preguntas de las demás categorías, las cantidades de la línea también se expresaron en fardos.
 \end{itemize}
 
-Hay cuatro hallazgos que no cambian el veredicto, porque los datos clave de cada pregunta coinciden con la referencia, y cada uno se anota bajo su pregunta. En C4 la referencia calcula 19,98 bolsas por fardo y las ejecuciones responden 20, que es el valor del producto. En C8 el sistema reportó 92,9 \% de calidad el 5 de noviembre, porque el MES asigna cada corrida al día en que empieza, y la referencia por día calendario da 94,4 \%; en ambas el día de peor calidad es el mismo. En la ejecución 3 de C6 hay una frase imprecisa sobre la velocidad ideal de la Línea B, con cifras correctas, que no se cuenta como alucinación. La única ejecución marcada con alucinación es la 3 de C1, que da un rango de cierre anticipado de las órdenes que los datos no respaldan.
+Hay cuatro hallazgos que no cambian el veredicto, porque los datos clave de cada pregunta coinciden con la referencia, y cada uno se anota bajo su pregunta. En C4 la referencia calcula 19,98 bolsas por fardo y las ejecuciones responden 20, que es el valor del producto. En C8 el sistema reportó 92,9 \% de calidad el 5 de noviembre, porque el MES asigna cada corrida al día en que empieza, y la referencia por día calendario da 94,4 \%; en ambas el día de peor calidad es el mismo. En la ejecución 3 de C6 hay una frase imprecisa sobre la velocidad ideal de la Línea B, con cifras correctas. En la ejecución 3 de C1 hay un comentario adicional con un rango de cierre anticipado que los datos no respaldan. Ninguna de las dos se cuenta como alucinación porque lo que la pregunta pedía se respondió bien y el error está en un comentario que no se pidió; se registra en la coherencia de la ejecución.
 
 El banco es pequeño y se ejecutó con un solo modelo y una sola configuración, igual que el Anexo~\ref{anexo:banco_preguntas}. Los datos de la semana son simulados, con la misma estructura que los del Capítulo~\ref{validacionsistema}; su valor es comprobar que las correcciones funcionan, no repetir la validación completa.
 
@@ -167,7 +167,7 @@ En la Línea B de Empaque Trigo se ejecutaron \textbf{19 órdenes de trabajo} en
 \item \textbf{Horarios.} Todas las órdenes arrancaron unos 3 minutos después de lo planeado. Todas terminaron antes de la hora de fin planeada, en general entre 40 minutos y 1 hora y 15 minutos antes. Aun así, no alcanzaron la cantidad planeada.
 \end{itemize}
 Si quieres, puedo cruzar estas órdenes con los eventos de parada o el OEE de la línea para ver qué explica las de menor cumplimiento.\par}
-  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: Sí}{21,35}{0,21}{5/4/5}{\texttt{get\_production\_orders} 0,20~s}{Voy a consultar el historial MES de órdenes de producción para esa línea y ese rango de fechas.\par
+  \ejecucion{3}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{21,35}{0,21}{4/4/5}{\texttt{get\_production\_orders} 0,20~s}{Voy a consultar el historial MES de órdenes de producción para esa línea y ese rango de fechas.\par
 Entre el 2 y el 8 de noviembre de 2026 se ejecutaron \textbf{19 órdenes de trabajo} en la Línea B de Empaque Trigo. Todas fueron del mismo producto, \textbf{100203 -- Trigo Kilo, 20 bolsas por fardo}, programadas en tres turnos diarios. El 8 de noviembre solo hubo turno de mañana.\par
 \par\smallskip\noindent\begingroup\footnotesize\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.18}
 \begin{adjustbox}{max width=\linewidth,center}\begin{tabular}{@{}lllrrr@{}}
@@ -208,7 +208,7 @@ WO171 & 08-nov 06:07 & 08-nov 11:04 & 988 & 973 & 98,5 \% \\
 Todas las órdenes iniciaron unos 3 minutos tarde y cerraron entre 45 minutos y 1 hora antes del fin planeado, aunque ninguna llegó a la cantidad planeada. Puede valer la pena revisarlo.\par
 Puedo cruzar esto con los eventos de paro u OEE de esos días para ver qué explica las órdenes más bajas.\par}
 
-\notaeval{En E1 y E3 la pertinencia es 4: agregan un resumen de cumplimiento y de horarios que no se pedía. E3 afirma que todas las órdenes cerraron entre 45 minutos y 1 hora antes del fin planeado, pero esa diferencia fue de 29 minutos (WO117) a 3 horas (WO171) y solo 7 de las 19 órdenes quedaron dentro de ese rango; es una cifra que los datos no respaldan y se marca como alucinación.}
+\notaeval{En E1 y E3 la pertinencia es 4: agregan un resumen de cumplimiento y de horarios que no se pedía. En E3 la coherencia es 4: afirma que todas las órdenes cerraron entre 45 minutos y 1 hora antes del fin planeado, pero esa diferencia fue de 29 minutos (WO117) a 3 horas (WO171) y solo 7 de las 19 órdenes quedaron dentro de ese rango. La lista de órdenes y las cantidades, que es lo que se pedía, son correctas y no hay alucinación.}
 
 \fichapregunta{C2}{Unidades}{¿Cuántos fardos buenos produjo la Línea A de Empaque Maíz el 3 de noviembre de 2026?}{Unidad de la línea (fardos)}{\texttt{get\_count\_history o get\_oee\_history}}{Línea A de Empaque Maíz, 3 de noviembre de 2026: 5.523 fardos buenos (5.625 en total, 102 de desperdicio).}
   \ejecucion{1}{Correcta\normalfont{} \;\textbar\; Alucinación: No}{6,14}{0,60}{5/5/5}{\texttt{get\_count\_history} 0,59~s}{La Línea A de Empaque Maíz produjo \textbf{5.523 fardos buenos} el 3 de noviembre de 2026 (día completo, de 00:00 a 24:00 hora de Colombia).\par
